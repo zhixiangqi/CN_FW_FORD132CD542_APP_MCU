@@ -408,7 +408,7 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[3].pin[4]" locked="true">
                         <Aliases>
-                            <Alias value="FPCACHK_LOUT"/>
+                            <Alias value="TP_REST"/>
                         </Aliases>
                     </Block>
                     <Parameters>
