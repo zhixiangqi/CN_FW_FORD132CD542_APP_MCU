@@ -565,25 +565,25 @@ extern "C" {
 #define MCU_SWCLK_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_STRONG
 #endif /* defined (CY_USING_HAL) */
 
-#define FPCACHK_LOUT_ENABLED 1U
-#define FPCACHK_LOUT_PORT GPIO_PRT3
-#define FPCACHK_LOUT_PORT_NUM 3U
-#define FPCACHK_LOUT_PIN 4U
-#define FPCACHK_LOUT_NUM 4U
-#define FPCACHK_LOUT_DRIVEMODE CY_GPIO_DM_PULLDOWN_IN_OFF
-#define FPCACHK_LOUT_INIT_DRIVESTATE 0
+#define TP_REST_ENABLED 1U
+#define TP_REST_PORT GPIO_PRT3
+#define TP_REST_PORT_NUM 3U
+#define TP_REST_PIN 4U
+#define TP_REST_NUM 4U
+#define TP_REST_DRIVEMODE CY_GPIO_DM_PULLDOWN_IN_OFF
+#define TP_REST_INIT_DRIVESTATE 0
 #ifndef ioss_0_port_3_pin_4_HSIOM
     #define ioss_0_port_3_pin_4_HSIOM HSIOM_SEL_GPIO
 #endif
-#define FPCACHK_LOUT_HSIOM ioss_0_port_3_pin_4_HSIOM
-#define FPCACHK_LOUT_IRQ ioss_interrupts_gpio_3_IRQn
+#define TP_REST_HSIOM ioss_0_port_3_pin_4_HSIOM
+#define TP_REST_IRQ ioss_interrupts_gpio_3_IRQn
 
 #if defined (CY_USING_HAL)
-#define FPCACHK_LOUT_HAL_PORT_PIN P3_4
-#define FPCACHK_LOUT P3_4
-#define FPCACHK_LOUT_HAL_IRQ CYHAL_GPIO_IRQ_NONE
-#define FPCACHK_LOUT_HAL_DIR CYHAL_GPIO_DIR_OUTPUT 
-#define FPCACHK_LOUT_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_PULLDOWN
+#define TP_REST_HAL_PORT_PIN P3_4
+#define TP_REST P3_4
+#define TP_REST_HAL_IRQ CYHAL_GPIO_IRQ_NONE
+#define TP_REST_HAL_DIR CYHAL_GPIO_DIR_OUTPUT 
+#define TP_REST_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_PULLDOWN
 #endif /* defined (CY_USING_HAL) */
 
 #define FPCACHK_LIN_ENABLED 1U
@@ -1177,10 +1177,10 @@ extern const cy_stc_gpio_pin_config_t MCU_SWCLK_config;
 extern const cyhal_resource_inst_t MCU_SWCLK_obj;
 #endif /* defined (CY_USING_HAL) */
 
-extern const cy_stc_gpio_pin_config_t FPCACHK_LOUT_config;
+extern const cy_stc_gpio_pin_config_t TP_REST_config;
 
 #if defined (CY_USING_HAL)
-extern const cyhal_resource_inst_t FPCACHK_LOUT_obj;
+extern const cyhal_resource_inst_t TP_REST_obj;
 #endif /* defined (CY_USING_HAL) */
 
 extern const cy_stc_gpio_pin_config_t FPCACHK_LIN_config;
