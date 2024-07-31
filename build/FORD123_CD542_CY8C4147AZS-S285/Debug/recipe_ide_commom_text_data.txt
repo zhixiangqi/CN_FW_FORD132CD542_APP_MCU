@@ -1,0 +1,9 @@
+&&_MTB_RECIPE__OPENOCD_CFG&&=psoc4.cfg
+&&_MTB_RECIPE__OPENOCD_CHIP&&=psoc4
+&&_MTB_RECIPE__SVD_PATH&&=${cy_prj_path}/../mtb_shared/mtb-pdl-cat2/release-v2.11.0/devices/svd/psoc4100sp.svd
+&&_MTB_RECIPE__SYM_FILE&&=${cy_prj_path}/build/FORD123_CD542_CY8C4147AZS-S285/Debug/mtb-example-psoc4-empty-app.elf
+&&_MTB_RECIPE__PROG_FILE&&=${cy_prj_path}/build/FORD123_CD542_CY8C4147AZS-S285/Debug/mtb-example-psoc4-empty-app.hex
+&&_MTB_RECIPE__ECLIPSE_GDB&&=${cy_tools_path:CY_TOOL_arm-none-eabi-gdb_EXE}
+&&_MTB_RECIPE__ECLIPSE_JLINK_EXE&&=${jlink_path}/${jlink_gdbserver}
+&&_MTB_RECIPE__APP_NAME&&=CN_FW_FORD132CD542_APP_MCU
+&&_MTB_RECIPE__PRJ_NAME&&=CN_FW_FORD132CD542_APP_MCU

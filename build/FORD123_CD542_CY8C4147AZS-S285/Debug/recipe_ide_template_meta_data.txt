@@ -1,0 +1,2 @@
+TEMPLATE_REPLACE=../mtb_shared/recipe-make-cat2/release-v2.2.0/make/scripts/interface_version_2/eclipse/KitProg3=.mtbLaunchConfigs
+UUID=&&PROJECT_UUID&&
