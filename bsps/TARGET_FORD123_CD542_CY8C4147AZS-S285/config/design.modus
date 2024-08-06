@@ -3,6 +3,7 @@
     <Devices>
         <Device mpn="CY8C4147AZS-S285">
             <BlockConfig>
+                <Block location="ioss[0].port[3].pin[7]"/>
                 <Personality template="m0s8dap" version="1.0">
                     <Block location="cpuss[0].dap[0]" locked="true"/>
                     <Parameters>
@@ -408,14 +409,16 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[3].pin[4]" locked="true">
                         <Aliases>
-                            <Alias value="TP_REST"/>
+                            <Alias value="TDDI_ATTN"/>
+                            <Alias value="TDDI_USER_BIN1"/>
+                            <Alias value="TDDI_USER_BIN"/>
                         </Aliases>
                     </Block>
                     <Parameters>
-                        <Param id="DriveModes" value="CY_GPIO_DM_PULLDOWN_IN_OFF"/>
+                        <Param id="DriveModes" value="CY_GPIO_DM_PULLUP_IN_OFF"/>
                         <Param id="inFlash" value="true"/>
-                        <Param id="initialState" value="0"/>
-                        <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>
+                        <Param id="initialState" value="1"/>
+                        <Param id="isrTrigger" value="CY_GPIO_INTR_FALLING"/>
                         <Param id="portLevelConfig" value="false"/>
                         <Param id="slewRate" value="CY_GPIO_SLEW_FAST"/>
                         <Param id="vtrip" value="CY_GPIO_VTRIP_CMOS"/>
@@ -424,11 +427,11 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[3].pin[5]" locked="true">
                         <Aliases>
-                            <Alias value="FPCACHK_LIN"/>
+                            <Alias value="TP_RESET"/>
                         </Aliases>
                     </Block>
                     <Parameters>
-                        <Param id="DriveModes" value="CY_GPIO_DM_HIGHZ"/>
+                        <Param id="DriveModes" value="CY_GPIO_DM_PULLUP_DOWN_IN_OFF"/>
                         <Param id="inFlash" value="true"/>
                         <Param id="initialState" value="1"/>
                         <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>

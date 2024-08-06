@@ -25,11 +25,11 @@
 #include "app/inc/RegisterApp.h"
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/BacklightApp.h"
+#include "app/inc/TC0App.h"
 #include "driver/inc/PwmDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/PortDriver.h"
-#include "app/inc/TC0App.h"
 
 #define BLT_SAMPLE_CNT  16U
 

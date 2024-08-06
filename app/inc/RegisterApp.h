@@ -1,5 +1,5 @@
-#ifndef RegisterApp_H__
-#define RegisterApp_H__
+#ifndef APP_INC_RegisterApp_H__
+#define APP_INC_RegisterApp_H__
 
 #include "main.h"
 

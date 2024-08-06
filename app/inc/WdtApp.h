@@ -1,5 +1,5 @@
-#ifndef WDTAPP_H__
-#define WDTAPP_H__
+#ifndef APP_INC_WDTAPP_H__
+#define APP_INC_WDTAPP_H__
 
 #include "main.h"
 

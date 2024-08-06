@@ -1,5 +1,5 @@
-#ifndef POWERAPP_H__
-#define POWERAPP_H__
+#ifndef APP_INC_POWERAPP_H__
+#define APP_INC_POWERAPP_H__
 
 #include "main.h"
 

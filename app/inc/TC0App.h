@@ -1,5 +1,5 @@
-#ifndef TC0App_H__
-#define TC0App_H__
+#ifndef APP_INC_TC0App_H__
+#define APP_INC_TC0App_H__
 
 #include "main.h"
 

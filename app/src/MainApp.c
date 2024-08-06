@@ -36,6 +36,7 @@
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/I2C4MDriver.h"
 #include "driver/inc/PwmDriver.h"
+#include "app/inc/TDDIApp.h"
 
 #define CY_ASSERT_FAILED          (0u)
 
@@ -110,6 +111,8 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
     PowerApp_PowerGoodInitial();
     PowerApp_Sequence(POWER_ON);
+    /*TDDI exit standby mode*/
+    TDDIApp_ExitStandbyMode();
     /*Do LCD Power On Sequence*/
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);

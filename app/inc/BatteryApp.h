@@ -1,5 +1,5 @@
-#ifndef BATTERYAPP_H__
-#define BATTERYAPP_H__
+#ifndef APP_INC_BATTERYAPP_H__
+#define APP_INC_BATTERYAPP_H__
 
 #define BT_NORMAL       0x00U
 #define BT_LOWHIGH      0x01U

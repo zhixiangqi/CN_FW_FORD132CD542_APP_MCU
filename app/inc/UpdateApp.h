@@ -1,5 +1,5 @@
-#ifndef UPDATEAPP_H__
-#define UPDATEAPP_H__
+#ifndef APP_INC_UPDATEAPP_H__
+#define APP_INC_UPDATEAPP_H__
 
 #include "main.h"
 

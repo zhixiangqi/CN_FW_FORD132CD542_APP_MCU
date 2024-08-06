@@ -1,5 +1,5 @@
-#ifndef StackTaskApp_H__
-#define StackTaskApp_H__
+#ifndef APP_INC_StackTaskApp_H__
+#define APP_INC_StackTaskApp_H__
 
 #include "main.h"
 
