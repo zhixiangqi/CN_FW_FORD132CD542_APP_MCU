@@ -9,5 +9,5 @@
 #define NT51926_SLAVE_ADDRESS		        0x6FU
 #define NT51926_SLAVE_SECOND_ADDRESS		0x6DU
 
-void TDDIApp_ExitStandbyMode(void);
+void TDDI_ExitStandbyMode(void);
 #endif

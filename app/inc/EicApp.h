@@ -10,6 +10,5 @@
 
 #include "main.h"
 
-#define TDDI_INTR_PRIORITY    (3u)
 
 #endif /* APP_INC_EICAPP_H_ */

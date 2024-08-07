@@ -3,7 +3,6 @@
     <Devices>
         <Device mpn="CY8C4147AZS-S285">
             <BlockConfig>
-                <Block location="ioss[0].port[3].pin[7]"/>
                 <Personality template="m0s8dap" version="1.0">
                     <Block location="cpuss[0].dap[0]" locked="true"/>
                     <Parameters>
@@ -410,8 +409,6 @@
                     <Block location="ioss[0].port[3].pin[4]" locked="true">
                         <Aliases>
                             <Alias value="TDDI_ATTN"/>
-                            <Alias value="TDDI_USER_BIN1"/>
-                            <Alias value="TDDI_USER_BIN"/>
                         </Aliases>
                     </Block>
                     <Parameters>

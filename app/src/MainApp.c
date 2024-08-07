@@ -112,7 +112,7 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     PowerApp_PowerGoodInitial();
     PowerApp_Sequence(POWER_ON);
     /*TDDI exit standby mode*/
-    TDDIApp_ExitStandbyMode();
+    TDDI_ExitStandbyMode();
     /*Do LCD Power On Sequence*/
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
