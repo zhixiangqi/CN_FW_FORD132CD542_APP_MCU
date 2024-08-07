@@ -1,5 +1,5 @@
-#ifndef DEVICEAPP_H__
-#define DEVICEAPP_H__
+#ifndef APP_INC_DEVICEAPP_H__
+#define APP_INC_DEVICEAPP_H__
 
 #include "main.h"
 

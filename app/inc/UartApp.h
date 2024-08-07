@@ -1,5 +1,5 @@
-#ifndef UARTApp_H__
-#define UARTApp_H__
+#ifndef APP_INC_UARTApp_H__
+#define APP_INC_UARTApp_H__
 
 #include "main.h"
 

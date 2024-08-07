@@ -1,5 +1,5 @@
-#ifndef I2C2SLAVEAPP_H__
-#define I2C2SLAVEAPP_H__
+#ifndef APP_INC_I2C2SLAVEAPP_H__
+#define APP_INC_I2C2SLAVEAPP_H__
 
 #include "main.h"
 

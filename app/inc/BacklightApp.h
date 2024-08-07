@@ -1,5 +1,5 @@
-#ifndef BACKLIGHTAPP_H__
-#define BACKLIGHTAPP_H__
+#ifndef APP_INC_BACKLIGHTAPP_H__
+#define APP_INC_BACKLIGHTAPP_H__
 
 #include "main.h"
 

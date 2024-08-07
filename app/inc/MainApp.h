@@ -1,5 +1,5 @@
-#ifndef MAINAPP_H
-#define MAINAPP_H
+#ifndef APP_INC_MAINAPP_H
+#define APP_INC_MAINAPP_H
 
 #define STATE_BOOT          0x00U
 #define STATE_PRENORMAL     0x01U

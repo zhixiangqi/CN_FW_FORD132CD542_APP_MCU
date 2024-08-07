@@ -503,41 +503,41 @@ const cyhal_resource_inst_t MCU_SWCLK_obj =
 };
 #endif /* defined (CY_USING_HAL) */
 
-const cy_stc_gpio_pin_config_t TP_REST_config =
+const cy_stc_gpio_pin_config_t TDDI_ATTN_config =
 {
-    .outVal = 0,
-    .driveMode = CY_GPIO_DM_PULLDOWN_IN_OFF,
-    .hsiom = TP_REST_HSIOM,
-    .intEdge = CY_GPIO_INTR_DISABLE,
+    .outVal = 1,
+    .driveMode = CY_GPIO_DM_PULLUP_IN_OFF,
+    .hsiom = TDDI_ATTN_HSIOM,
+    .intEdge = CY_GPIO_INTR_FALLING,
     .vtrip = CY_GPIO_VTRIP_CMOS,
     .slewRate = CY_GPIO_SLEW_FAST,
 };
 
 #if defined (CY_USING_HAL)
-const cyhal_resource_inst_t TP_REST_obj =
+const cyhal_resource_inst_t TDDI_ATTN_obj =
 {
     .type = CYHAL_RSC_GPIO,
-    .block_num = TP_REST_PORT_NUM,
-    .channel_num = TP_REST_PIN,
+    .block_num = TDDI_ATTN_PORT_NUM,
+    .channel_num = TDDI_ATTN_PIN,
 };
 #endif /* defined (CY_USING_HAL) */
 
-const cy_stc_gpio_pin_config_t FPCACHK_LIN_config =
+const cy_stc_gpio_pin_config_t TP_RESET_config =
 {
     .outVal = 1,
-    .driveMode = CY_GPIO_DM_HIGHZ,
-    .hsiom = FPCACHK_LIN_HSIOM,
+    .driveMode = CY_GPIO_DM_PULLUP_DOWN_IN_OFF,
+    .hsiom = TP_RESET_HSIOM,
     .intEdge = CY_GPIO_INTR_DISABLE,
     .vtrip = CY_GPIO_VTRIP_CMOS,
     .slewRate = CY_GPIO_SLEW_FAST,
 };
 
 #if defined (CY_USING_HAL)
-const cyhal_resource_inst_t FPCACHK_LIN_obj =
+const cyhal_resource_inst_t TP_RESET_obj =
 {
     .type = CYHAL_RSC_GPIO,
-    .block_num = FPCACHK_LIN_PORT_NUM,
-    .channel_num = FPCACHK_LIN_PIN,
+    .block_num = TP_RESET_PORT_NUM,
+    .channel_num = TP_RESET_PIN,
 };
 #endif /* defined (CY_USING_HAL) */
 
@@ -946,8 +946,8 @@ void init_cycfg_pins(void)
     Cy_GPIO_Pin_Init(DISP_FAULT_PORT, DISP_FAULT_PIN, &DISP_FAULT_config);
     Cy_GPIO_Pin_Init(MCU_SWDIO_PORT, MCU_SWDIO_PIN, &MCU_SWDIO_config);
     Cy_GPIO_Pin_Init(MCU_SWCLK_PORT, MCU_SWCLK_PIN, &MCU_SWCLK_config);
-    Cy_GPIO_Pin_Init(TP_REST_PORT, TP_REST_PIN, &TP_REST_config);
-    Cy_GPIO_Pin_Init(FPCACHK_LIN_PORT, FPCACHK_LIN_PIN, &FPCACHK_LIN_config);
+    Cy_GPIO_Pin_Init(TDDI_ATTN_PORT, TDDI_ATTN_PIN, &TDDI_ATTN_config);
+    Cy_GPIO_Pin_Init(TP_RESET_PORT, TP_RESET_PIN, &TP_RESET_config);
     Cy_GPIO_Pin_Init(DDIC_WP_PORT, DDIC_WP_PIN, &DDIC_WP_config);
     Cy_GPIO_Pin_Init(EXFLASH_SPI_SDI_PORT, EXFLASH_SPI_SDI_PIN, &EXFLASH_SPI_SDI_config);
     Cy_GPIO_Pin_Init(EXFLASH_SPI_SDO_PORT, EXFLASH_SPI_SDO_PIN, &EXFLASH_SPI_SDO_config);
@@ -997,8 +997,8 @@ void reserve_cycfg_pins(void)
     cyhal_hwmgr_reserve(&DISP_FAULT_obj);
     cyhal_hwmgr_reserve(&MCU_SWDIO_obj);
     cyhal_hwmgr_reserve(&MCU_SWCLK_obj);
-    cyhal_hwmgr_reserve(&TP_REST_obj);
-    cyhal_hwmgr_reserve(&FPCACHK_LIN_obj);
+    cyhal_hwmgr_reserve(&TDDI_ATTN_obj);
+    cyhal_hwmgr_reserve(&TP_RESET_obj);
     cyhal_hwmgr_reserve(&DDIC_WP_obj);
     cyhal_hwmgr_reserve(&EXFLASH_SPI_SDI_obj);
     cyhal_hwmgr_reserve(&EXFLASH_SPI_SDO_obj);

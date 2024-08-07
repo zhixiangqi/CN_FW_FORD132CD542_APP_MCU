@@ -1,5 +1,5 @@
-#ifndef INTBAPP_H__
-#define INTBAPP_H__
+#ifndef APP_INC_INTBAPP_H__
+#define APP_INC_INTBAPP_H__
 
 #include "main.h"
 

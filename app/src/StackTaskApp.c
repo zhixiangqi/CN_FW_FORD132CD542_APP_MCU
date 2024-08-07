@@ -30,6 +30,7 @@
 #include "app/inc/UartApp.h"
 #include "app/inc/PowerApp.h"
 #include "app/inc/UpdateApp.h"
+#include "app/inc/LEDDriveApp.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -218,6 +219,7 @@ void StackTaskApp_MissionAction(void)
         case TASK_MONITOR:
             BacklightApp_TempMonitor();
             BatteryApp_PowerMonitor();
+            LEDDrive_FaultREead();
         break;
 
         case TASK_BLTFLOW:

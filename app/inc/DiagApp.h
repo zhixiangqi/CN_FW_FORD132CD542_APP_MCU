@@ -1,5 +1,5 @@
-#ifndef DIAGAPP_H__
-#define DIAGAPP_H__
+#ifndef APP_INC_DIAGAPP_H__
+#define APP_INC_DIAGAPP_H__
 
 #include "main.h"
 
