@@ -19,8 +19,6 @@
 
 /* This section lists the other files that are included in this file.
  */
-
-#include "main.h"
 #include "app/inc/MainApp.h"
 #include "app/inc/TC0App.h"
 #include "app/inc/StackTaskApp.h"
@@ -32,11 +30,14 @@
 #include "app/inc/WdtApp.h"
 #include "app/inc/PowerApp.h"
 #include "app/inc/FlashApp.h"
+#include "app/inc/TDDIApp.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/I2C4MDriver.h"
 #include "driver/inc/PwmDriver.h"
-#include "app/inc/TDDIApp.h"
+#include "driver/inc/PortDriver.h"
+#include "driver/inc/EicDriver.h"
+
 
 #define CY_ASSERT_FAILED          (0u)
 
@@ -109,6 +110,8 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     WdtApp_CleanCounter();
     /*ADC initial*/
     AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
+    /*EIC initial*/
+    EicDriver_Initial();
     PowerApp_PowerGoodInitial();
     PowerApp_Sequence(POWER_ON);
     /*TDDI exit standby mode*/
@@ -156,11 +159,14 @@ static uint8_t MainApp_HandShake_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
+    uint16_t u16AdcVolt;
     StackTaskApp_MissionAction();
     INTBApp_Flow();
     // sprintf((char *)u8TxBuffer,"NORMAL FINISHED 0x%02x\r\n",RegisterApp_DHU_Read(CMD_DISP_STATUS,0U));
     // UartDriver_TxWriteString(u8TxBuffer);
-    if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
+    /* Check SYNC Voltage */
+    u16AdcVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, 3);
+    if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && (u16AdcVolt > 413 && u16AdcVolt < 2114))
     {
         u8Return = STATE_NORMAL;
     }else{
@@ -201,13 +207,24 @@ static uint8_t MainApp_PreSleep_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
-    WdtApp_CleanCounter();
+     uint16_t u16AdcVolt;
+    // WdtApp_CleanCounter();
     INTBApp_Flow();
     /* Do Power Off Sequence*/
     sprintf((char *)u8TxBuffer,"SLEEP FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
     u8Return = STATE_SLEEP;
     (void) u8Nothing;
+    TC0App_DelayMS(200U);
+    /* Check SYNC Voltage */
+    u16AdcVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, 3);
+    if (u16AdcVolt > 413 && u16AdcVolt < 2114)
+    {
+        /* Initialize the device and board peripherals */
+        cybsp_init();
+    }else{
+        PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
+    }
     return u8Return;
 }
 

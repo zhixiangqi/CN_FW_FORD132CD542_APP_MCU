@@ -20,8 +20,6 @@
 /* Section: Included Files                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-
-#include "main.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/BacklightApp.h"

@@ -20,6 +20,7 @@
 /* This section lists the other files that are included in this file.
  */
 
+#include <LEDApp.h>
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/BacklightApp.h"
 #include "app/inc/BatteryApp.h"
@@ -30,10 +31,10 @@
 #include "app/inc/UartApp.h"
 #include "app/inc/PowerApp.h"
 #include "app/inc/UpdateApp.h"
-#include "app/inc/LEDDriveApp.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"
+#include "driver/inc/EicDriver.h"
 
 #define FIFO true
 
@@ -219,7 +220,6 @@ void StackTaskApp_MissionAction(void)
         case TASK_MONITOR:
             BacklightApp_TempMonitor();
             BatteryApp_PowerMonitor();
-            LEDDrive_FaultREead();
         break;
 
         case TASK_BLTFLOW:
@@ -240,6 +240,15 @@ void StackTaskApp_MissionAction(void)
             DiagApp_FaultCheckFlow();
             DiagApp_FpcCheckFlow();
             DiagApp_LockCheckFlow();
+        break;
+
+        case TASK_INTTCHLOW:
+            if (tp_interr_flag == TRUE)
+            {
+                INTBApp_PullReqSetOrClear(INTB_REQ_SET);
+                RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS+2,INTB_INT_TCH_SET);
+                tp_interr_flag = FALSE;
+            }
         break;
 
         case TASK_UPDATE_ERASE:

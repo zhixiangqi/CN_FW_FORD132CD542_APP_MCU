@@ -5,8 +5,8 @@
  *      Author: Administrator
  */
 
-#ifndef APP_INC_LEDDRIVEAPP_H_
-#define APP_INC_LEDDRIVEAPP_H_
+#ifndef APP_INC_LEDAPP_H_
+#define APP_INC_LEDAPP_H_
 
 #include "main.h"
 
@@ -14,4 +14,4 @@
 
 
 void LEDDrive_FaultREead(void);
-#endif /* APP_INC_LEDDRIVEAPP_H_ */
+#endif /* APP_INC_LEDAPP_H_ */

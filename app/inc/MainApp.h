@@ -1,6 +1,8 @@
 #ifndef APP_INC_MAINAPP_H
 #define APP_INC_MAINAPP_H
 
+#include "main.h"
+
 #define STATE_BOOT          0x00U
 #define STATE_PRENORMAL     0x01U
 #define STATE_HANDSHAKE     0x02U

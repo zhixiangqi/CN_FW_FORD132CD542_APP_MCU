@@ -12,6 +12,8 @@ void PowerApp_Sequence(uint8_t u8Action)
     {
     case POWER_ON: //total ms
         /* code */
+        PortDriver_PinSet(HVLDO_EN_PORT,HVLDO_EN_PIN);
+        TC0App_DelayMS(2U);
         PortDriver_PinSet(VBATT_EN_PORT,VBATT_EN_PIN);
         PortDriver_PinSet(P3V3_EN_PORT,P3V3_EN_PIN);
         TC0App_DelayMS(10U);
