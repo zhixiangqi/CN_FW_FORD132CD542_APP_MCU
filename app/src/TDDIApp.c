@@ -44,14 +44,14 @@ void TDDI_ExitStandbyMode(void)
     txbuffer[1]=0x03;
     I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
 
-    // txbuffer[0]=0x07;
-    // txbuffer[1]=0xA8;
-    // I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+    txbuffer[0]=0x07;
+    txbuffer[1]=0xA8;
+    I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
 
     // bist auto run
-    txbuffer[0]=0x02;
-    txbuffer[1]=0x3F;
-    I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+    // txbuffer[0]=0x02;
+    // txbuffer[1]=0x3F;
+    // I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
 
     txbuffer[0]=0x01;
     txbuffer[1]=0x07;

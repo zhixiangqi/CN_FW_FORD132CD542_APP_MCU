@@ -4,9 +4,11 @@
  *  Created on: 2024年8月9日
  *      Author: Administrator
  */
+#include "app/inc/TC0App.h"
 #include "driver/inc/EicDriver.h"
+#include "driver/inc/TC0Driver.h"
 
-uint8_t tp_interr_count= 0;
+// uint8_t tp_interr_count= 0;
 bool tp_interr_flag = false;
 
 const static cy_stc_sysint_t gtdATTNCfg =
@@ -22,12 +24,12 @@ static void EicDriver_U301_TSC_ATTN_ISR(void)
 	NVIC_ClearPendingIRQ(gtdATTNCfg.intrSrc);
 
     /*Start count debounce times*/
-    tp_interr_count++;
-    if (tp_interr_count > 3)
-    {
+    // tp_interr_count++;
+    // if (tp_interr_count > 3)
+    // {
         tp_interr_flag = true;
-        tp_interr_count = 0;
-    }
+        // tp_interr_count = 0;
+    // }
 }
 
 void EicDriver_Initial(void)

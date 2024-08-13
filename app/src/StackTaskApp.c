@@ -213,7 +213,7 @@ void StackTaskApp_MissionAction(void)
                 RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS,0x00U);
                 RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS+1U,0x00U);
             }
-            INTBApp_PullReqSetOrClear(INTB_REQ_SET);
+            // INTBApp_PullReqSetOrClear(INTB_REQ_SET);
             UartApp_ReadFlow();
         break;
 
@@ -243,12 +243,12 @@ void StackTaskApp_MissionAction(void)
         break;
 
         case TASK_INTTCHLOW:
-            if (tp_interr_flag == TRUE)
-            {
-                INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-                RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS+2,INTB_INT_TCH_SET);
-                tp_interr_flag = FALSE;
-            }
+             if (tp_interr_flag == TRUE)
+             {
+                 INTBApp_PullReqSetOrClear(INTB_REQ_SET);
+                 RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS+2,INTB_INT_TCH_SET);
+                 tp_interr_flag = FALSE;
+             }
         break;
 
         case TASK_UPDATE_ERASE:
