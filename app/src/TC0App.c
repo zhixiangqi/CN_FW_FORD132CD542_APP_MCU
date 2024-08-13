@@ -26,8 +26,9 @@
  */
 #include "app/inc/TC0App.h"
 #include "app/inc/StackTaskApp.h"
-#include "driver/inc/TC0Driver.h"
 #include "app/inc/WdtApp.h"
+#include "driver/inc/TC0Driver.h"
+
 
 #define CLOCK_48M_DELAY_MS 5617U
 #define CLOCK_48M_DELAY_US 8U
@@ -51,6 +52,11 @@ static void TC0APP_TC0_Task_1000msec(void)
 {
     StackTaskApp_MissionPush(TASK_DEBUGINFO);
     StackTaskApp_MissionPush(TASK_MONITOR);
+}
+
+static void TC0APP_TC0_Task_5msec(void)
+{
+    StackTaskApp_MissionPush(TASK_INTTCHLOW);
 }
 
 static void TC0APP_TC0_Task_10msec(void)
@@ -103,6 +109,10 @@ static void TC0App_Callback_InterruptHandler(void)
     {
         TC0APP_TC0_Task_1msec();
 
+        if ((timercount_ms % 5) ==0)
+        {
+            TC0APP_TC0_Task_5msec();
+        }
         if ((timercount_ms % 10) ==0)
         {
             TC0APP_TC0_Task_10msec();

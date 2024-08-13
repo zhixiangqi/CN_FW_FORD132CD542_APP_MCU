@@ -264,13 +264,13 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[2].pin[3]" locked="true">
                         <Aliases>
-                            <Alias value="SYNC_CHECK"/>
+                            <Alias value="ADC_SYNCCHECK"/>
                         </Aliases>
                     </Block>
                     <Parameters>
-                        <Param id="DriveModes" value="CY_GPIO_DM_HIGHZ"/>
+                        <Param id="DriveModes" value="CY_GPIO_DM_ANALOG"/>
                         <Param id="inFlash" value="true"/>
-                        <Param id="initialState" value="0"/>
+                        <Param id="initialState" value="1"/>
                         <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>
                         <Param id="portLevelConfig" value="false"/>
                         <Param id="slewRate" value="CY_GPIO_SLEW_FAST"/>
@@ -280,7 +280,7 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[2].pin[4]" locked="true">
                         <Aliases>
-                            <Alias value="FPCACHK_ROUT"/>
+                            <Alias value="FPCACHK_TOUT"/>
                         </Aliases>
                     </Block>
                     <Parameters>
@@ -296,7 +296,7 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[2].pin[5]" locked="true">
                         <Aliases>
-                            <Alias value="FPCACHK_RIN"/>
+                            <Alias value="FPCACHK_ROUT"/>
                         </Aliases>
                     </Block>
                     <Parameters>
@@ -408,13 +408,13 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[3].pin[4]" locked="true">
                         <Aliases>
-                            <Alias value="TDDI_ATTN"/>
+                            <Alias value="U301_TSC_ATTN"/>
                         </Aliases>
                     </Block>
                     <Parameters>
-                        <Param id="DriveModes" value="CY_GPIO_DM_PULLUP_IN_OFF"/>
+                        <Param id="DriveModes" value="CY_GPIO_DM_HIGHZ"/>
                         <Param id="inFlash" value="true"/>
-                        <Param id="initialState" value="1"/>
+                        <Param id="initialState" value="0"/>
                         <Param id="isrTrigger" value="CY_GPIO_INTR_FALLING"/>
                         <Param id="portLevelConfig" value="false"/>
                         <Param id="slewRate" value="CY_GPIO_SLEW_FAST"/>
@@ -424,13 +424,13 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[3].pin[5]" locked="true">
                         <Aliases>
-                            <Alias value="TP_RESET"/>
+                            <Alias value="U301_TSC_RESET"/>
                         </Aliases>
                     </Block>
                     <Parameters>
-                        <Param id="DriveModes" value="CY_GPIO_DM_PULLUP_DOWN_IN_OFF"/>
+                        <Param id="DriveModes" value="CY_GPIO_DM_STRONG_IN_OFF"/>
                         <Param id="inFlash" value="true"/>
-                        <Param id="initialState" value="1"/>
+                        <Param id="initialState" value="0"/>
                         <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>
                         <Param id="portLevelConfig" value="false"/>
                         <Param id="slewRate" value="CY_GPIO_SLEW_FAST"/>
@@ -606,7 +606,7 @@
                     <Parameters>
                         <Param id="DriveModes" value="CY_GPIO_DM_STRONG_IN_OFF"/>
                         <Param id="inFlash" value="true"/>
-                        <Param id="initialState" value="1"/>
+                        <Param id="initialState" value="0"/>
                         <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>
                         <Param id="portLevelConfig" value="false"/>
                         <Param id="slewRate" value="CY_GPIO_SLEW_FAST"/>
@@ -769,7 +769,7 @@
                         <Param id="boostPump" value="false"/>
                         <Param id="ch0_avg" value="false"/>
                         <Param id="ch0_input" value="CY_SAR_CHAN_SINGLE_ENDED"/>
-                        <Param id="ch0_min_acq_time" value="167"/>
+                        <Param id="ch0_min_acq_time" value="10000"/>
                         <Param id="ch0_range_intr" value="false"/>
                         <Param id="ch0_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch0_sat_intr" value="false"/>
@@ -811,19 +811,19 @@
                         <Param id="ch15_sat_intr" value="false"/>
                         <Param id="ch1_avg" value="false"/>
                         <Param id="ch1_input" value="CY_SAR_CHAN_SINGLE_ENDED"/>
-                        <Param id="ch1_min_acq_time" value="167"/>
+                        <Param id="ch1_min_acq_time" value="10000"/>
                         <Param id="ch1_range_intr" value="false"/>
                         <Param id="ch1_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch1_sat_intr" value="false"/>
                         <Param id="ch2_avg" value="false"/>
                         <Param id="ch2_input" value="CY_SAR_CHAN_SINGLE_ENDED"/>
-                        <Param id="ch2_min_acq_time" value="167"/>
+                        <Param id="ch2_min_acq_time" value="10000"/>
                         <Param id="ch2_range_intr" value="false"/>
                         <Param id="ch2_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch2_sat_intr" value="false"/>
                         <Param id="ch3_avg" value="false"/>
                         <Param id="ch3_input" value="CY_SAR_CHAN_SINGLE_ENDED"/>
-                        <Param id="ch3_min_acq_time" value="167"/>
+                        <Param id="ch3_min_acq_time" value="10000"/>
                         <Param id="ch3_range_intr" value="false"/>
                         <Param id="ch3_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch3_sat_intr" value="false"/>
@@ -863,7 +863,7 @@
                         <Param id="ch9_range_intr" value="false"/>
                         <Param id="ch9_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch9_sat_intr" value="false"/>
-                        <Param id="diff_format" value="false"/>
+                        <Param id="diff_format" value="true"/>
                         <Param id="inFlash" value="true"/>
                         <Param id="inj_avg" value="false"/>
                         <Param id="inj_en" value="false"/>
@@ -872,18 +872,18 @@
                         <Param id="inj_res" value="CY_SAR_MAX_RES"/>
                         <Param id="inj_sat_intr" value="false"/>
                         <Param id="is_variable_clock" value="false"/>
-                        <Param id="num_channels" value="3"/>
+                        <Param id="num_channels" value="4"/>
                         <Param id="range_cond" value="CY_SAR_RANGE_COND_BELOW"/>
                         <Param id="range_high" value="0"/>
                         <Param id="range_low" value="0"/>
-                        <Param id="sample_rate" value="20000"/>
-                        <Param id="se_format" value="false"/>
+                        <Param id="sample_rate" value="80"/>
+                        <Param id="se_format" value="true"/>
                         <Param id="soc_en" value="false"/>
                         <Param id="subRes" value="CY_SAR_SUB_RESOLUTION_10B"/>
                         <Param id="trigger_mode" value="CY_SAR_TRIGGER_MODE_FW_AND_HWEDGE"/>
-                        <Param id="vneg_select" value="CY_SAR_NEG_SEL_VREF"/>
-                        <Param id="vref_select" value="CY_SAR_VREF_SEL_VDDA"/>
-                        <Param id="vref_voltage" value="1.800"/>
+                        <Param id="vneg_select" value="CY_SAR_NEG_SEL_VSSA_KELVIN"/>
+                        <Param id="vref_select" value="CY_SAR_VREF_SEL_EXT"/>
+                        <Param id="vref_voltage" value="3.300"/>
                     </Parameters>
                 </Personality>
                 <Personality template="m0s8peripheralclock" version="1.0">
@@ -1333,6 +1333,10 @@
                     <Port name="scb[2].i2c_sda[0]"/>
                 </Net>
                 <Net>
+                    <Port name="ioss[0].port[1].pin[7].analog[0]"/>
+                    <Port name="pass[0].sar[0].vref_ext[0]"/>
+                </Net>
+                <Net>
                     <Port name="ioss[0].port[4].pin[0].digital_inout[0]"/>
                     <Port name="scb[0].spi_mosi[0]"/>
                 </Net>
@@ -1409,6 +1413,9 @@
                     </Arm>
                     <Arm>
                         <Port name="ioss[0].port[2].pin[2].analog[0]"/>
+                    </Arm>
+                    <Arm>
+                        <Port name="ioss[0].port[2].pin[3].analog[0]"/>
                     </Arm>
                 </Mux>
             </Netlist>

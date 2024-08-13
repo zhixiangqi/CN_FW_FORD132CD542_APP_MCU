@@ -1,8 +1,9 @@
+#include "app/inc/WdtApp.h"
+#include "app/inc/RegisterApp.h"
+#include "app/inc/TC0App.h"
 #include "driver/inc/WdtDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/PortDriver.h"
-#include "app/inc/RegisterApp.h"
-#include "app/inc/TC0App.h"
 
 static uint8_t u8TxBuffer[60] = {0};
 

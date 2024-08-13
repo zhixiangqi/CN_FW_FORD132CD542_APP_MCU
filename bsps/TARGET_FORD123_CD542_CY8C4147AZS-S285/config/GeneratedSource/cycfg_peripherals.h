@@ -82,6 +82,7 @@ extern "C" {
 extern const cy_stc_sar_channel_config_t PASS_ADC_SENSE_channel_0_config;
 extern const cy_stc_sar_channel_config_t PASS_ADC_SENSE_channel_1_config;
 extern const cy_stc_sar_channel_config_t PASS_ADC_SENSE_channel_2_config;
+extern const cy_stc_sar_channel_config_t PASS_ADC_SENSE_channel_3_config;
 extern const cy_stc_sar_config_t PASS_ADC_SENSE_config;
 
 #if defined (CY_USING_HAL)
