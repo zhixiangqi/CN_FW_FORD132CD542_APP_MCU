@@ -38,6 +38,7 @@
 #include "driver/inc/PwmDriver.h"
 
 #define CY_ASSERT_FAILED          (0u)
+#define APP_START_ADDR          0x3000U
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -58,12 +59,18 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     uint8_t u8Return;
     uint32_t result = 0U;
     /* Initialize the device and board peripherals */
+    uint32_t PC = (uint32_t)(&MainApp_Task);
     result = cybsp_init();
+    (void)Cy_GPIO_Pin_FastInit(GPIO_PRT0, 4U, CY_GPIO_DM_ANALOG, 0x00U, HSIOM_SEL_GPIO);
+    (void)Cy_GPIO_Pin_FastInit(GPIO_PRT0, 5U, CY_GPIO_DM_ANALOG, 0x00U, HSIOM_SEL_GPIO);
+    Cy_SysClk_WcoBypass(false);
+    /* Cypress WCO chip spec request 500ms for TS START (set as 500000UL)*/
+    Cy_SysClk_WcoEnable(1000UL);
 
     /* Board init failed. Stop program execution */
     if (result != CY_RSLT_SUCCESS)
     {
-        CY_ASSERT(CY_ASSERT_FAILED);
+        //CY_ASSERT(CY_ASSERT_FAILED);
         u8Return = STATE_PRESLEEP;
     }
     else{
@@ -89,7 +96,7 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     
     WdtApp_CheckResetCause();
     WdtApp_Initial();
-    sprintf((char *)u8TxBuffer,"BOOT FINISHED\r\n");
+    sprintf((char *)u8TxBuffer,"BOOT FINISHED, PC:0x%lX\r\n",PC);
     UartDriver_TxWriteString(u8TxBuffer);
     /* Only for flash w/r test*/
     uint8_t Flag[4] = {0x0A, 0x00, 0x00, 0x00};
@@ -110,6 +117,8 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
     PowerApp_PowerGoodInitial();
     PowerApp_Sequence(POWER_ON);
+    /* Due to Bus pull up with P3V3 vout, Init after Power on seq; HW would change PCBA (pull up with MCU_3V3)*/
+    I2C4MDriver_Initialize();
     /*Do LCD Power On Sequence*/
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
