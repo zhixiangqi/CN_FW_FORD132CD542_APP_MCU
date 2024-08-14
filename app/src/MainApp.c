@@ -40,7 +40,7 @@
 
 
 #define CY_ASSERT_FAILED          (0u)
-
+#define SYNC_VOLT_SAMPLE_CNT      3U
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: File Scope or Global Data                                         */
@@ -50,6 +50,9 @@
 static uint8_t u8MAIN_STATUS = STATE_BOOT;
 static uint8_t u8TxBuffer[60] = {0};
 
+uint16_t u16SyncVoltSample[SYNC_VOLT_SAMPLE_CNT] = {0U};
+uint8_t u8SYNCSampleCount = 0U;
+bool u8SYNCSampleReady = FALSE;
 /*  Function: MainApp_Boot_Mode
 **  Callfrom: Main_Flow state machine
 **        Do: Do basic initial like PORT/CLOCK and other mustbe function.
@@ -159,18 +162,40 @@ static uint8_t MainApp_HandShake_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
-    uint16_t u16AdcVolt;
+    uint16_t u16AdcSyncVolt;
     StackTaskApp_MissionAction();
     INTBApp_Flow();
     // sprintf((char *)u8TxBuffer,"NORMAL FINISHED 0x%02x\r\n",RegisterApp_DHU_Read(CMD_DISP_STATUS,0U));
     // UartDriver_TxWriteString(u8TxBuffer);
-    /* Check SYNC Voltage */
-    u16AdcVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, 3);
-    if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && (u16AdcVolt > 413 && u16AdcVolt < 2114))
+    /* Get SYNC Voltage */
+    u16AdcSyncVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH3_SYNCVOLT);
+    /* Do check the data base(samples) is ready for result output (SYNC_VOLT_SAMPLE_CNT = 3 times)*/
+    u16SyncVoltSample[u8SYNCSampleCount] = u16AdcSyncVolt;
+    if(u8SYNCSampleCount == (SYNC_VOLT_SAMPLE_CNT - 1U)){u8SYNCSampleReady = TRUE;}
+    u8SYNCSampleCount = ((u8SYNCSampleCount + 1U) > (SYNC_VOLT_SAMPLE_CNT - 1U)) ? 0U : (u8SYNCSampleCount + 1U);
+    if (u8SYNCSampleReady == TRUE)
     {
-        u8Return = STATE_NORMAL;
-    }else{
-        u8Return = STATE_PRESLEEP;
+        u8SYNCSampleReady = FALSE;
+        uint16_t u16SyncVolDebounce = 0U;
+        for(uint8_t u8count = 0U; u8count < SYNC_VOLT_SAMPLE_CNT; u8count++)
+        {
+            u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
+        }
+        if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && (u16SyncVolDebounce > 413 && u16SyncVolDebounce < 2114))
+        {
+            u8Return = STATE_NORMAL;
+        }else{
+            u8Return = STATE_PRESLEEP;
+        }
+    }
+    else 
+    {
+        if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
+        {
+            u8Return = STATE_NORMAL;
+        }else{
+            u8Return = STATE_PRESLEEP;
+        }
     }
     WdtApp_CleanCounter();
     /* Test WDT timeout - ~3.2sec reset (ILO has 40Kz +/- 50%, so it should consider as 2.5)*/
@@ -207,7 +232,7 @@ static uint8_t MainApp_PreSleep_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
-     uint16_t u16AdcVolt;
+    uint16_t u16AdcSyncVolt;
     // WdtApp_CleanCounter();
     INTBApp_Flow();
     /* Do Power Off Sequence*/
@@ -216,12 +241,30 @@ static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
     u8Return = STATE_SLEEP;
     (void) u8Nothing;
     TC0App_DelayMS(200U);
-    /* Check SYNC Voltage */
-    u16AdcVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, 3);
-    if (u16AdcVolt > 413 && u16AdcVolt < 2114)
+    /* Get SYNC Voltage */
+    u16AdcSyncVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH3_SYNCVOLT);
+    /* Do check the data base(samples) is ready for result output (SYNC_VOLT_SAMPLE_CNT = 3 times)*/
+    u16SyncVoltSample[u8SYNCSampleCount] = u16AdcSyncVolt;
+    if(u8SYNCSampleCount == (SYNC_VOLT_SAMPLE_CNT - 1U)){u8SYNCSampleReady = TRUE;}
+    u8SYNCSampleCount = ((u8SYNCSampleCount + 1U) > (SYNC_VOLT_SAMPLE_CNT - 1U)) ? 0U : (u8SYNCSampleCount + 1U);
+    if (u8SYNCSampleReady == TRUE)
     {
-        /* Initialize the device and board peripherals */
-        cybsp_init();
+        u8SYNCSampleReady = FALSE;
+        uint16_t u16SyncVolDebounce = 0U;
+        for(uint8_t u8count = 0U; u8count < SYNC_VOLT_SAMPLE_CNT; u8count++)
+        {
+            u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
+        }
+        if(u16SyncVolDebounce > 413 && u16SyncVolDebounce < 2114)
+        {
+            u8Return = STATE_BOOT;
+        }else{
+            PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
+        }
+    }
+    if(u16AdcSyncVolt > 413 && u16AdcSyncVolt < 2114)
+    {
+        u8Return = STATE_BOOT;
     }else{
         PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
     }

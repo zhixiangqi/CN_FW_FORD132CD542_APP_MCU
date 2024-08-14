@@ -397,46 +397,46 @@ extern "C" {
 #define ADC_SYNCCHECK_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_ANALOG
 #endif /* defined (CY_USING_HAL) */
 
-#define FPCACHK_TOUT_ENABLED 1U
-#define FPCACHK_TOUT_PORT GPIO_PRT2
-#define FPCACHK_TOUT_PORT_NUM 2U
-#define FPCACHK_TOUT_PIN 4U
-#define FPCACHK_TOUT_NUM 4U
-#define FPCACHK_TOUT_DRIVEMODE CY_GPIO_DM_PULLDOWN_IN_OFF
-#define FPCACHK_TOUT_INIT_DRIVESTATE 0
-#ifndef ioss_0_port_2_pin_4_HSIOM
-    #define ioss_0_port_2_pin_4_HSIOM HSIOM_SEL_GPIO
-#endif
-#define FPCACHK_TOUT_HSIOM ioss_0_port_2_pin_4_HSIOM
-#define FPCACHK_TOUT_IRQ ioss_interrupts_gpio_2_IRQn
-
-#if defined (CY_USING_HAL)
-#define FPCACHK_TOUT_HAL_PORT_PIN P2_4
-#define FPCACHK_TOUT P2_4
-#define FPCACHK_TOUT_HAL_IRQ CYHAL_GPIO_IRQ_NONE
-#define FPCACHK_TOUT_HAL_DIR CYHAL_GPIO_DIR_OUTPUT 
-#define FPCACHK_TOUT_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_PULLDOWN
-#endif /* defined (CY_USING_HAL) */
-
 #define FPCACHK_ROUT_ENABLED 1U
 #define FPCACHK_ROUT_PORT GPIO_PRT2
 #define FPCACHK_ROUT_PORT_NUM 2U
-#define FPCACHK_ROUT_PIN 5U
-#define FPCACHK_ROUT_NUM 5U
-#define FPCACHK_ROUT_DRIVEMODE CY_GPIO_DM_HIGHZ
+#define FPCACHK_ROUT_PIN 4U
+#define FPCACHK_ROUT_NUM 4U
+#define FPCACHK_ROUT_DRIVEMODE CY_GPIO_DM_PULLDOWN_IN_OFF
 #define FPCACHK_ROUT_INIT_DRIVESTATE 0
-#ifndef ioss_0_port_2_pin_5_HSIOM
-    #define ioss_0_port_2_pin_5_HSIOM HSIOM_SEL_GPIO
+#ifndef ioss_0_port_2_pin_4_HSIOM
+    #define ioss_0_port_2_pin_4_HSIOM HSIOM_SEL_GPIO
 #endif
-#define FPCACHK_ROUT_HSIOM ioss_0_port_2_pin_5_HSIOM
+#define FPCACHK_ROUT_HSIOM ioss_0_port_2_pin_4_HSIOM
 #define FPCACHK_ROUT_IRQ ioss_interrupts_gpio_2_IRQn
 
 #if defined (CY_USING_HAL)
-#define FPCACHK_ROUT_HAL_PORT_PIN P2_5
-#define FPCACHK_ROUT P2_5
+#define FPCACHK_ROUT_HAL_PORT_PIN P2_4
+#define FPCACHK_ROUT P2_4
 #define FPCACHK_ROUT_HAL_IRQ CYHAL_GPIO_IRQ_NONE
-#define FPCACHK_ROUT_HAL_DIR CYHAL_GPIO_DIR_INPUT 
-#define FPCACHK_ROUT_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_NONE
+#define FPCACHK_ROUT_HAL_DIR CYHAL_GPIO_DIR_OUTPUT 
+#define FPCACHK_ROUT_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_PULLDOWN
+#endif /* defined (CY_USING_HAL) */
+
+#define FPCACHK_RIN_ENABLED 1U
+#define FPCACHK_RIN_PORT GPIO_PRT2
+#define FPCACHK_RIN_PORT_NUM 2U
+#define FPCACHK_RIN_PIN 5U
+#define FPCACHK_RIN_NUM 5U
+#define FPCACHK_RIN_DRIVEMODE CY_GPIO_DM_HIGHZ
+#define FPCACHK_RIN_INIT_DRIVESTATE 0
+#ifndef ioss_0_port_2_pin_5_HSIOM
+    #define ioss_0_port_2_pin_5_HSIOM HSIOM_SEL_GPIO
+#endif
+#define FPCACHK_RIN_HSIOM ioss_0_port_2_pin_5_HSIOM
+#define FPCACHK_RIN_IRQ ioss_interrupts_gpio_2_IRQn
+
+#if defined (CY_USING_HAL)
+#define FPCACHK_RIN_HAL_PORT_PIN P2_5
+#define FPCACHK_RIN P2_5
+#define FPCACHK_RIN_HAL_IRQ CYHAL_GPIO_IRQ_NONE
+#define FPCACHK_RIN_HAL_DIR CYHAL_GPIO_DIR_INPUT 
+#define FPCACHK_RIN_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_NONE
 #endif /* defined (CY_USING_HAL) */
 
 #define DES_LOCK_ENABLED 1U
@@ -1129,16 +1129,16 @@ extern const cy_stc_gpio_pin_config_t ADC_SYNCCHECK_config;
 extern const cyhal_resource_inst_t ADC_SYNCCHECK_obj;
 #endif /* defined (CY_USING_HAL) */
 
-extern const cy_stc_gpio_pin_config_t FPCACHK_TOUT_config;
-
-#if defined (CY_USING_HAL)
-extern const cyhal_resource_inst_t FPCACHK_TOUT_obj;
-#endif /* defined (CY_USING_HAL) */
-
 extern const cy_stc_gpio_pin_config_t FPCACHK_ROUT_config;
 
 #if defined (CY_USING_HAL)
 extern const cyhal_resource_inst_t FPCACHK_ROUT_obj;
+#endif /* defined (CY_USING_HAL) */
+
+extern const cy_stc_gpio_pin_config_t FPCACHK_RIN_config;
+
+#if defined (CY_USING_HAL)
+extern const cyhal_resource_inst_t FPCACHK_RIN_obj;
 #endif /* defined (CY_USING_HAL) */
 
 extern const cy_stc_gpio_pin_config_t DES_LOCK_config;

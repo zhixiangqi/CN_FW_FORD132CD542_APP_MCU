@@ -351,29 +351,10 @@ const cyhal_resource_inst_t ADC_SYNCCHECK_obj =
 };
 #endif /* defined (CY_USING_HAL) */
 
-const cy_stc_gpio_pin_config_t FPCACHK_TOUT_config =
-{
-    .outVal = 0,
-    .driveMode = CY_GPIO_DM_PULLDOWN_IN_OFF,
-    .hsiom = FPCACHK_TOUT_HSIOM,
-    .intEdge = CY_GPIO_INTR_DISABLE,
-    .vtrip = CY_GPIO_VTRIP_CMOS,
-    .slewRate = CY_GPIO_SLEW_FAST,
-};
-
-#if defined (CY_USING_HAL)
-const cyhal_resource_inst_t FPCACHK_TOUT_obj =
-{
-    .type = CYHAL_RSC_GPIO,
-    .block_num = FPCACHK_TOUT_PORT_NUM,
-    .channel_num = FPCACHK_TOUT_PIN,
-};
-#endif /* defined (CY_USING_HAL) */
-
 const cy_stc_gpio_pin_config_t FPCACHK_ROUT_config =
 {
     .outVal = 0,
-    .driveMode = CY_GPIO_DM_HIGHZ,
+    .driveMode = CY_GPIO_DM_PULLDOWN_IN_OFF,
     .hsiom = FPCACHK_ROUT_HSIOM,
     .intEdge = CY_GPIO_INTR_DISABLE,
     .vtrip = CY_GPIO_VTRIP_CMOS,
@@ -386,6 +367,25 @@ const cyhal_resource_inst_t FPCACHK_ROUT_obj =
     .type = CYHAL_RSC_GPIO,
     .block_num = FPCACHK_ROUT_PORT_NUM,
     .channel_num = FPCACHK_ROUT_PIN,
+};
+#endif /* defined (CY_USING_HAL) */
+
+const cy_stc_gpio_pin_config_t FPCACHK_RIN_config =
+{
+    .outVal = 0,
+    .driveMode = CY_GPIO_DM_HIGHZ,
+    .hsiom = FPCACHK_RIN_HSIOM,
+    .intEdge = CY_GPIO_INTR_DISABLE,
+    .vtrip = CY_GPIO_VTRIP_CMOS,
+    .slewRate = CY_GPIO_SLEW_FAST,
+};
+
+#if defined (CY_USING_HAL)
+const cyhal_resource_inst_t FPCACHK_RIN_obj =
+{
+    .type = CYHAL_RSC_GPIO,
+    .block_num = FPCACHK_RIN_PORT_NUM,
+    .channel_num = FPCACHK_RIN_PIN,
 };
 #endif /* defined (CY_USING_HAL) */
 
@@ -938,8 +938,8 @@ void init_cycfg_pins(void)
     Cy_GPIO_Pin_Init(ADC_PCBTEMP_PORT, ADC_PCBTEMP_PIN, &ADC_PCBTEMP_config);
     Cy_GPIO_Pin_Init(ADC_BATTVOLT_PORT, ADC_BATTVOLT_PIN, &ADC_BATTVOLT_config);
     Cy_GPIO_Pin_Init(ADC_SYNCCHECK_PORT, ADC_SYNCCHECK_PIN, &ADC_SYNCCHECK_config);
-    Cy_GPIO_Pin_Init(FPCACHK_TOUT_PORT, FPCACHK_TOUT_PIN, &FPCACHK_TOUT_config);
     Cy_GPIO_Pin_Init(FPCACHK_ROUT_PORT, FPCACHK_ROUT_PIN, &FPCACHK_ROUT_config);
+    Cy_GPIO_Pin_Init(FPCACHK_RIN_PORT, FPCACHK_RIN_PIN, &FPCACHK_RIN_config);
     Cy_GPIO_Pin_Init(DES_LOCK_PORT, DES_LOCK_PIN, &DES_LOCK_config);
     Cy_GPIO_Pin_Init(DES_PASS_PORT, DES_PASS_PIN, &DES_PASS_config);
     Cy_GPIO_Pin_Init(EXFLASH_WP_PORT, EXFLASH_WP_PIN, &EXFLASH_WP_config);
@@ -989,8 +989,8 @@ void reserve_cycfg_pins(void)
     cyhal_hwmgr_reserve(&ADC_PCBTEMP_obj);
     cyhal_hwmgr_reserve(&ADC_BATTVOLT_obj);
     cyhal_hwmgr_reserve(&ADC_SYNCCHECK_obj);
-    cyhal_hwmgr_reserve(&FPCACHK_TOUT_obj);
     cyhal_hwmgr_reserve(&FPCACHK_ROUT_obj);
+    cyhal_hwmgr_reserve(&FPCACHK_RIN_obj);
     cyhal_hwmgr_reserve(&DES_LOCK_obj);
     cyhal_hwmgr_reserve(&DES_PASS_obj);
     cyhal_hwmgr_reserve(&EXFLASH_WP_obj);

@@ -202,17 +202,17 @@ void StackTaskApp_MissionAction(void)
                 sprintf((char *)u8TxBuffer,"I2C M driver transmit fail >> 0x%02x\r\n",Status);
                 UartDriver_TxWriteString(u8TxBuffer);
             }
-            if(test_flag == TRUE)
-            {
-                test_flag = FALSE;
-                RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS,0xFFU);
-                RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS+1U,0x03U);
-                //RegisterApp_DHU_Setup(CMD_DISP_EN,0U,1U);
-            }else{
-                test_flag = TRUE;
-                RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS,0x00U);
-                RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS+1U,0x00U);
-            }
+            // if(test_flag == TRUE)
+            // {
+            //     test_flag = FALSE;
+            //     RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS,0xFFU);
+            //     RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS+1U,0x03U);
+            //     //RegisterApp_DHU_Setup(CMD_DISP_EN,0U,1U);
+            // }else{
+            //     test_flag = TRUE;
+            //     RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS,0x00U);
+            //     RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS+1U,0x00U);
+            // }
             // INTBApp_PullReqSetOrClear(INTB_REQ_SET);
             UartApp_ReadFlow();
         break;

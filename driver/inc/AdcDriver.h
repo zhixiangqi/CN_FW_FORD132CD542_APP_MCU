@@ -8,6 +8,7 @@
 #define ADC_SAR0_CH0_BLTTEMP    0x00000000U
 #define ADC_SAR0_CH1_PCBTEMP    0x00000001U
 #define ADC_SAR0_CH2_BATVOLT    0x00000002U
+#define ADC_SAR0_CH3_SYNCVOLT   0x00000003U
 
 bool AdcDriver_Initial(SAR_Type* SAR, cy_stc_sar_config_t SAR_Config);
 void AdcDriver_Enable(SAR_Type* SAR);

@@ -27,7 +27,6 @@ void PowerApp_Sequence(uint8_t u8Action)
         PortDriver_PinSet(LED_EN_PORT,LED_EN_PIN);
         TC0App_DelayMS(2U);
         PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-        TC0App_DelayMS(20U);
         break;
 
     case POWER_OFF: //total ms
@@ -43,6 +42,8 @@ void PowerApp_Sequence(uint8_t u8Action)
         TC0App_DelayMS(2U);
         PortDriver_PinClear(VBATT_EN_PORT,VBATT_EN_PIN);
         PortDriver_PinClear(P3V3_EN_PORT,P3V3_EN_PIN);
+        TC0App_DelayMS(2U);
+        PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
         break;
 
     default:
