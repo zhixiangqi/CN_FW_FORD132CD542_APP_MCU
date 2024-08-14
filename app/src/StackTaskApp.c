@@ -213,7 +213,6 @@ void StackTaskApp_MissionAction(void)
             //     RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS,0x00U);
             //     RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS+1U,0x00U);
             // }
-            // INTBApp_PullReqSetOrClear(INTB_REQ_SET);
             UartApp_ReadFlow();
             //PowerApp_RTQ6749_FaultCheck();
             //PowerApp_LP8664_FaultCheck();
