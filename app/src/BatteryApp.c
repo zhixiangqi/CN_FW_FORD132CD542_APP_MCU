@@ -37,11 +37,11 @@ uint8_t gu8BattSampleCount = 0U;
 uint16_t gu16BattVoltSample[BATT_SAMPLE_CNT] = {0U};
 
 /*DTC 240321*/
-#define BT_VOLT0   1102U    
+#define BT_VOLT0   100U    
 /*7.5V*/
-#define BT_VOLT1   1176U    
+#define BT_VOLT1   200U    
 /*8V*/
-#define BT_VOLT2   1329U    
+#define BT_VOLT2   300U    
 /*9V-Hysteresis*/
 #define BT_VOLT3   2688U    
 /*18V*/
