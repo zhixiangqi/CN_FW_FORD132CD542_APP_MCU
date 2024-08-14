@@ -188,7 +188,7 @@ void StackTaskApp_MissionAction(void)
         case TASK_DEBUGINFO:
             /*Do nothing*/
             uint16_t adc0_value = 0U;
-            adc0_value = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH1_PCBTEMP);
+            adc0_value = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH1_BLTTEMP);
             sprintf((char *)u8TxBuffer,"ADC0 = 0x%04x\r\n",adc0_value);
             UartDriver_TxWriteString(u8TxBuffer);
             uint8_t Command[2] = {0x00U};
@@ -215,6 +215,8 @@ void StackTaskApp_MissionAction(void)
             // }
             // INTBApp_PullReqSetOrClear(INTB_REQ_SET);
             UartApp_ReadFlow();
+            //PowerApp_RTQ6749_FaultCheck();
+            //PowerApp_LP8664_FaultCheck();
         break;
 
         case TASK_MONITOR:

@@ -46,6 +46,8 @@ uint8_t u8BLT_DERATING_EN = FALSE;
 uint8_t u8BLT_DERATING_ALARM_FLAG = FALSE;
 uint8_t u8BATT_PROTECT_EN = FALSE;
 
+uint16_t u16DimmingStep = 8U;
+volatile bool bDimmingUpdateStepFlag = false;
 
 void BacklightApp_BattProtectSet(uint8_t u8Set)
 {
@@ -57,6 +59,11 @@ void BacklightApp_Initial(void)
     (void)PwmDriver_Initial();
     (void)PwmDriver_DutySet(0x0000U);
     (void)PwmDriver_Start();
+}
+
+void BacklightApp_UpdateDimmingStep(void)
+{
+    bDimmingUpdateStepFlag = true;
 }
 
 static void BacklightApp_BrightnessAdgust(uint16_t BrightnessTarget,uint16_t GradientValue)
@@ -118,6 +125,7 @@ static uint8_t BacklightApp_Normal_Mode(uint16_t u16MATemp)
         (void)u8BLT_DERATING_EN;
         u8BLT_DERATING_EN = TRUE;
         u8BLT_DERATING_ALARM_FLAG = TRUE;
+        bDimmingUpdateStepFlag = true;
         u8Return = BLT_BURN_MODE;
     }else{
         u8Return = BLT_NORMAL_MODE;
@@ -141,6 +149,7 @@ static uint8_t BacklightApp_Burn_Mode(uint16_t u16MATemp)
 			(void)u8BLT_DERATING_EN;
             u8BLT_DERATING_EN = FALSE;
             u8BLT_DERATING_ALARM_FLAG = TRUE;
+            bDimmingUpdateStepFlag = true;
             u8Return = BLT_NORMAL_MODE;
         }else
         {
@@ -148,6 +157,7 @@ static uint8_t BacklightApp_Burn_Mode(uint16_t u16MATemp)
         }
     }else if(u16MATemp < BLT_TEMP93){
         u8BLT_DERATING_ALARM_FLAG = TRUE;
+        bDimmingUpdateStepFlag = true;
         u8Return = BLT_BOIL_MODE;
     }else{
         u8Return = BLT_BURN_MODE;
@@ -170,6 +180,7 @@ static uint8_t BacklightApp_Boil_Mode(uint16_t u16MATemp)
 			(void)u8BLT_DERATING_EN;
             u8BLT_DERATING_EN = FALSE;
             u8BLT_DERATING_ALARM_FLAG = TRUE;
+            bDimmingUpdateStepFlag = true;
             u8Return = BLT_NORMAL_MODE;
         }else
         {
@@ -177,6 +188,7 @@ static uint8_t BacklightApp_Boil_Mode(uint16_t u16MATemp)
         }
     }else if(u16MATemp < BLT_TEMP105){
         u8BLT_DERATING_ALARM_FLAG = TRUE;
+        bDimmingUpdateStepFlag = true;
         u8Return = BLT_SCORCH_MODE;
     }else{
         u8Return = BLT_BOIL_MODE;
@@ -200,6 +212,7 @@ static uint8_t BacklightApp_Scorch_Mode(uint16_t u16MATemp)
 			(void)u8BLT_DERATING_EN;
             u8BLT_DERATING_EN = FALSE;
             u8BLT_DERATING_ALARM_FLAG = TRUE;
+            bDimmingUpdateStepFlag = true;
             u8Return = BLT_NORMAL_MODE;
         }else
         {
@@ -222,13 +235,22 @@ void BacklightApp_DimmingControl(void)
         rdData[count] = RegisterApp_DHU_Read(CMD_BL_PWM,count);
     }
     /*Backlight On/Off*/
-    BacklightSwitch = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS) & 0x01U;
+    BacklightSwitch = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS) & (!RegisterApp_DHU_Read(CMD_DISP_SHUTD,CMD_DATA_POS)) & 0x01U;
     /*Dimming target*/
     BrightnessTarget =  ((uint16_t)rdData[CMD_DATA_POS+1U])*256U;
     BrightnessTarget += ((uint16_t)rdData[CMD_DATA_POS])*1U;
 
     /*Do gradual-dimming function & set threshold value*/
     BrightnessTarget = ((BrightnessTarget > u16BrightnessUpperLimit) ? u16BrightnessUpperLimit : BrightnessTarget);
+    
+    if(bDimmingUpdateStepFlag == true)
+    {
+        /* Delta PWM Mod 0x7F (128 dimming step) and plus 1 (at least 1 step a time)*/
+        u16DimmingStep = ((BrightnessTarget > u16Brightness) ? (BrightnessTarget - u16Brightness)%0x7F : (u16Brightness - BrightnessTarget)%0x7F)
+                         + 1U;
+        bDimmingUpdateStepFlag = false;
+    }
+    
     if(BacklightSwitch == BLT_ENABLE){
         u16GradientValue = 0U;
         BacklightApp_BrightnessAdgust(BrightnessTarget,0U);
@@ -241,17 +263,9 @@ void BacklightApp_DimmingControl(void)
             PwmDriver_Stop();
         }
     }else if(BacklightSwitch == BLT_DISABLE){
-        /*Do gradual dimming from target to 0*/
-        if(u16GradientValue != BrightnessTarget){
-            u16GradientValue = u16GradientValue + BLT_GRADUAL_UNIT;
-            u16GradientValue = ((BrightnessTarget >= u16GradientValue) ? u16GradientValue : BrightnessTarget);
-            BacklightApp_BrightnessAdgust(BrightnessTarget,u16GradientValue);
-            //PwmDriver_Start();
-        }else{
-            //PwmDriver_Initial();
-            BacklightApp_BrightnessAdgust(BrightnessTarget,BrightnessTarget);
-            PwmDriver_Stop();
-        }
+        /* Directly Close Backlight (PWM set as 0)*/
+        u16Brightness = 0U;
+        PwmDriver_Stop();
     }else{
         /*ERROR READ FORMAT. NEED CHECK*/
     }
@@ -285,7 +299,7 @@ void BacklightApp_DeratingFlow(void)
     uint8_t CurrentStatus = BLT_NORMAL_MODE;
     uint16_t TempVolt = 0U;
     uint16_t u16MATemp = 0U;
-    TempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH0_BLTTEMP);
+    TempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH0_PCBTEMP);
 
     /* Do check the data base(samples) is ready for result output (BLT_SAMPLE_CNT = 16 times)*/
     u16TempVoltSample[u8BLSampleCount] = TempVolt;
@@ -337,14 +351,14 @@ void BacklightApp_TempMonitor(void)
 {
     uint16_t BltTempVolt = 0U;
     uint16_t PcbTempVolt = 0U;
-    PcbTempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH1_PCBTEMP);
-    sprintf((char *)u8TxBuffer,"PCB TEMP %d \r\n",PcbTempVolt);
+    PcbTempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH1_BLTTEMP);
+    sprintf((char *)u8TxBuffer,"BLT TEMP %d \r\n",PcbTempVolt);
     UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
     RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC,(uint8_t)(PcbTempVolt >> 8));
     RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC+1U,(uint8_t)(PcbTempVolt));
 
-    BltTempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH0_BLTTEMP);
-    sprintf((char *)u8TxBuffer,"BLT TEMP %d DERATE %d STATE %d\r\n",BltTempVolt,u8BLT_DERATING_EN,u8BLT_DERATING_STATUS);
+    BltTempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH0_PCBTEMP);
+    sprintf((char *)u8TxBuffer,"PCB TEMP %d DERATE %d STATE %d\r\n",BltTempVolt,u8BLT_DERATING_EN,u8BLT_DERATING_STATUS);
     UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
 }
 
