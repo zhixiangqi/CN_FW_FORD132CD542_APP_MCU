@@ -74,9 +74,9 @@ const cy_stc_sar_channel_config_t PASS_ADC_SENSE_channel_3_config =
 };
 const cy_stc_sar_config_t PASS_ADC_SENSE_config =
 {
-    .vrefSel = CY_SAR_VREF_SEL_EXT,
-    .vrefBypCapEn = false,
-    .negSel = CY_SAR_NEG_SEL_VSSA_KELVIN,
+    .vrefSel = CY_SAR_VREF_SEL_VDDA_DIV_2,
+    .vrefBypCapEn = true,
+    .negSel = CY_SAR_NEG_SEL_VREF,
     .negVref = CY_SAR_NEGVREF_HW,
     .boostPump = false,
     .power = CY_SAR_HALF_PWR,
@@ -84,14 +84,14 @@ const cy_stc_sar_config_t PASS_ADC_SENSE_config =
     .switchDisable = false,
     .subResolution = CY_SAR_SUB_RESOLUTION_10B,
     .leftAlign = false,
-    .singleEndedSigned = true,
-    .differentialSigned = true,
-    .avgCnt = CY_SAR_AVG_CNT_16,
+    .singleEndedSigned = false,
+    .differentialSigned = false,
+    .avgCnt = CY_SAR_AVG_CNT_2,
     .avgShift = true,
     .trigMode = CY_SAR_TRIGGER_MODE_FW_ONLY,
     .eosEn = false,
-    .sampleTime0 = 1023,
-    .sampleTime1 = 81,
+    .sampleTime0 = 335,
+    .sampleTime1 = 3,
     .sampleTime2 = 2,
     .sampleTime3 = 2,
     .rangeThresLow = 0UL,
@@ -345,8 +345,6 @@ const cyhal_resource_inst_t TC7_PWM_LED_obj =
 
 void init_cycfg_peripherals(void)
 {
-    SAR_MUX_SWITCH0(SAR0) = CY_SAR_MUX_FW_VSSA_VMINUS;
-    SAR_MUX_SWITCH_HW_CTRL(SAR0) |= CY_SAR_MUX_HW_CTRL_VSSA;
     Cy_SysClk_PeriphAssignDivider(PCLK_PASS0_CLOCK_SAR, CY_SYSCLK_DIV_16_BIT, 0U);
     Cy_SysClk_PeriphAssignDivider(PCLK_SCB0_CLOCK, CY_SYSCLK_DIV_16_BIT, 1U);
     Cy_SysClk_PeriphAssignDivider(PCLK_SCB2_CLOCK, CY_SYSCLK_DIV_16_BIT, 2U);
