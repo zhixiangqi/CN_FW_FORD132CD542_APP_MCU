@@ -764,12 +764,12 @@
                         </Aliases>
                     </Block>
                     <Parameters>
-                        <Param id="avg_cnt" value="CY_SAR_AVG_CNT_16"/>
+                        <Param id="avg_cnt" value="CY_SAR_AVG_CNT_2"/>
                         <Param id="avg_mode" value="CY_SAR_AVG_MODE_SEQUENTIAL_FIXED"/>
                         <Param id="boostPump" value="false"/>
                         <Param id="ch0_avg" value="false"/>
                         <Param id="ch0_input" value="CY_SAR_CHAN_SINGLE_ENDED"/>
-                        <Param id="ch0_min_acq_time" value="10000"/>
+                        <Param id="ch0_min_acq_time" value="167"/>
                         <Param id="ch0_range_intr" value="false"/>
                         <Param id="ch0_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch0_sat_intr" value="false"/>
@@ -811,19 +811,19 @@
                         <Param id="ch15_sat_intr" value="false"/>
                         <Param id="ch1_avg" value="false"/>
                         <Param id="ch1_input" value="CY_SAR_CHAN_SINGLE_ENDED"/>
-                        <Param id="ch1_min_acq_time" value="10000"/>
+                        <Param id="ch1_min_acq_time" value="167"/>
                         <Param id="ch1_range_intr" value="false"/>
                         <Param id="ch1_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch1_sat_intr" value="false"/>
                         <Param id="ch2_avg" value="false"/>
                         <Param id="ch2_input" value="CY_SAR_CHAN_SINGLE_ENDED"/>
-                        <Param id="ch2_min_acq_time" value="10000"/>
+                        <Param id="ch2_min_acq_time" value="167"/>
                         <Param id="ch2_range_intr" value="false"/>
                         <Param id="ch2_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch2_sat_intr" value="false"/>
                         <Param id="ch3_avg" value="false"/>
                         <Param id="ch3_input" value="CY_SAR_CHAN_SINGLE_ENDED"/>
-                        <Param id="ch3_min_acq_time" value="10000"/>
+                        <Param id="ch3_min_acq_time" value="167"/>
                         <Param id="ch3_range_intr" value="false"/>
                         <Param id="ch3_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch3_sat_intr" value="false"/>
@@ -863,7 +863,7 @@
                         <Param id="ch9_range_intr" value="false"/>
                         <Param id="ch9_res" value="CY_SAR_MAX_RES"/>
                         <Param id="ch9_sat_intr" value="false"/>
-                        <Param id="diff_format" value="true"/>
+                        <Param id="diff_format" value="false"/>
                         <Param id="inFlash" value="true"/>
                         <Param id="inj_avg" value="false"/>
                         <Param id="inj_en" value="false"/>
@@ -876,14 +876,14 @@
                         <Param id="range_cond" value="CY_SAR_RANGE_COND_BELOW"/>
                         <Param id="range_high" value="0"/>
                         <Param id="range_low" value="0"/>
-                        <Param id="sample_rate" value="80"/>
-                        <Param id="se_format" value="true"/>
+                        <Param id="sample_rate" value="20000"/>
+                        <Param id="se_format" value="false"/>
                         <Param id="soc_en" value="false"/>
                         <Param id="subRes" value="CY_SAR_SUB_RESOLUTION_10B"/>
                         <Param id="trigger_mode" value="CY_SAR_TRIGGER_MODE_FW_AND_HWEDGE"/>
-                        <Param id="vneg_select" value="CY_SAR_NEG_SEL_VSSA_KELVIN"/>
-                        <Param id="vref_select" value="CY_SAR_VREF_SEL_EXT"/>
-                        <Param id="vref_voltage" value="3.300"/>
+                        <Param id="vneg_select" value="CY_SAR_NEG_SEL_VREF"/>
+                        <Param id="vref_select" value="CY_SAR_VREF_SEL_VDDA_DIV_2_BYP"/>
+                        <Param id="vref_voltage" value="1.200"/>
                     </Parameters>
                 </Personality>
                 <Personality template="m0s8peripheralclock" version="1.0">
@@ -1331,10 +1331,6 @@
                 <Net>
                     <Port name="ioss[0].port[1].pin[3].digital_inout[0]"/>
                     <Port name="scb[2].i2c_sda[0]"/>
-                </Net>
-                <Net>
-                    <Port name="ioss[0].port[1].pin[7].analog[0]"/>
-                    <Port name="pass[0].sar[0].vref_ext[0]"/>
                 </Net>
                 <Net>
                     <Port name="ioss[0].port[4].pin[0].digital_inout[0]"/>

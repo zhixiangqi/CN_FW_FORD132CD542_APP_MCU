@@ -123,6 +123,8 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     EicDriver_Initial();
     PowerApp_PowerGoodInitial();
     PowerApp_Sequence(POWER_ON);
+    /*Exit SourceIc StandyMode*/
+    TDDI_ExitStandbyMode();
     /*Do LCD Power On Sequence*/
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
@@ -185,14 +187,14 @@ static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
         {
             u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
         }
-        if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && (u16SyncVolDebounce > 413 && u16SyncVolDebounce < 2114))
+        if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && (u16SyncVolDebounce > 413))
         {
             u8Return = STATE_NORMAL;
         }else{
             u8Return = STATE_PRESLEEP;
         }
     }
-    else 
+    else
     {
         if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
         {
@@ -259,14 +261,14 @@ static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
         {
             u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
         }
-        if(u16SyncVolDebounce > 413 && u16SyncVolDebounce < 2114)
+        if(u16SyncVolDebounce > 413)
         {
             u8Return = STATE_BOOT;
         }else{
             PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
         }
     }
-    if(u16AdcSyncVolt > 413 && u16AdcSyncVolt < 2114)
+    if(u16AdcSyncVolt > 413)
     {
         u8Return = STATE_BOOT;
     }else{
