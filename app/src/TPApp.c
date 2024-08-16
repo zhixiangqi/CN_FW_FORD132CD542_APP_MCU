@@ -51,17 +51,14 @@ void TPApp_TCHENMonitor(void)
 
         case DISPLAY_ON_TOUCH_OFF:
             PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-            /* code */
             break;
 
         case DISPLAY_OFF_TOUCH_ON:
             PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-            /* code */
             break;
 
         case DISPLAY_ON_TOUCH_ON:
             PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-            /* code */
             break;
         
         default:
