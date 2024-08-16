@@ -19,6 +19,7 @@
 
 /* This section lists the other files that are included in this file.
  */
+#include "app/inc/DDIApp.h" 
 #include "app/inc/MainApp.h"
 #include "app/inc/TC0App.h"
 #include "app/inc/StackTaskApp.h"
@@ -30,7 +31,6 @@
 #include "app/inc/WdtApp.h"
 #include "app/inc/PowerApp.h"
 #include "app/inc/FlashApp.h"
-#include "app/inc/TDDIApp.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -124,7 +124,7 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     PowerApp_PowerGoodInitial();
     PowerApp_Sequence(POWER_ON);
     /*Exit SourceIc StandyMode*/
-    TDDI_ExitStandbyMode();
+    DDIApp_ExitStandbyMode();
     /*Do LCD Power On Sequence*/
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
@@ -238,40 +238,20 @@ static uint8_t MainApp_PreSleep_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
-    uint16_t u16AdcSyncVolt;
-    // WdtApp_CleanCounter();
-    INTBApp_Flow();
-    /* Do Power Off Sequence*/
-    sprintf((char *)u8TxBuffer,"SLEEP FINISHED\r\n");
-    UartDriver_TxWriteString(u8TxBuffer);
-    u8Return = STATE_SLEEP;
-    (void) u8Nothing;
-    TC0App_DelayMS(200U);
-    /* Get SYNC Voltage */
-    u16AdcSyncVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH3_SYNCVOLT);
-    /* Do check the data base(samples) is ready for result output (SYNC_VOLT_SAMPLE_CNT = 3 times)*/
-    u16SyncVoltSample[u8SYNCSampleCount] = u16AdcSyncVolt;
-    if(u8SYNCSampleCount == (SYNC_VOLT_SAMPLE_CNT - 1U)){u8SYNCSampleReady = TRUE;}
-    u8SYNCSampleCount = ((u8SYNCSampleCount + 1U) > (SYNC_VOLT_SAMPLE_CNT - 1U)) ? 0U : (u8SYNCSampleCount + 1U);
-    if (u8SYNCSampleReady == TRUE)
-    {
-        u8SYNCSampleReady = FALSE;
-        uint16_t u16SyncVolDebounce = 0U;
-        for(uint8_t u8count = 0U; u8count < SYNC_VOLT_SAMPLE_CNT; u8count++)
-        {
-            u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
-        }
-        if(u16SyncVolDebounce > 413)
-        {
-            u8Return = STATE_BOOT;
-        }else{
-            PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
-        }
-    }
-    if(u16AdcSyncVolt > 413)
+    uint8_t u8SleepCount=0;
+    u8SleepCount++;
+    if (u8SleepCount > 1)
     {
         u8Return = STATE_BOOT;
+        (void) u8Nothing;
     }else{
+        // WdtApp_CleanCounter();
+        INTBApp_Flow();
+        /* Do Power Off Sequence*/
+        sprintf((char *)u8TxBuffer,"SLEEP FINISHED\r\n");
+        UartDriver_TxWriteString(u8TxBuffer);
+        u8Return = STATE_SLEEP;
+        (void) u8Nothing;
         PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
     }
     return u8Return;

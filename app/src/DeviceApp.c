@@ -9,7 +9,7 @@
 #define NUM_DISP_ID    2U
 static uint8_t DV_DISP_ID[NUM_DISP_ID] = {
     /* EXAMPLE: H1BT-14F180-FA*/
-    0x45,SUBREVISION_SW_VER
+    0x3F,SUBREVISION_SW_VER
 };
 #define NUM_CORE_FPN    25U
 static uint8_t DV_CORE_ASSB_FPN[NUM_CORE_FPN] = {

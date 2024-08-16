@@ -11,7 +11,7 @@
 /* Section: Included Files                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-#include <LEDApp.h>
+#include "app/inc/LEDApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/BacklightApp.h"

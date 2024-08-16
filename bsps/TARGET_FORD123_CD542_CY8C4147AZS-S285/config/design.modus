@@ -202,6 +202,22 @@
                     </Parameters>
                 </Personality>
                 <Personality template="m0s8pin" version="2.0">
+                    <Block location="ioss[0].port[1].pin[4]" locked="true">
+                        <Aliases>
+                            <Alias value="TEST_PIN"/>
+                        </Aliases>
+                    </Block>
+                    <Parameters>
+                        <Param id="DriveModes" value="CY_GPIO_DM_HIGHZ"/>
+                        <Param id="inFlash" value="true"/>
+                        <Param id="initialState" value="1"/>
+                        <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>
+                        <Param id="portLevelConfig" value="false"/>
+                        <Param id="slewRate" value="CY_GPIO_SLEW_FAST"/>
+                        <Param id="vtrip" value="CY_GPIO_VTRIP_CMOS"/>
+                    </Parameters>
+                </Personality>
+                <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[1].pin[7]" locked="true"/>
                     <Parameters>
                         <Param id="DriveModes" value="CY_GPIO_DM_ANALOG"/>
@@ -1160,7 +1176,7 @@
                         <Param id="ManualLowPhaseDutyCycle" value="16"/>
                         <Param id="ModeUser" value="CY_SCB_I2C_MASTER"/>
                         <Param id="RxAddressFifoDelay" value="6"/>
-                        <Param id="SlaveAddress" value="12"/>
+                        <Param id="SlaveAddress" value="16"/>
                         <Param id="SlaveAddressMask" value="254"/>
                         <Param id="inFlash" value="true"/>
                     </Parameters>

@@ -13,11 +13,11 @@
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+#include "app/inc/DDIApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/BacklightApp.h"
 #include "app/inc/TC0App.h"
-#include "app/inc/TDDIApp.h"
 #include "driver/inc/PwmDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
@@ -25,7 +25,7 @@
 #include "driver/inc/I2C4MDriver.h"
 
 
-void TDDI_ExitStandbyMode(void)
+void DDIApp_ExitStandbyMode(void)
 {
     uint8_t txbuffer[2]={0x00U};
     txbuffer[0]=0x1E;

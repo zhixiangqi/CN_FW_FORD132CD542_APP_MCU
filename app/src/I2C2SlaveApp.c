@@ -257,8 +257,7 @@ static void I2CSlaveApp_TxReadTransferDone(uint8_t subaddr)
         {
         case CMD_DISP_STATUS:
             /* Check the DISP_STATUS has been sent, then Clear INT_ERR*/
-            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_CLEAR);
-            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS+2,INTB_INT_TCH_CLEAR);
+            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_TCH_CLEAR);
             break;
         
         default:
