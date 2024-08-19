@@ -28,7 +28,7 @@ void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue)
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
     {
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-        RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET);
+        RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET | RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS));
     }
     (void)u8OldByte0;
     (void)u8OldByte1;
@@ -55,7 +55,7 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
     {
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-        RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET);
+        RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET | RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS));
     }
     (void)u8OldByte0;
     (void)u8OldByte1;

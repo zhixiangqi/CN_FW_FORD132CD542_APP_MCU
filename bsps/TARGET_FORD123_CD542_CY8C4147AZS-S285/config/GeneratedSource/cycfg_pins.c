@@ -527,7 +527,7 @@ const cy_stc_gpio_pin_config_t U301_TSC_ATTN_config =
     .outVal = 0,
     .driveMode = CY_GPIO_DM_HIGHZ,
     .hsiom = U301_TSC_ATTN_HSIOM,
-    .intEdge = CY_GPIO_INTR_FALLING,
+    .intEdge = CY_GPIO_INTR_BOTH,
     .vtrip = CY_GPIO_VTRIP_CMOS,
     .slewRate = CY_GPIO_SLEW_FAST,
 };

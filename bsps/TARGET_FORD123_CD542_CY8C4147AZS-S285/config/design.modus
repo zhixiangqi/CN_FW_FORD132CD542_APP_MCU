@@ -431,7 +431,7 @@
                         <Param id="DriveModes" value="CY_GPIO_DM_HIGHZ"/>
                         <Param id="inFlash" value="true"/>
                         <Param id="initialState" value="0"/>
-                        <Param id="isrTrigger" value="CY_GPIO_INTR_FALLING"/>
+                        <Param id="isrTrigger" value="CY_GPIO_INTR_BOTH"/>
                         <Param id="portLevelConfig" value="false"/>
                         <Param id="slewRate" value="CY_GPIO_SLEW_FAST"/>
                         <Param id="vtrip" value="CY_GPIO_VTRIP_CMOS"/>

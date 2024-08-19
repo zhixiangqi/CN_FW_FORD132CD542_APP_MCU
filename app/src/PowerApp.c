@@ -30,8 +30,6 @@ void PowerApp_Sequence(uint8_t u8Action)
         TC0App_DelayMS(2U);
         PortDriver_PinSet(DISP_RESX_PORT,DISP_RESX_PIN);
         TC0App_DelayMS(26U);
-        PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-        TC0App_DelayMS(2U);
         PortDriver_PinSet(LED_EN_PORT,LED_EN_PIN);
         TC0App_DelayMS(2U);
         break;
@@ -117,8 +115,8 @@ void PowerApp_PowerGoodFlow()
         sprintf((char *)u8TxBuffer,"P3V3 SWIM >> 0x%02x, %d, %d\r\n",u8Status2,PG_P3V3.ConsecutiveHighCnt,PG_P3V3.ConsecutiveLowCnt);
         UartDriver_TxWriteString(u8TxBuffer);
     }
-    sprintf((char *)u8TxBuffer,"PG FLOW> P1V2 0x%02x > P3V3 0x%02x\r\n",u8Status1,u8Status2);
-    //UartDriver_TxWriteString(u8TxBuffer);
+    // sprintf((char *)u8TxBuffer,"PG FLOW> P1V2 0x%02x > P3V3 0x%02x\r\n",u8Status1,u8Status2);
+    // UartDriver_TxWriteString(u8TxBuffer);
 }
 
 void PowerApp_RTQ6749_FaultCheck()

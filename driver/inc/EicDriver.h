@@ -14,5 +14,6 @@
 
 void EicDriver_Initial(void);
 
-extern bool tp_interr_flag;
+extern bool tp_interr_low_flag;
+extern bool tp_interr_high_flag;
 #endif /* DRIVER_INC_EICDRIVER_H_ */

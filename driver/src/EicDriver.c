@@ -7,9 +7,11 @@
 #include "app/inc/TC0App.h"
 #include "driver/inc/EicDriver.h"
 #include "driver/inc/TC0Driver.h"
+#include "driver/inc/PortDriver.h"
 
-bool tp_interr_flag = false;
-
+bool tp_interr_low_flag = false;
+bool tp_interr_high_flag = false;
+static uint8_t u8ISRState = 0;
 const static cy_stc_sysint_t gtdATTNCfg =
 {
     .intrSrc = U301_TSC_ATTN_IRQ,	/* Interrupt source is U301_TSC_ATTN_PIN interrupt */
@@ -22,8 +24,13 @@ static void EicDriver_U301_TSC_ATTN_ISR(void)
 	Cy_GPIO_ClearInterrupt(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
 	NVIC_ClearPendingIRQ(gtdATTNCfg.intrSrc);
 
-    /*Start count debounce times*/
-    tp_interr_flag = true;
+    u8ISRState = PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
+    if (u8ISRState == PIN_LOW)
+    {
+        tp_interr_low_flag = TRUE;
+    }else{
+        tp_interr_high_flag = TRUE;
+    }
 }
 
 void EicDriver_Initial(void)
