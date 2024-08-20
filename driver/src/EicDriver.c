@@ -20,17 +20,16 @@ const static cy_stc_sysint_t gtdATTNCfg =
 
 static void EicDriver_U301_TSC_ATTN_ISR(void)
 {
-	/* Clears the triggered pin interrupt */
-	Cy_GPIO_ClearInterrupt(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
-	NVIC_ClearPendingIRQ(gtdATTNCfg.intrSrc);
-
-    u8ISRState = PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
+	u8ISRState = Cy_GPIO_Read(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
     if (u8ISRState == PIN_LOW)
     {
         tp_interr_low_flag = TRUE;
     }else{
         tp_interr_high_flag = TRUE;
     }
+    /* Clears the triggered pin interrupt */
+	Cy_GPIO_ClearInterrupt(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
+	NVIC_ClearPendingIRQ(gtdATTNCfg.intrSrc);
 }
 
 void EicDriver_Initial(void)

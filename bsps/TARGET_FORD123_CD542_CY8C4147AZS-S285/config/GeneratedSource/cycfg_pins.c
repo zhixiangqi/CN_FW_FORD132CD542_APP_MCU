@@ -256,25 +256,6 @@ const cyhal_resource_inst_t DES_I2C_SDA_obj =
 };
 #endif /* defined (CY_USING_HAL) */
 
-const cy_stc_gpio_pin_config_t TEST_PIN_config =
-{
-    .outVal = 1,
-    .driveMode = CY_GPIO_DM_HIGHZ,
-    .hsiom = TEST_PIN_HSIOM,
-    .intEdge = CY_GPIO_INTR_DISABLE,
-    .vtrip = CY_GPIO_VTRIP_CMOS,
-    .slewRate = CY_GPIO_SLEW_FAST,
-};
-
-#if defined (CY_USING_HAL)
-const cyhal_resource_inst_t TEST_PIN_obj =
-{
-    .type = CYHAL_RSC_GPIO,
-    .block_num = TEST_PIN_PORT_NUM,
-    .channel_num = TEST_PIN_PIN,
-};
-#endif /* defined (CY_USING_HAL) */
-
 const cy_stc_gpio_pin_config_t ioss_0_port_1_pin_7_config =
 {
     .outVal = 1,
@@ -524,7 +505,7 @@ const cyhal_resource_inst_t MCU_SWCLK_obj =
 
 const cy_stc_gpio_pin_config_t U301_TSC_ATTN_config =
 {
-    .outVal = 0,
+    .outVal = 1,
     .driveMode = CY_GPIO_DM_HIGHZ,
     .hsiom = U301_TSC_ATTN_HSIOM,
     .intEdge = CY_GPIO_INTR_BOTH,
@@ -952,7 +933,6 @@ void init_cycfg_pins(void)
     Cy_GPIO_Pin_Init(BIAS_EN_PORT, BIAS_EN_PIN, &BIAS_EN_config);
     Cy_GPIO_Pin_Init(DES_I2C_SCL_PORT, DES_I2C_SCL_PIN, &DES_I2C_SCL_config);
     Cy_GPIO_Pin_Init(DES_I2C_SDA_PORT, DES_I2C_SDA_PIN, &DES_I2C_SDA_config);
-    Cy_GPIO_Pin_Init(TEST_PIN_PORT, TEST_PIN_PIN, &TEST_PIN_config);
     Cy_GPIO_Pin_Init(ioss_0_port_1_pin_7_PORT, ioss_0_port_1_pin_7_PIN, &ioss_0_port_1_pin_7_config);
     Cy_GPIO_Pin_Init(ADC_BLTTEMP_PORT, ADC_BLTTEMP_PIN, &ADC_BLTTEMP_config);
     Cy_GPIO_Pin_Init(ADC_PCBTEMP_PORT, ADC_PCBTEMP_PIN, &ADC_PCBTEMP_config);
@@ -1004,7 +984,6 @@ void reserve_cycfg_pins(void)
     cyhal_hwmgr_reserve(&BIAS_EN_obj);
     cyhal_hwmgr_reserve(&DES_I2C_SCL_obj);
     cyhal_hwmgr_reserve(&DES_I2C_SDA_obj);
-    cyhal_hwmgr_reserve(&TEST_PIN_obj);
     cyhal_hwmgr_reserve(&ioss_0_port_1_pin_7_obj);
     cyhal_hwmgr_reserve(&ADC_BLTTEMP_obj);
     cyhal_hwmgr_reserve(&ADC_PCBTEMP_obj);

@@ -293,27 +293,6 @@ extern "C" {
 #define DES_I2C_SDA_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_OPENDRAINDRIVESLOW
 #endif /* defined (CY_USING_HAL) */
 
-#define TEST_PIN_ENABLED 1U
-#define TEST_PIN_PORT GPIO_PRT1
-#define TEST_PIN_PORT_NUM 1U
-#define TEST_PIN_PIN 4U
-#define TEST_PIN_NUM 4U
-#define TEST_PIN_DRIVEMODE CY_GPIO_DM_HIGHZ
-#define TEST_PIN_INIT_DRIVESTATE 1
-#ifndef ioss_0_port_1_pin_4_HSIOM
-    #define ioss_0_port_1_pin_4_HSIOM HSIOM_SEL_GPIO
-#endif
-#define TEST_PIN_HSIOM ioss_0_port_1_pin_4_HSIOM
-#define TEST_PIN_IRQ ioss_interrupts_gpio_1_IRQn
-
-#if defined (CY_USING_HAL)
-#define TEST_PIN_HAL_PORT_PIN P1_4
-#define TEST_PIN P1_4
-#define TEST_PIN_HAL_IRQ CYHAL_GPIO_IRQ_NONE
-#define TEST_PIN_HAL_DIR CYHAL_GPIO_DIR_INPUT 
-#define TEST_PIN_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_NONE
-#endif /* defined (CY_USING_HAL) */
-
 #define ioss_0_port_1_pin_7_ENABLED 1U
 #define ioss_0_port_1_pin_7_PORT GPIO_PRT1
 #define ioss_0_port_1_pin_7_PORT_NUM 1U
@@ -592,7 +571,7 @@ extern "C" {
 #define U301_TSC_ATTN_PIN 4U
 #define U301_TSC_ATTN_NUM 4U
 #define U301_TSC_ATTN_DRIVEMODE CY_GPIO_DM_HIGHZ
-#define U301_TSC_ATTN_INIT_DRIVESTATE 0
+#define U301_TSC_ATTN_INIT_DRIVESTATE 1
 #ifndef ioss_0_port_3_pin_4_HSIOM
     #define ioss_0_port_3_pin_4_HSIOM HSIOM_SEL_GPIO
 #endif
@@ -1118,12 +1097,6 @@ extern const cy_stc_gpio_pin_config_t DES_I2C_SDA_config;
 
 #if defined (CY_USING_HAL)
 extern const cyhal_resource_inst_t DES_I2C_SDA_obj;
-#endif /* defined (CY_USING_HAL) */
-
-extern const cy_stc_gpio_pin_config_t TEST_PIN_config;
-
-#if defined (CY_USING_HAL)
-extern const cyhal_resource_inst_t TEST_PIN_obj;
 #endif /* defined (CY_USING_HAL) */
 
 extern const cy_stc_gpio_pin_config_t ioss_0_port_1_pin_7_config;

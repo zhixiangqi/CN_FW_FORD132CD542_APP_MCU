@@ -17,5 +17,5 @@
 #define DISPLAY_ON_TOUCH_ON					0x03U
 
 void TPApp_TCHFlow(void);
-void TPApp_TCHENMonitor(void);
+void TPApp_TCHENFlow(void);
 #endif /* APP_INC_TPAPP_H_ */

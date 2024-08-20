@@ -15,7 +15,7 @@ static uint8_t u8TPCount;
 static uint8_t u8TxBuffer[60] = {0};
 static uint8_t u8TCH_EN_State = 0U;
 
-void TPApp_TCHENMonitor(void)
+void TPApp_TCHENFlow(void)
 {
     u8TCH_EN_State = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS);
     if (u8TCH_EN_State == DISPLAY_ON_TOUCH_ON)
@@ -25,7 +25,6 @@ void TPApp_TCHENMonitor(void)
     {
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
     }else{/*Do nothing*/}
-
     sprintf((char *)u8TxBuffer,"DISP&TP STATE %d\r\n",u8TCH_EN_State);
     UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
 }
@@ -34,23 +33,30 @@ void TPApp_TCHFlow(void)
 {
     if (u8TCH_EN_State == DISPLAY_ON_TOUCH_ON)
     {
+        uint8_t u8ISRState = RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS);
         if (tp_interr_low_flag == TRUE)
         {
             INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_TCH_SET | RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS));
+            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_TCH_SET | u8ISRState);
             tp_interr_low_flag = FALSE;
+            sprintf((char *)u8TxBuffer,"TP_INT LOW %d\r\n",tp_interr_low_flag);
+            UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
         }else if (tp_interr_high_flag == TRUE)
         {
-            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET & RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS));
+            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET & u8ISRState);
             tp_interr_high_flag = FALSE;
-        }else if (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW)
+            sprintf((char *)u8TxBuffer,"TP_INT HIGH %d\r\n",tp_interr_high_flag);
+            UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+        }else if ((PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW) && ((u8ISRState & INTB_INT_TCH_SET) != INTB_INT_TCH_SET))
         {
             u8TPCount++;
             if (u8TPCount > 20U)
             {
                 INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-                RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_TCH_SET | RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS));
+                RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_TCH_SET | INTB_INT_TCH_SET);
                 u8TPCount = 0;
+                sprintf((char *)u8TxBuffer,"TP_INT KEPEP LOW %d\r\n",u8TPCount);
+                UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
             }
         }else{/*Do nothing*/}
     }else{/*Do nothing*/}

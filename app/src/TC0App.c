@@ -71,16 +71,14 @@ static void TC0APP_TC0_Task_15msec(void)
     StackTaskApp_MissionPush(TASK_BLTFLOW);
 }
 
-static void TC0APP_TC0_Task_20msec(void)
-{
-    /* Empty Work*/
-}
-
 static void TC0APP_TC0_Task_100msec(void)
 {
     StackTaskApp_MissionPush(TASK_PWGFLOW);
 }
-
+static void TC0APP_TC0_Task_200msec(void)
+{
+    StackTaskApp_MissionPush(TASK_TCHENLOW);
+}
 static void TC0APP_TC0_Task_1msec(void)
 {
     for(uint32_t DHUCmdID=0U;DHUCmdID<DHUCmdBufferSize;DHUCmdID++)
@@ -129,14 +127,14 @@ static void TC0App_Callback_InterruptHandler(void)
             TC0APP_TC0_Task_15msec();
         }else{/*Do Nothing*/}
 
-        if ((timercount_ms % 20) ==0)
-        {
-            TC0APP_TC0_Task_20msec();
-        }else{/*Do Nothing*/}
-
         if ((timercount_ms % 100) ==0)
         {
             TC0APP_TC0_Task_100msec();
+        }else{/*Do Nothing*/}
+
+        if ((timercount_ms % 200) ==0)
+        {
+            TC0APP_TC0_Task_200msec();
         }else{/*Do Nothing*/}
     }
 

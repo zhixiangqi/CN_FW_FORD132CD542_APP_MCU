@@ -210,7 +210,6 @@ void StackTaskApp_MissionAction(void)
         case TASK_MONITOR:
             BacklightApp_TempMonitor();
             BatteryApp_PowerMonitor();
-            TPApp_TCHENMonitor();
         break;
 
         case TASK_BLTFLOW:
@@ -235,6 +234,10 @@ void StackTaskApp_MissionAction(void)
 
         case TASK_TCHFLOW:
             TPApp_TCHFlow();
+        break;
+
+        case TASK_TCHENLOW:
+            TPApp_TCHENFlow();
         break;
 
         case TASK_UPDATE_ERASE:
