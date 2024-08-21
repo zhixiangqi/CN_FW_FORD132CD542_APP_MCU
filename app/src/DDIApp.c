@@ -24,7 +24,7 @@
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/I2C4MDriver.h"
 
-
+static uint8_t u8TxBuffer[60] = {0};
 void DDIApp_ExitStandbyMode(void)
 {
     uint8_t txbuffer[2]={0x00U};
@@ -56,4 +56,19 @@ void DDIApp_ExitStandbyMode(void)
     txbuffer[0]=0x01;
     txbuffer[1]=0x07;
     I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+}
+
+void DDIApp_DiagRead(uint8_t u8Register)
+{
+    uint8_t rxbuffer[1]={0x00U};
+    uint8_t u8Return;
+    u8Return = I2C4MDriver_WriteRead(NT51926_SLAVE_ADDRESS, &u8Register, sizeof(rxbuffer), rxbuffer,sizeof(rxbuffer));
+    if (u8Return == ERROR_NONE)
+    {
+        sprintf((char *)u8TxBuffer,"NT51926 STATE %d\r\n",rxbuffer[0]);
+    }
+    else{
+        sprintf((char *)u8TxBuffer,"NT51926 STATE %d\r\n",0xFF);
+    }
+    UartDriver_TxWriteString(u8TxBuffer);
 }

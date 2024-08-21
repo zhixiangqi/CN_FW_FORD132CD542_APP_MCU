@@ -8,7 +8,7 @@
 
 #define DISP0_LATCHED_MASK  0xEFU
 #define DISP0_TCERR_MASK    0x80U   /* [Latched] Touch Connection Error (FPC connection)(No use)*/
-#define DISP0_TSCERR_MASK   0x40U   /* [Latched] Touch Screen Controller Error (No use)*/
+#define DISP0_TSCERR_MASK   0x40U   /* [Latched] Touch Screen Controller Error */
 #define DISP0_LLOSS_MASK    0x20U   /* [Latched] Loss of Lock*/
 #define DISP0_RSTRQ_MASK    0x10U   /* Reset Request*/
 #define DISP0_DCERR_MASK    0x08U   /* [Latched] Disconnect Error (FPC connection)*/

@@ -49,6 +49,7 @@
 
 static uint8_t u8MAIN_STATUS = STATE_BOOT;
 static uint8_t u8TxBuffer[60] = {0};
+static uint8_t u8SleepCount=0;
 
 uint16_t u16SyncVoltSample[SYNC_VOLT_SAMPLE_CNT] = {0U};
 uint8_t u8SYNCSampleCount = 0U;
@@ -238,13 +239,16 @@ static uint8_t MainApp_PreSleep_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
-    uint8_t u8SleepCount=0;
+    /*Judgement SYNC whether it is keeping lower than 2.2V*/
     u8SleepCount++;
-    if (u8SleepCount > 1)
+    if (u8SleepCount > 20U)
     {
         u8Return = STATE_BOOT;
+        u8SleepCount = 0U;
         (void) u8Nothing;
-    }else{
+    }
+    else
+    {
         // WdtApp_CleanCounter();
         INTBApp_Flow();
         /* Do Power Off Sequence*/
@@ -252,6 +256,7 @@ static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
         UartDriver_TxWriteString(u8TxBuffer);
         u8Return = STATE_SLEEP;
         (void) u8Nothing;
+        /*Turn off the MCU power*/
         PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
     }
     return u8Return;

@@ -205,6 +205,7 @@ void StackTaskApp_MissionAction(void)
             UartApp_ReadFlow();
             PowerApp_RTQ6749_FaultCheck();
             PowerApp_LP8664_FaultCheck();
+            DDIApp_DiagRead(0x1C);
         break;
 
         case TASK_MONITOR:

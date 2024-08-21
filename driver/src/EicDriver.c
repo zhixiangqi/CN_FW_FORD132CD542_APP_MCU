@@ -20,7 +20,8 @@ const static cy_stc_sysint_t gtdATTNCfg =
 
 static void EicDriver_U301_TSC_ATTN_ISR(void)
 {
-	u8ISRState = Cy_GPIO_Read(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
+	/*Both edge,by reading PIN state to judge*/
+    u8ISRState = Cy_GPIO_Read(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
     if (u8ISRState == PIN_LOW)
     {
         tp_interr_low_flag = TRUE;

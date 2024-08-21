@@ -113,6 +113,7 @@ uint8_t DiagApp_ConsecutiveCheckRegister(DiagIO* ds1,bool isgood)
 
 DiagIO FAULT_LED;
 DiagIO FAULT_LCD;
+DiagIO FAULT_TOUCH;
 DiagIO STATUS_LOCK;
 DiagIO STATUS_FPC;
 void DiagApp_CheckFlowInitial()
@@ -125,11 +126,18 @@ void DiagApp_CheckFlowInitial()
     FAULT_LED.ConsecutiveLowCnt = 0;
 
     FAULT_LCD.Status = IO_STATUS_SWIM;
-    FAULT_LCD.Port = LED_FAULT_PORT;
-    FAULT_LCD.PortNumber = LED_FAULT_PIN;
+    FAULT_LCD.Port = DISP_FAULT_PORT;
+    FAULT_LCD.PortNumber = DISP_FAULT_PIN;
     FAULT_LCD.Threshlod = 5;
     FAULT_LCD.ConsecutiveHighCnt =  0;
     FAULT_LCD.ConsecutiveLowCnt = 0;
+
+    FAULT_TOUCH.Status = IO_STATUS_SWIM;
+    FAULT_TOUCH.Port = DISP_FAULT_PORT;
+    FAULT_TOUCH.PortNumber = DISP_FAULT_PIN;
+    FAULT_TOUCH.Threshlod = 5;
+    FAULT_TOUCH.ConsecutiveHighCnt =  0;
+    FAULT_TOUCH.ConsecutiveLowCnt = 0;
 
     STATUS_FPC.Status = IO_STATUS_SWIM;
     STATUS_FPC.Port = FPCACHK_ROUT_PORT;
@@ -150,6 +158,7 @@ void DiagApp_FaultCheckFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     uint8_t u8Status2 = IO_STATUS_SWIM;
+    uint8_t u8Status3 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_LED);
     if(IO_STATUS_HIGH == u8Status1){
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
@@ -164,6 +173,15 @@ void DiagApp_FaultCheckFlow(void)
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
     }else if(IO_STATUS_LOW == u8Status2){
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
+    }else{
+        /* When voltage at swim state, Do nothing*/
+    }
+
+    u8Status3 = DiagApp_ConsecutiveCheckIO(&FAULT_TOUCH);
+    if(IO_STATUS_HIGH == u8Status3){
+        DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_TSCERR_MASK);
+    }else if(IO_STATUS_LOW == u8Status3){
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_TSCERR_MASK);
     }else{
         /* When voltage at swim state, Do nothing*/
     }

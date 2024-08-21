@@ -8,4 +8,5 @@
 
 
 void DDIApp_ExitStandbyMode(void);
+void DDIApp_DiagRead(uint8_t u8Register);
 #endif

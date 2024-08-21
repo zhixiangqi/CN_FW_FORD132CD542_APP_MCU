@@ -17,6 +17,7 @@ static uint8_t u8TCH_EN_State = 0U;
 
 void TPApp_TCHENFlow(void)
 {
+    /*First,read CMD_DISP_EN state to judge*/
     u8TCH_EN_State = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS);
     if (u8TCH_EN_State == DISPLAY_ON_TOUCH_ON)
     {
@@ -33,7 +34,9 @@ void TPApp_TCHFlow(void)
 {
     if (u8TCH_EN_State == DISPLAY_ON_TOUCH_ON)
     {
+        /*First,read ISR state to judge*/
         uint8_t u8ISRState = RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS);
+        /*Falling edge trigger*/
         if (tp_interr_low_flag == TRUE)
         {
             INTBApp_PullReqSetOrClear(INTB_REQ_SET);
@@ -41,13 +44,17 @@ void TPApp_TCHFlow(void)
             tp_interr_low_flag = FALSE;
             sprintf((char *)u8TxBuffer,"TP_INT LOW %d\r\n",tp_interr_low_flag);
             UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
-        }else if (tp_interr_high_flag == TRUE)
+        }
+        /*Rising edge trigger*/
+        else if (tp_interr_high_flag == TRUE)
         {
             RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET & u8ISRState);
             tp_interr_high_flag = FALSE;
             sprintf((char *)u8TxBuffer,"TP_INT HIGH %d\r\n",tp_interr_high_flag);
             UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
-        }else if ((PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW) && ((u8ISRState & INTB_INT_TCH_SET) != INTB_INT_TCH_SET))
+        }
+        /*If lost trigger,judge PIN whether is LOW,debouce 20 times,about 40ms*/
+        else if ((PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW) && ((u8ISRState & INTB_INT_TCH_SET) != INTB_INT_TCH_SET))
         {
             u8TPCount++;
             if (u8TPCount > 20U)
