@@ -30,7 +30,7 @@ void TPApp_TCHENFlow(void)
     UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
 }
 
-void TPApp_TCHFlow(void)
+void TPApp_TCHINTFlow(void)
 {
     if (u8TCH_EN_State == DISPLAY_ON_TOUCH_ON)
     {

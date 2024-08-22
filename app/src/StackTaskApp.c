@@ -31,6 +31,7 @@
 #include "app/inc/PowerApp.h"
 #include "app/inc/UpdateApp.h"
 #include "app/inc/TPApp.h"
+#include "app/inc/DDIApp.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -174,7 +175,8 @@ static uint8_t StackTaskApp_MissionPop(void)
 **            Case Task define at StackTaskApp.h
 **        Go: No Return
  */
-uint8_t test_flag = FALSE;
+uint8_t test_flag = TRUE;
+uint16_t u16SYNCVolatge = 0xFFFFU;
 void StackTaskApp_MissionAction(void)
 {
     (void)QueneNumber;
@@ -205,7 +207,14 @@ void StackTaskApp_MissionAction(void)
             UartApp_ReadFlow();
             PowerApp_RTQ6749_FaultCheck();
             PowerApp_LP8664_FaultCheck();
-            DDIApp_DiagRead(0x1C);
+            // DDIApp_DiagRead(0x1F);
+            // DDIApp_DiagRead(0x00);
+            // DDIApp_DiagRead(0x01);
+            // DDIApp_DiagRead(0x07);
+            // DDIApp_DiagRead(0x03);
+            // DDIApp_DiagRead(0x04);
+            // DDIApp_DiagRead(0x0A);
+            // DDIApp_DiagRead(0x1C);
         break;
 
         case TASK_MONITOR:
@@ -233,12 +242,16 @@ void StackTaskApp_MissionAction(void)
             DiagApp_LockCheckFlow();
         break;
 
-        case TASK_TCHFLOW:
-            TPApp_TCHFlow();
+        case TASK_TCHINTFLOW:
+            TPApp_TCHINTFlow();
         break;
 
         case TASK_TCHENLOW:
             TPApp_TCHENFlow();
+        break;
+
+        case TASK_SYNCCHECKLOW:
+            u16SYNCVolatge = BatteryApp_SYNCVolatgeCheck();
         break;
 
         case TASK_UPDATE_ERASE:

@@ -55,7 +55,11 @@ static void TC0APP_TC0_Task_1000msec(void)
 }
 static void TC0APP_TC0_Task_2msec(void)
 {
-    StackTaskApp_MissionPush(TASK_TCHFLOW);
+    StackTaskApp_MissionPush(TASK_TCHINTFLOW);
+}
+static void TC0APP_TC0_Task_3msec(void)
+{
+    StackTaskApp_MissionPush(TASK_SYNCCHECKLOW);
 }
 static void TC0APP_TC0_Task_6msec(void)
 {
@@ -65,7 +69,6 @@ static void TC0APP_TC0_Task_10msec(void)
 {
     StackTaskApp_MissionPush(TASK_BATFLOW);
 }
-
 static void TC0APP_TC0_Task_15msec(void)
 {
     StackTaskApp_MissionPush(TASK_BLTFLOW);
@@ -113,10 +116,17 @@ static void TC0App_Callback_InterruptHandler(void)
         {
             TC0APP_TC0_Task_2msec();
         }else{/*Do Nothing*/}
+
+        if ((timercount_ms % 3) ==0)
+        {
+            TC0APP_TC0_Task_3msec();
+        }else{/*Do Nothing*/}
+
         if ((timercount_ms % 6) ==0)
         {
             TC0APP_TC0_Task_6msec();
         }else{/*Do Nothing*/}
+
         if ((timercount_ms % 10) ==0)
         {
             TC0APP_TC0_Task_10msec();

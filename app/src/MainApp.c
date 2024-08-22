@@ -40,7 +40,6 @@
 
 
 #define CY_ASSERT_FAILED          (0u)
-#define SYNC_VOLT_SAMPLE_CNT      3U
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: File Scope or Global Data                                         */
@@ -51,9 +50,6 @@ static uint8_t u8MAIN_STATUS = STATE_BOOT;
 static uint8_t u8TxBuffer[60] = {0};
 static uint8_t u8SleepCount=0;
 
-uint16_t u16SyncVoltSample[SYNC_VOLT_SAMPLE_CNT] = {0U};
-uint8_t u8SYNCSampleCount = 0U;
-bool u8SYNCSampleReady = FALSE;
 /*  Function: MainApp_Boot_Mode
 **  Callfrom: Main_Flow state machine
 **        Do: Do basic initial like PORT/CLOCK and other mustbe function.
@@ -125,7 +121,7 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     PowerApp_PowerGoodInitial();
     PowerApp_Sequence(POWER_ON);
     /*Exit SourceIc StandyMode*/
-    DDIApp_ExitStandbyMode();
+    DDIApp_StandbyMode(EXIT_STANDBY_MODE);
     /*Do LCD Power On Sequence*/
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
@@ -169,33 +165,21 @@ static uint8_t MainApp_HandShake_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
-    uint16_t u16AdcSyncVolt;
     StackTaskApp_MissionAction();
     INTBApp_Flow();
-    // sprintf((char *)u8TxBuffer,"NORMAL FINISHED 0x%02x\r\n",RegisterApp_DHU_Read(CMD_DISP_STATUS,0U));
-    // UartDriver_TxWriteString(u8TxBuffer);
-    /* Get SYNC Voltage */
-    u16AdcSyncVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH3_SYNCVOLT);
-    /* Do check the data base(samples) is ready for result output (SYNC_VOLT_SAMPLE_CNT = 3 times)*/
-    u16SyncVoltSample[u8SYNCSampleCount] = u16AdcSyncVolt;
-    if(u8SYNCSampleCount == (SYNC_VOLT_SAMPLE_CNT - 1U)){u8SYNCSampleReady = TRUE;}
-    u8SYNCSampleCount = ((u8SYNCSampleCount + 1U) > (SYNC_VOLT_SAMPLE_CNT - 1U)) ? 0U : (u8SYNCSampleCount + 1U);
-    if (u8SYNCSampleReady == TRUE)
+    /*Check Disp Shutdown and SYNC Volatge*/
+    if (u16SYNCVolatge > 413 && u16SYNCVolatge < 65535)
     {
-        u8SYNCSampleReady = FALSE;
-        uint16_t u16SyncVolDebounce = 0U;
-        for(uint8_t u8count = 0U; u8count < SYNC_VOLT_SAMPLE_CNT; u8count++)
-        {
-            u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
-        }
-        if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && (u16SyncVolDebounce > 413))
+        if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
         {
             u8Return = STATE_NORMAL;
         }else{
             u8Return = STATE_PRESLEEP;
         }
-    }
-    else
+    }else if(u16SYNCVolatge <= 413)
+    {
+        u8Return = STATE_PRESLEEP;
+    }else if(u16SYNCVolatge == 65535)
     {
         if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
         {
@@ -223,6 +207,8 @@ static uint8_t MainApp_PreSleep_Mode(uint8_t u8Nothing)
     WdtApp_CleanCounter();
     /* Do LCD Power Off Sequence*/
     INTBApp_InitSwitch(INTB_DEINITIAL);
+    /*Enter SourceIc StandyMode*/
+    DDIApp_StandbyMode(ENTER_STANDBY_MODE);
     PowerApp_Sequence(POWER_OFF);
     sprintf((char *)u8TxBuffer,"PRESLEEP FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);

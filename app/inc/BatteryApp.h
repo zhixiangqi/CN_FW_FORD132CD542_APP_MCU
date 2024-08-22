@@ -7,6 +7,7 @@
 #define BT_LOWHIGH      0x01U
 #define BT_OVERPOWER    0x02U
 
+uint16_t BatteryApp_SYNCVolatgeCheck(void);
 void BatteryApp_PowerMonitor(void);
 void BatteryApp_Flow(void);
 
