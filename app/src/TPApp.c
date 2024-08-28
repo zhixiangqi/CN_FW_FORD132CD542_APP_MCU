@@ -7,32 +7,34 @@
 #include "app/inc/TPApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/INTBApp.h"
+#include "app/inc/DiagApp.h"
 #include "driver/inc/EicDriver.h"
 #include "driver/inc/TC0Driver.h"
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/UartDriver.h"
 static uint8_t u8TPCount;
 static uint8_t u8TxBuffer[60] = {0};
-static uint8_t u8TCH_EN_State = 0U;
 
 void TPApp_TCHENFlow(void)
 {
-    /*First,read CMD_DISP_EN state to judge*/
-    u8TCH_EN_State = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS);
-    if (u8TCH_EN_State == DISPLAY_ON_TOUCH_ON)
+    /*Check TSC_EN*/
+    if ((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x02U) == 0x02U)
     {
         PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-    }else if(u8TCH_EN_State == DISPLAY_ON_TOUCH_OFF)
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+    }
+    else
     {
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-    }else{/*Do nothing*/}
-    sprintf((char *)u8TxBuffer,"DISP&TP STATE %d\r\n",u8TCH_EN_State);
-    UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+        DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+    }
+//     sprintf((char *)u8TxBuffer,"DISP&TP STATE %d\r\n",u8TCH_EN_State);
+//     UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
 }
 
 void TPApp_TCHINTFlow(void)
 {
-    if (u8TCH_EN_State == DISPLAY_ON_TOUCH_ON)
+    if ((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x02U) == 0x02U)
     {
         /*First,read ISR state to judge*/
         uint8_t u8ISRState = RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS);

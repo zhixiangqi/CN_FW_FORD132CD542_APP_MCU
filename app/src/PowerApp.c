@@ -43,6 +43,8 @@ void PowerApp_Sequence(uint8_t u8Action)
         break;
 
     case LCD_ON:
+        PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
+        TC0App_DelayMS(10U);
         PortDriver_PinSet(DISP_RESX_PORT,DISP_RESX_PIN);
         TC0App_DelayMS(10U);
         PortDriver_PinSet(BIAS_EN_PORT,BIAS_EN_PIN);
@@ -60,6 +62,8 @@ void PowerApp_Sequence(uint8_t u8Action)
         PortDriver_PinClear(BIAS_EN_PORT,BIAS_EN_PIN);
         TC0App_DelayMS(5U);
         PortDriver_PinClear(DISP_RESX_PORT,DISP_RESX_PIN);
+        TC0App_DelayMS(5U);
+        PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
         break;
 
     default:

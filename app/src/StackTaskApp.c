@@ -235,10 +235,6 @@ void StackTaskApp_MissionAction(void)
             TPApp_TCHINTFlow();
         break;
 
-        case TASK_TCHENLOW:
-            TPApp_TCHENFlow();
-        break;
-
         case TASK_SYNCCHECKLOW:
             u16SYNCVolatge = BatteryApp_SYNCVolatgeCheck();
         break;

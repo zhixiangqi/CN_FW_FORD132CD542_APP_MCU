@@ -11,11 +11,6 @@
 
 #include "main.h"
 
-#define DISPLAY_OFF_TOUCH_OFF				0x00U
-#define DISPLAY_ON_TOUCH_OFF				0x01U
-#define DISPLAY_OFF_TOUCH_ON				0x02U
-#define DISPLAY_ON_TOUCH_ON					0x03U
-
 void TPApp_TCHINTFlow(void);
 void TPApp_TCHENFlow(void);
 #endif /* APP_INC_TPAPP_H_ */

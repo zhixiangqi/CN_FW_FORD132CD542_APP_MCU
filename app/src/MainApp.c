@@ -32,6 +32,7 @@
 #include "app/inc/PowerApp.h"
 #include "app/inc/FlashApp.h"
 #include "app/inc/DiagApp.h"
+#include "app/inc/TPApp.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -94,11 +95,11 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     TC0App_DHUTaskClean();
     /*ADC initial*/
     AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
-    /*EIC initial*/
-    EicDriver_Initial();
     PowerApp_PowerGoodInitial();
     /* Enable global interrupts */
     __enable_irq();
+    /*EIC initial*/
+    EicDriver_Initial();
     /* WDT Init*/
     WdtApp_CheckResetCause();
     WdtApp_Initial();
@@ -108,8 +109,8 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     I2C4MDriver_Initialize();
     TC0App_NormalWorkStartSet(TRUE);
     DiagApp_CheckFlowInitial();
-    sprintf((char *)u8TxBuffer,"BOOT FINISHED, PC:0x%lX, POS:%02X\r\n",PC,MCU_POSITION);
-    UartDriver_TxWriteString(u8TxBuffer);
+    // sprintf((char *)u8TxBuffer,"BOOT FINISHED, PC:0x%lX, POS:%02X\r\n",PC,MCU_POSITION);
+    // UartDriver_TxWriteString(u8TxBuffer);
     /* Only for flash w/r test*/
     uint8_t Flag[4] = {0x0F, 0x00, 0x00, 0x00};
     FlashApp_WriteRowFlash(&Flag[0],0x0001F000,4U);
@@ -125,11 +126,11 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
 {
     WdtApp_CleanCounter();
-    /*Exit SourceIc StandyMode*/
-    DDIApp_StandbyMode(EXIT_STANDBY_MODE);
     /*Do LCD Power On Sequence*/
     TC0App_TimerTaskStopper(true);
     PowerApp_Sequence(LCD_ON);
+    /*Exit SourceIc StandyMode*/
+    DDIApp_StandbyMode(EXIT_STANDBY_MODE);
     TC0App_TimerTaskStopper(false);
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
@@ -181,25 +182,40 @@ static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
     {
         if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
         {
-            u8Return = STATE_NORMAL;
+            if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
+            {
+                u8Return = STATE_NORMAL;
+            }else{
+                u8Return = STATE_PRESLEEP;
+            }
         }else{
-            u8Return = STATE_PRESLEEP;
+            INTBApp_InitSwitch(INTB_DEINITIAL);
+            u8Return = STATE_SHUTDOWN;
         }
     }else if(u16SYNCVolatge <= 413)
     {
-        u8Return = STATE_PRESLEEP;
+        INTBApp_InitSwitch(INTB_DEINITIAL);
+        u8Return = STATE_SHUTDOWN;
     }else if(u16SYNCVolatge == 65535)
     {
-        if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
+        if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
         {
-            u8Return = STATE_NORMAL;
+            if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
+            {
+                u8Return = STATE_NORMAL;
+            }else{
+                u8Return = STATE_PRESLEEP;
+            }
         }else{
-            u8Return = STATE_PRESLEEP;
+            INTBApp_InitSwitch(INTB_DEINITIAL);
+            u8Return = STATE_SHUTDOWN;
         }
     }else{
         INTBApp_InitSwitch(INTB_DEINITIAL);
         u8Return = STATE_SHUTDOWN;
     }
+    /*Check TSC_EN*/
+    TPApp_TCHENFlow();
     /* Test WDT timeout - ~3.2sec reset (ILO has 40Kz +/- 50%, so it should consider as 2.5)*/
     // TC0App_DelayMS(3000U);
     // WdtApp_CleanCounter();
@@ -244,8 +260,8 @@ static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
     StackTaskApp_MissionAction();
     INTBApp_Flow();
     /* Do Power Off Sequence*/
-    sprintf((char *)u8TxBuffer,"SLEEP FINISHED\r\n");
-    //UartDriver_TxWriteString(u8TxBuffer);
+    // sprintf((char *)u8TxBuffer,"SLEEP FINISHED\r\n");
+    UartDriver_TxWriteString(u8TxBuffer);
     if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
     {
         if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)

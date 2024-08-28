@@ -81,10 +81,6 @@ static void TC0APP_TC0_Task_100msec(void)
 {
     StackTaskApp_MissionPush(TASK_PWGFLOW);
 }
-static void TC0APP_TC0_Task_200msec(void)
-{
-    StackTaskApp_MissionPush(TASK_TCHENLOW);
-}
 
 static void TC0APP_TC0_Task_250msec(void)
 {
@@ -160,11 +156,8 @@ static void TC0App_Callback_InterruptHandler(void)
         if ((timercount_ms % 100) ==0)
         {
             TC0APP_TC0_Task_100msec();
-        }else{/*Do Nothing*/}
-
-        if ((timercount_ms % 200) ==0)
-        {
-            TC0APP_TC0_Task_200msec();
+        }
+        
         if ((timercount_ms % 250) ==0)
         {
             TC0APP_TC0_Task_250msec();

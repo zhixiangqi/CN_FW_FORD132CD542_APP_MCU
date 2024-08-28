@@ -145,12 +145,6 @@ void DiagApp_CheckFlowInitial()
     FAULT_TOUCH.ConsecutiveHighCnt =  0;
     FAULT_TOUCH.ConsecutiveLowCnt = 0;
 
-    STATUS_FPC.Status = IO_STATUS_SWIM;
-    STATUS_FPC.Port = FPCACHK_ROUT_PORT;
-    STATUS_FPC.PortNumber = FPCACHK_ROUT_PIN;
-    STATUS_FPC.Threshlod = 5;
-    STATUS_FPC.ConsecutiveHighCnt = 0;
-    STATUS_FPC.ConsecutiveLowCnt = 0;
     FAULT_BIAS.Status = IO_STATUS_SWIM;
     FAULT_BIAS.Port = BIAS_FAULT_PORT;
     FAULT_BIAS.PortNumber = BIAS_FAULT_PIN;
@@ -225,6 +219,7 @@ void DiagApp_BiasFaultCheckFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     uint8_t u8Status2 = IO_STATUS_SWIM;
+    uint8_t u8Status3 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_BIAS);
     if(IO_STATUS_HIGH == u8Status1){
         /* Recovery mechanism merge to LCD FAULT
@@ -259,19 +254,17 @@ void DiagApp_BiasFaultCheckFlow(void)
 void DiagApp_FpcCheckFlow(void)
 {
     uint8_t u8StatusR = IO_STATUS_SWIM;
-    uint8_t u8Status1 = IO_STATUS_SWIM;
     u8StatusR = DiagApp_ConsecutiveCheckIO(&STATUS_RFPC);
-    u8Status1 = (u8StatusR | u8StatusL);
-    if(IO_STATUS_SWIM == u8Status1){
+    if(IO_STATUS_SWIM == u8StatusR){
         /* When voltage at swim state, Do nothing*/
-    }else if(IO_STATUS_HIGH == (u8Status1 & IO_STATUS_HLMASK)){
+    }else if(IO_STATUS_HIGH == (u8StatusR & IO_STATUS_HLMASK)){
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_DCERR_MASK);
-    }else if(IO_STATUS_LOW == (u8Status1 & IO_STATUS_HLMASK)){
+    }else if(IO_STATUS_LOW == (u8StatusR & IO_STATUS_HLMASK)){
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_DCERR_MASK);
     }else{
         /* When voltage at swim state, Do nothing*/
     }
-    sprintf((char *)u8TxBuffer,"FPC CHECK FLOW> STATUS_RFPC 0x%02x,0x%02x STATUS_RFPC 0x%02x,0x%02x\r\n",u8StatusR,STATUS_RFPC.ConsecutiveLowCnt,u8StatusL,STATUS_LFPC.ConsecutiveLowCnt);
+    sprintf((char *)u8TxBuffer,"FPC CHECK FLOW> STATUS_RFPC 0x%02x,0x%02x\r\n",u8StatusR,STATUS_RFPC.ConsecutiveLowCnt);
     //UartDriver_TxWriteString(u8TxBuffer);
 }
 
