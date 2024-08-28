@@ -172,7 +172,6 @@ static uint8_t StackTaskApp_MissionPop(void)
 **            Case Task define at StackTaskApp.h
 **        Go: No Return
  */
-uint8_t test_flag = TRUE;
 void StackTaskApp_MissionAction(void)
 {
     TC0App_TimerReset(TIMER_CPUCOUNT);
@@ -186,10 +185,7 @@ void StackTaskApp_MissionAction(void)
     {
         case TASK_DEBUGINFO:
             /*Do nothing*/
-            INTBApp_PullReqSetOrClear(INTB_REQ_SET);
             UartApp_ReadFlow();
-            //PowerApp_RTQ6749_FaultCheck();
-            //PowerApp_LP8664_FaultCheck();
         break;
 
         case TASK_MONITOR:
@@ -199,7 +195,6 @@ void StackTaskApp_MissionAction(void)
 
         case TASK_BLTFLOW:
             BacklightApp_DeratingFlow();
-            DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_TERR_MASK);
         break;
 
         case TASK_DIMMING:
@@ -210,11 +205,25 @@ void StackTaskApp_MissionAction(void)
             BatteryApp_Flow();
         break;
 
-        case TASK_PWGFLOW:
+        case TASK_PWGFLOW: /* 100ms Task*/
             PowerApp_PowerGoodFlow();
-            DiagApp_FaultCheckFlow();
-            DiagApp_FpcCheckFlow();
+            /* RTQ6749 only check i2c when hardware pin BIAS_FAULT pull low (DiagApp_BiasFaultCheckFlow())
+            PowerApp_RTQ6749_FaultCheck();
+            */
+            DiagApp_BiasFaultCheckFlow();
+        break;
+
+        case TASK_LEDFLOW:
+            DiagApp_LedFaultCheckFlow();
+        break;
+
+        case TASK_IOCHECK:
             DiagApp_LockCheckFlow();
+            DiagApp_FpcCheckFlow();
+        break;
+
+        case TASK_LCDFLOW:
+            DiagApp_LcdFaultCheckFlow();
         break;
 
         case TASK_UPDATE_ERASE:
