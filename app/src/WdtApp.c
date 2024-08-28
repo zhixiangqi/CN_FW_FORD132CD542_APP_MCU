@@ -4,6 +4,9 @@
 #include "driver/inc/WdtDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/PortDriver.h"
+#include "app/inc/RegisterApp.h"
+#include "app/inc/TC0App.h"
+#include "app/inc/StackTaskApp.h"
 
 static uint8_t u8TxBuffer[60] = {0};
 
@@ -53,7 +56,10 @@ void WdtApp_CheckResetCause(void)
 
 void WdtApp_InterruptCallback(void)
 {
-    UartDriver_TxWriteString((uint8_t *)"WDT Timeout!");
+    uint8_t wdt_casue = 0U;
+    wdt_casue = StackTaskApp_TaskNumberReturn();
+    sprintf((char *)u8TxBuffer,"WDT Timeout by 0x%02X:FAULT!\r\n",wdt_casue);
+    UartDriver_TxWriteString(u8TxBuffer);
 }
 
 void WdtApp_CleanCounter(void)

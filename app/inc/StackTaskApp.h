@@ -10,15 +10,18 @@
 #define MISSION_NUM_TWO     2U
 #define MISSION_NUM_THREE   3U
 
-#define TASK_DEBUGINFO      0U
-#define TASK_MONITOR        1U
-#define TASK_BLTFLOW        2U
-#define TASK_DIMMING        3U
-#define TASK_BATFLOW        4U
-#define TASK_PWGFLOW        5U
-#define TASK_TCHINTFLOW     6U
-#define TASK_TCHENLOW       7U
-#define TASK_SYNCCHECKLOW   8U
+#define TASK_DEBUGINFO  0U
+#define TASK_MONITOR    1U
+#define TASK_BLTFLOW    2U
+#define TASK_DIMMING    3U
+#define TASK_BATFLOW    4U
+#define TASK_PWGFLOW    5U
+#define TASK_LEDFLOW    6U
+#define TASK_IOCHECK    7U
+#define TASK_LCDFLOW    8U
+#define TASK_TCHINTFLOW     9U
+#define TASK_TCHENLOW       10U
+#define TASK_SYNCCHECKLOW   11U
 #define TASK_UPDATE_ERASE   0xE6U
 #define TASK_UPDATE_TRANS   0xE7U
 #define TASK_UPDATE_CRCSM   0xE8U

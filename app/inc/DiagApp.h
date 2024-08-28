@@ -29,6 +29,7 @@
 #define IO_HIGH     1U
 #define IO_LOW      0U
 
+#define IO_STATUS_HLMASK    0x01U
 #define IO_STATUS_HIGH  0x01U
 #define IO_STATUS_LOW   0x00U
 #define IO_STATUS_SWIM  0x02U
@@ -40,13 +41,17 @@ typedef struct{
     uint8_t Threshlod;
     uint8_t ConsecutiveHighCnt;
     uint8_t ConsecutiveLowCnt;
+    bool Report;
 }DiagIO;
 
+void DiagApp_CheckFlowInitial(void);
 void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue);
 void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue);
 uint8_t DiagApp_ConsecutiveCheckIO(DiagIO* ds);
 uint8_t DiagApp_ConsecutiveCheckRegister(DiagIO* ds,bool isgood);
-void DiagApp_FaultCheckFlow(void);
+void DiagApp_LcdFaultCheckFlow(void);
+void DiagApp_LedFaultCheckFlow(void);
+void DiagApp_BiasFaultCheckFlow(void);
 void DiagApp_FpcCheckFlow(void);
 void DiagApp_LockCheckFlow(void);
 #endif

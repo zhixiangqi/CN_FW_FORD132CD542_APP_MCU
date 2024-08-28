@@ -190,22 +190,7 @@ void StackTaskApp_MissionAction(void)
     {
         case TASK_DEBUGINFO:
             /*Do nothing*/
-            uint16_t adc0_value = 0U;
-            adc0_value = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH1_BLTTEMP);
-            sprintf((char *)u8TxBuffer,"ADC0 = 0x%04x\r\n",adc0_value);
-            UartDriver_TxWriteString(u8TxBuffer);
-            INTBApp_PullReqSetOrClear(INTB_REQ_SET);
             UartApp_ReadFlow();
-            PowerApp_RTQ6749_FaultCheck();
-            PowerApp_LP8664_FaultCheck();
-            // DDIApp_DiagRead(0x1F);
-            // DDIApp_DiagRead(0x00);
-            // DDIApp_DiagRead(0x01);
-            // DDIApp_DiagRead(0x07);
-            // DDIApp_DiagRead(0x03);
-            // DDIApp_DiagRead(0x04);
-            // DDIApp_DiagRead(0x0A);
-            // DDIApp_DiagRead(0x1C);
         break;
 
         case TASK_MONITOR:
@@ -215,7 +200,6 @@ void StackTaskApp_MissionAction(void)
 
         case TASK_BLTFLOW:
             BacklightApp_DeratingFlow();
-            DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_TERR_MASK);
         break;
 
         case TASK_DIMMING:
@@ -226,11 +210,25 @@ void StackTaskApp_MissionAction(void)
             BatteryApp_Flow();
         break;
 
-        case TASK_PWGFLOW:
+        case TASK_PWGFLOW: /* 100ms Task*/
             PowerApp_PowerGoodFlow();
-            DiagApp_FaultCheckFlow();
-            DiagApp_FpcCheckFlow();
+            /* RTQ6749 only check i2c when hardware pin BIAS_FAULT pull low (DiagApp_BiasFaultCheckFlow())
+            PowerApp_RTQ6749_FaultCheck();
+            */
+            DiagApp_BiasFaultCheckFlow();
+        break;
+
+        case TASK_LEDFLOW:
+            DiagApp_LedFaultCheckFlow();
+        break;
+
+        case TASK_IOCHECK:
             DiagApp_LockCheckFlow();
+            DiagApp_FpcCheckFlow();
+        break;
+
+        case TASK_LCDFLOW:
+            DiagApp_LcdFaultCheckFlow();
         break;
 
         case TASK_TCHINTFLOW:

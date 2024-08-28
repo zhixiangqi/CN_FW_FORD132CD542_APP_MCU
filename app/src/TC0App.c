@@ -47,6 +47,7 @@ uint8_t FLAG_STARTTOWORK_START = FALSE;
 uint8_t FLAG_INTBSETTCNT_START = FALSE;
 uint8_t FLAG_INTBHOLDCNT_START = FALSE;
 volatile bool DHUTaskFlag[DHUCmdBufferSize] = {0};
+volatile static bool StopperEN = false;
 
 static void TC0APP_TC0_Task_1000msec(void)
 {
@@ -61,6 +62,7 @@ static void TC0APP_TC0_Task_3msec(void)
 {
     StackTaskApp_MissionPush(TASK_SYNCCHECKLOW);
 }
+
 static void TC0APP_TC0_Task_6msec(void)
 {
     StackTaskApp_MissionPush(TASK_DIMMING);
@@ -68,6 +70,7 @@ static void TC0APP_TC0_Task_6msec(void)
 static void TC0APP_TC0_Task_10msec(void)
 {
     StackTaskApp_MissionPush(TASK_BATFLOW);
+    StackTaskApp_MissionPush(TASK_IOCHECK);
 }
 static void TC0APP_TC0_Task_15msec(void)
 {
@@ -82,6 +85,13 @@ static void TC0APP_TC0_Task_200msec(void)
 {
     StackTaskApp_MissionPush(TASK_TCHENLOW);
 }
+
+static void TC0APP_TC0_Task_250msec(void)
+{
+    StackTaskApp_MissionPush(TASK_LEDFLOW);
+    StackTaskApp_MissionPush(TASK_LCDFLOW);
+}
+
 static void TC0APP_TC0_Task_1msec(void)
 {
     for(uint32_t DHUCmdID=0U;DHUCmdID<DHUCmdBufferSize;DHUCmdID++)
@@ -94,10 +104,20 @@ static void TC0APP_TC0_Task_1msec(void)
     }
 }
 
+void TC0App_TimerTaskStopper(bool EnCmd)
+{
+    StopperEN = EnCmd;
+}
+
 static void TC0App_Callback_InterruptHandler(void)
 {
     TC0Driver_IntFlagClean();
-    timercount_ms = timercount_ms+1;
+    if (StopperEN == false)
+    {
+        timercount_ms = timercount_ms+1;
+    }else{
+        /* Do nothing*/
+    }
     cpu_timer_ms = cpu_timer_ms+1;
     if(FLAG_INTBSETTCNT_START == TRUE)
     {
@@ -122,9 +142,9 @@ static void TC0App_Callback_InterruptHandler(void)
             TC0APP_TC0_Task_3msec();
         }else{/*Do Nothing*/}
 
-        if ((timercount_ms % 5) ==0)
+        if ((timercount_ms % 6) ==0)
         {
-            TC0APP_TC0_Task_5msec();
+            TC0APP_TC0_Task_6msec();
         }else{/*Do Nothing*/}
 
         if ((timercount_ms % 10) ==0)
@@ -145,6 +165,9 @@ static void TC0App_Callback_InterruptHandler(void)
         if ((timercount_ms % 200) ==0)
         {
             TC0APP_TC0_Task_200msec();
+        if ((timercount_ms % 250) ==0)
+        {
+            TC0APP_TC0_Task_250msec();
         }else{/*Do Nothing*/}
     }
 
