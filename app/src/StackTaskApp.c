@@ -179,6 +179,7 @@ uint8_t test_flag = TRUE;
 uint16_t u16SYNCVolatge = 0xFFFFU;
 void StackTaskApp_MissionAction(void)
 {
+    TC0App_TimerReset(TIMER_CPUCOUNT);
     (void)QueneNumber;
     //TC0App_TimerTaskStopper(true);
     QueneNumber = StackTaskApp_MissionReturnQueneNumber();
@@ -193,17 +194,7 @@ void StackTaskApp_MissionAction(void)
             adc0_value = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH1_BLTTEMP);
             sprintf((char *)u8TxBuffer,"ADC0 = 0x%04x\r\n",adc0_value);
             UartDriver_TxWriteString(u8TxBuffer);
-            if(test_flag == TRUE)
-            {
-                test_flag = FALSE;
-                RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS,0xFFU);
-                RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS+1U,0x03U);
-                //RegisterApp_DHU_Setup(CMD_DISP_EN,CMD_DATA_POS,1U);
-            }else{
-                test_flag = TRUE;
-                RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS,0x00U);
-                RegisterApp_DHU_Setup(CMD_BL_PWM,CMD_DATA_POS+1U,0x00U);
-            }
+            INTBApp_PullReqSetOrClear(INTB_REQ_SET);
             UartApp_ReadFlow();
             PowerApp_RTQ6749_FaultCheck();
             PowerApp_LP8664_FaultCheck();
@@ -271,11 +262,15 @@ void StackTaskApp_MissionAction(void)
         break;
     }
     /* Show the CPU information exclude Overflow*/
-    if (TaskNumber == 0xFFU || TaskNumber == TASK_BLTFLOW){
+    //if (TaskNumber == 0xFFU || TaskNumber == TASK_BLTFLOW || TaskNumber == TASK_DIMMING || TaskNumber == TASK_BATFLOW || TaskNumber == TASK_PWGFLOW){
+    if (TaskNumber == 0xFFU){
         /*DO NOTHING*/
     }else{
-        sprintf((char *)u8TxBuffer,"QLINE> %ld TASK> %d\r\n",QueneNumber,TaskNumber);
-        // UartDriver_TxWriteString(u8TxBuffer);
+        if (TC0App_TimerReturn(TIMER_CPUCOUNT)>3U)
+        {
+            sprintf((char *)u8TxBuffer,"LOADING:%d QLINE> %ld TASK> %d\r\n",TC0App_TimerReturn(TIMER_CPUCOUNT),QueneNumber,TaskNumber);
+            UartDriver_TxWriteString(u8TxBuffer);
+        }
     }
 
     (void)QueneNumber;
