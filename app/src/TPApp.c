@@ -17,24 +17,33 @@ static uint8_t u8TxBuffer[60] = {0};
 
 void TPApp_TCHENFlow(void)
 {
+    uint8_t u8CmdDispEnState;
+    u8CmdDispEnState = RegisterApp_DHU_Read(CMD_DISP_EN,1U);
     /*Check TSC_EN*/
-    if ((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x02U) == 0x02U)
+    switch (u8CmdDispEnState)
     {
-        PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-        DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
-    }
-    else
-    {
+    case DISPLAY_OFF_TOUCH_OFF:
+    case DISPLAY_ON_TOUCH_OFF:
+    case DISPLAY_OFF_TOUCH_ON:
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+        break;
+
+    case DISPLAY_ON_TOUCH_ON:
+        PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+        break;
+    
+    default:
+        break;
     }
-//     sprintf((char *)u8TxBuffer,"DISP&TP STATE %d\r\n",u8TCH_EN_State);
-//     UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
 }
 
 void TPApp_TCHINTFlow(void)
 {
-    if ((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x02U) == 0x02U)
+    uint8_t u8CmdDispEnState;
+    u8CmdDispEnState = RegisterApp_DHU_Read(CMD_DISP_EN,1U);
+    if (u8CmdDispEnState == DISPLAY_ON_TOUCH_ON)
     {
         /*First,read ISR state to judge*/
         uint8_t u8ISRState = RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS);

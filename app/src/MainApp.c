@@ -19,7 +19,6 @@
 
 /* This section lists the other files that are included in this file.
  */
-#include "app/inc/DDIApp.h" 
 #include "app/inc/MainApp.h"
 #include "app/inc/TC0App.h"
 #include "app/inc/StackTaskApp.h"
@@ -33,6 +32,8 @@
 #include "app/inc/FlashApp.h"
 #include "app/inc/DiagApp.h"
 #include "app/inc/TPApp.h"
+#include "app/inc/DDIApp.h" 
+#include "app/inc/BatteryApp.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -50,7 +51,6 @@
 
 static uint8_t u8MAIN_STATUS = STATE_BOOT;
 static uint8_t u8TxBuffer[60] = {0};
-static uint8_t u8SleepCount=0;
 
 /*  Function: MainApp_Boot_Mode
 **  Callfrom: Main_Flow state machine
@@ -177,44 +177,20 @@ static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
     /* Do task & INTB flow*/
     StackTaskApp_MissionAction();
     INTBApp_Flow();
-    /*Check Disp Shutdown and SYNC Volatge*/
-    if (u16SYNCVolatge > 413 && u16SYNCVolatge < 65535)
+    /*Check Disp Shutdown and SYNC Volatge State*/
+    if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && bSyncVolatgeState)
     {
-        if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
+        if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
         {
-            if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
-            {
-                u8Return = STATE_NORMAL;
-            }else{
-                u8Return = STATE_PRESLEEP;
-            }
+            u8Return = STATE_NORMAL;
         }else{
-            INTBApp_InitSwitch(INTB_DEINITIAL);
-            u8Return = STATE_SHUTDOWN;
-        }
-    }else if(u16SYNCVolatge <= 413)
-    {
-        INTBApp_InitSwitch(INTB_DEINITIAL);
-        u8Return = STATE_SHUTDOWN;
-    }else if(u16SYNCVolatge == 65535)
-    {
-        if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
-        {
-            if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
-            {
-                u8Return = STATE_NORMAL;
-            }else{
-                u8Return = STATE_PRESLEEP;
-            }
-        }else{
-            INTBApp_InitSwitch(INTB_DEINITIAL);
-            u8Return = STATE_SHUTDOWN;
+            u8Return = STATE_PRESLEEP;
         }
     }else{
         INTBApp_InitSwitch(INTB_DEINITIAL);
         u8Return = STATE_SHUTDOWN;
     }
-    /*Check TSC_EN*/
+    /*Check TSC_EN flow*/
     TPApp_TCHENFlow();
     /* Test WDT timeout - ~3.2sec reset (ILO has 40Kz +/- 50%, so it should consider as 2.5)*/
     // TC0App_DelayMS(3000U);
@@ -260,9 +236,10 @@ static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
     StackTaskApp_MissionAction();
     INTBApp_Flow();
     /* Do Power Off Sequence*/
-    // sprintf((char *)u8TxBuffer,"SLEEP FINISHED\r\n");
-    UartDriver_TxWriteString(u8TxBuffer);
-    if((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U)
+    sprintf((char *)u8TxBuffer,"SLEEP FINISHED\r\n");
+    // UartDriver_TxWriteString(u8TxBuffer);
+    /*Check Disp Shutdown and SYNC Volatge State*/
+    if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && bSyncVolatgeState)
     {
         if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
         {
@@ -286,29 +263,19 @@ static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Shutdown_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
-    /*Judgement SYNC whether it is keeping lower than 2.2V*/
-    u8SleepCount++;
-    if (u8SleepCount > 20U)
-    {
-        u8Return = STATE_BOOT;
-        u8SleepCount = 0U;
-    }
-    else
-    {
-        WdtApp_CleanCounter();
-        TC0App_NormalWorkStartSet(FALSE);
-        /* Do Power Off Sequence*/
-        INTBApp_Flow();
-        PwmDriver_Stop();
-        PowerApp_Sequence(LCD_OFF);
-        PowerApp_Sequence(POWER_OFF);
-        TC0App_DelayMS(500U);
-        sprintf((char *)u8TxBuffer,"ShutDown... wait for power down\r\n");
-        UartDriver_TxWriteString(u8TxBuffer);
-        u8Return = STATE_SHUTDOWN;
-        /*Turn off the MCU power*/
-        PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
-    }
+    WdtApp_CleanCounter();
+    TC0App_NormalWorkStartSet(FALSE);
+    /* Do Power Off Sequence*/
+    INTBApp_Flow();
+    PwmDriver_Stop();
+    /*Enter SourceIc StandyMode*/
+    DDIApp_StandbyMode(ENTER_STANDBY_MODE);
+    PowerApp_Sequence(LCD_OFF);
+    PowerApp_Sequence(POWER_OFF);
+    TC0App_DelayMS(500U);
+    sprintf((char *)u8TxBuffer,"ShutDown... wait for power down\r\n");
+    UartDriver_TxWriteString(u8TxBuffer);
+    u8Return = STATE_SHUTDOWN;
     (void) u8Nothing;
     return u8Return;
 }

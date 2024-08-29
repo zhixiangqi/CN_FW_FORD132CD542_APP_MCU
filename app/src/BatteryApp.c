@@ -36,10 +36,11 @@ uint8_t gu8BattSampleReady = FALSE;
 uint8_t gu8BattSampleCount = 0U;
 uint16_t gu16BattVoltSample[BATT_SAMPLE_CNT] = {0U};
 
-#define SYNC_VOLT_SAMPLE_CNT      3U
+#define SYNC_VOLT_SAMPLE_CNT  20U
 uint16_t u16SyncVoltSample[SYNC_VOLT_SAMPLE_CNT] = {0U};
 uint8_t u8SYNCSampleCount = 0U;
 bool u8SYNCSampleReady = FALSE;
+bool bSyncVolatgeState = TRUE;
 
 /*DTC 240321*/
 #define BT_VOLT0   1102U    
@@ -71,9 +72,8 @@ bool u8SYNCSampleReady = FALSE;
 #define BT_STAGE5   0x05U
 #define BT_STAGE6   0x06U
 
-uint16_t BatteryApp_SYNCVolatgeCheck(void)
+void BatteryApp_SYNCVolatgeCheck(void)
 {
-    uint16_t u16Return;
     uint16_t u16AdcSyncVolt;
     /* Get SYNC Voltage */
     u16AdcSyncVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH3_SYNCVOLT);
@@ -89,16 +89,14 @@ uint16_t BatteryApp_SYNCVolatgeCheck(void)
         {
             u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
         }
-        u16Return = u16SyncVolDebounce;
+        if (u16SyncVolDebounce > 413U && u16SyncVolDebounce < 3745U)
+        {
+            bSyncVolatgeState = TRUE;
+        }else
+        {
+            bSyncVolatgeState = FALSE;
+        }
     }
-    else
-    {
-        u16Return = 0xFFFFU;
-    }
-    // static uint8_t u8TxBuffer[60] = {0};
-    // sprintf((char *)u8TxBuffer,"SYNC Volatge %d\r\n",u16Return);
-    // UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
-    return u16Return;
 }
 void BatteryApp_PowerMonitor(void)
 {

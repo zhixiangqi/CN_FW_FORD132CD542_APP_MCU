@@ -54,10 +54,12 @@ static void TC0APP_TC0_Task_1000msec(void)
     StackTaskApp_MissionPush(TASK_DEBUGINFO);
     StackTaskApp_MissionPush(TASK_MONITOR);
 }
+
 static void TC0APP_TC0_Task_2msec(void)
 {
     StackTaskApp_MissionPush(TASK_TCHINTFLOW);
 }
+
 static void TC0APP_TC0_Task_3msec(void)
 {
     StackTaskApp_MissionPush(TASK_SYNCCHECKLOW);
@@ -67,11 +69,13 @@ static void TC0APP_TC0_Task_6msec(void)
 {
     StackTaskApp_MissionPush(TASK_DIMMING);
 }
+
 static void TC0APP_TC0_Task_10msec(void)
 {
     StackTaskApp_MissionPush(TASK_BATFLOW);
     StackTaskApp_MissionPush(TASK_IOCHECK);
 }
+
 static void TC0APP_TC0_Task_15msec(void)
 {
     StackTaskApp_MissionPush(TASK_BLTFLOW);

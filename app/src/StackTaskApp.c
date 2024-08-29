@@ -175,8 +175,6 @@ static uint8_t StackTaskApp_MissionPop(void)
 **            Case Task define at StackTaskApp.h
 **        Go: No Return
  */
-uint8_t test_flag = TRUE;
-uint16_t u16SYNCVolatge = 0xFFFFU;
 void StackTaskApp_MissionAction(void)
 {
     TC0App_TimerReset(TIMER_CPUCOUNT);
@@ -236,7 +234,7 @@ void StackTaskApp_MissionAction(void)
         break;
 
         case TASK_SYNCCHECKLOW:
-            u16SYNCVolatge = BatteryApp_SYNCVolatgeCheck();
+            BatteryApp_SYNCVolatgeCheck();
         break;
 
         case TASK_UPDATE_ERASE:

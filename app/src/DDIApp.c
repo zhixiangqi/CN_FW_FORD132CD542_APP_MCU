@@ -27,11 +27,12 @@
 static uint8_t u8TxBuffer[60] = {0};
 void DDIApp_StandbyMode(uint8_t u8ModeState)
 {
-
     uint8_t txbuffer[2]={0x00U};
+
     txbuffer[0]=0x1E;
     txbuffer[1]=0x20;
     I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+    
     if (u8ModeState == EXIT_STANDBY_MODE)
     {
         txbuffer[0]=0x01;

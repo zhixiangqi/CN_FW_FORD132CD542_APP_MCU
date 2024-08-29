@@ -39,6 +39,7 @@ void PowerApp_Sequence(uint8_t u8Action)
         PortDriver_PinClear(P1V2_EN_PORT,P1V2_EN_PIN);
         TC0App_DelayMS(5U);
         PortDriver_PinClear(VBATT_EN_PORT,VBATT_EN_PIN);
+        PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
         
         break;
 
@@ -58,12 +59,11 @@ void PowerApp_Sequence(uint8_t u8Action)
         PortDriver_PinClear(LED_EN_PORT,LED_EN_PIN);
         TC0App_DelayMS(5U);
         PortDriver_PinClear(DISP_STBY_PORT,DISP_STBY_PIN);
+        PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
         TC0App_DelayMS(5U);
         PortDriver_PinClear(BIAS_EN_PORT,BIAS_EN_PIN);
         TC0App_DelayMS(5U);
         PortDriver_PinClear(DISP_RESX_PORT,DISP_RESX_PIN);
-        TC0App_DelayMS(5U);
-        PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
         break;
 
     default:
