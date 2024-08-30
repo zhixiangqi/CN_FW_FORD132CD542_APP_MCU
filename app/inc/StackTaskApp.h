@@ -19,7 +19,7 @@
 #define TASK_LEDFLOW    6U
 #define TASK_IOCHECK    7U
 #define TASK_LCDFLOW    8U
-#define TASK_TCHINTFLOW     9U
+#define TASK_TSCINTLOW   9U
 #define TASK_SYNCCHECKLOW   10U
 #define TASK_UPDATE_ERASE   0xE6U
 #define TASK_UPDATE_TRANS   0xE7U

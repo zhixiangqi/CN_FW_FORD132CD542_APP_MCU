@@ -13,6 +13,8 @@
 
 #define DHUCmdBufferSize 256U
 
+extern bool bTscIntKeepLow;
+
 void TC0App_Initial(void);
 void TC0App_DHUTaskClean(void);
 void TC0App_DHUTaskPush(uint8_t DHUCmdID);

@@ -15,6 +15,6 @@
 #define DISPLAY_OFF_TOUCH_ON				0x02U
 #define DISPLAY_ON_TOUCH_ON					0x03U 
 
-void TPApp_TCHINTFlow(void);
-void TPApp_TCHENFlow(void);
+void TPApp_TscEnFlow(void);
+void TPApp_TscIntFlow(void);
 #endif /* APP_INC_TPAPP_H_ */

@@ -48,7 +48,7 @@ uint8_t FLAG_INTBSETTCNT_START = FALSE;
 uint8_t FLAG_INTBHOLDCNT_START = FALSE;
 volatile bool DHUTaskFlag[DHUCmdBufferSize] = {0};
 volatile static bool StopperEN = false;
-
+bool bTscIntKeepLow = FALSE;
 static void TC0APP_TC0_Task_1000msec(void)
 {
     StackTaskApp_MissionPush(TASK_DEBUGINFO);
@@ -57,7 +57,7 @@ static void TC0APP_TC0_Task_1000msec(void)
 
 static void TC0APP_TC0_Task_2msec(void)
 {
-    StackTaskApp_MissionPush(TASK_TCHINTFLOW);
+    StackTaskApp_MissionPush(TASK_TSCINTLOW);
 }
 
 static void TC0APP_TC0_Task_3msec(void)
@@ -131,7 +131,7 @@ static void TC0App_Callback_InterruptHandler(void)
     if(FLAG_STARTTOWORK_START == TRUE)
     {
         TC0APP_TC0_Task_1msec();
- 
+
         if ((timercount_ms % 2) ==0)
         {
             TC0APP_TC0_Task_2msec();
@@ -160,11 +160,16 @@ static void TC0App_Callback_InterruptHandler(void)
         if ((timercount_ms % 100) ==0)
         {
             TC0APP_TC0_Task_100msec();
-        }
+        }else{/*Do Nothing*/}
         
         if ((timercount_ms % 250) ==0)
         {
             TC0APP_TC0_Task_250msec();
+        }else{/*Do Nothing*/}
+
+        if ((timercount_ms % 300) ==0)
+        {
+            bTscIntKeepLow = TRUE;
         }else{/*Do Nothing*/}
     }
 

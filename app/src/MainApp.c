@@ -191,7 +191,7 @@ static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
         u8Return = STATE_SHUTDOWN;
     }
     /*Check TSC_EN flow*/
-    TPApp_TCHENFlow();
+    TPApp_TscEnFlow();
     /* Test WDT timeout - ~3.2sec reset (ILO has 40Kz +/- 50%, so it should consider as 2.5)*/
     // TC0App_DelayMS(3000U);
     // WdtApp_CleanCounter();
