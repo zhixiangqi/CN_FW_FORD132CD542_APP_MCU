@@ -265,11 +265,11 @@ static uint8_t MainApp_Shutdown_Mode(uint8_t u8Nothing)
     uint8_t u8Return;
     WdtApp_CleanCounter();
     TC0App_NormalWorkStartSet(FALSE);
+    /*Enter SourceIc StandyMode*/
+    DDIApp_StandbyMode(ENTER_STANDBY_MODE);
     /* Do Power Off Sequence*/
     INTBApp_Flow();
     PwmDriver_Stop();
-    /*Enter SourceIc StandyMode*/
-    DDIApp_StandbyMode(ENTER_STANDBY_MODE);
     PowerApp_Sequence(LCD_OFF);
     PowerApp_Sequence(POWER_OFF);
     TC0App_DelayMS(500U);

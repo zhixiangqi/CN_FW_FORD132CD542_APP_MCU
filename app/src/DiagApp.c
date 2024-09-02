@@ -247,7 +247,7 @@ void DiagApp_BiasFaultCheckFlow(void)
     }else{
         /* When voltage at swim state, Do nothing*/
     }
-    sprintf((char *)u8TxBuffer,"FAULT CHECK FLOW> LED 0x%02x LCD 0x%02x\r\n",u8Status1,u8Status2);
+    sprintf((char *)u8TxBuffer,"FAULT CHECK FLOW> LED 0x%02x LCD 0x%02x TOUCH 0x%02x\r\n",u8Status1,u8Status2,u8Status3);
     //UartDriver_TxWriteString(u8TxBuffer);
 }
 

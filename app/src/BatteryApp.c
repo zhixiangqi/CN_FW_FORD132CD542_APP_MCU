@@ -36,7 +36,7 @@ uint8_t gu8BattSampleReady = FALSE;
 uint8_t gu8BattSampleCount = 0U;
 uint16_t gu16BattVoltSample[BATT_SAMPLE_CNT] = {0U};
 
-#define SYNC_VOLT_SAMPLE_CNT  20U
+#define SYNC_VOLT_SAMPLE_CNT  3U
 uint16_t u16SyncVoltSample[SYNC_VOLT_SAMPLE_CNT] = {0U};
 uint8_t u8SYNCSampleCount = 0U;
 bool u8SYNCSampleReady = FALSE;

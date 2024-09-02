@@ -157,6 +157,11 @@ static void TC0App_Callback_InterruptHandler(void)
             TC0APP_TC0_Task_15msec();
         }else{/*Do Nothing*/}
 
+        if ((timercount_ms % 20) ==0)
+        {
+            bTscIntKeepLow = TRUE;
+        }else{/*Do Nothing*/}
+
         if ((timercount_ms % 100) ==0)
         {
             TC0APP_TC0_Task_100msec();
@@ -165,11 +170,6 @@ static void TC0App_Callback_InterruptHandler(void)
         if ((timercount_ms % 250) ==0)
         {
             TC0APP_TC0_Task_250msec();
-        }else{/*Do Nothing*/}
-
-        if ((timercount_ms % 300) ==0)
-        {
-            bTscIntKeepLow = TRUE;
         }else{/*Do Nothing*/}
     }
 
