@@ -23,7 +23,7 @@
 #define RESERVED_DATA_SIZE  4U
 
 #define UNIT_READ           64U
-#define MCU_POSITION        0x0A
+
 bool UpdateApp_EraseFlashMCU(void);
 bool UpdateApp_TransferFlashMCU(void);
 bool UpdateApp_ChecksumFlashMCU(void);

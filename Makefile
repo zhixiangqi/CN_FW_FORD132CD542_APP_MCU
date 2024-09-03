@@ -46,7 +46,7 @@ TARGET=FORD132_CD542_CY8C4147AZS-S285
 #
 # If APPNAME is edited, ensure to update or regenerate launch
 # configurations for your IDE.
-APPNAME=mtb-example-psoc4-empty-app
+APPNAME=CN_FW_FORD132CD542_APP_MCU
 
 # Name of toolchain to use. Options include:
 #
@@ -101,7 +101,15 @@ SOURCES=
 INCLUDES=
 
 # Add additional defines to the build process (without a leading -D).
-DEFINES=
+ifeq ($(TARGET),FORD132_CD542_CY8C4147AZS-S285)
+DEFINES=MCU_POSITION=0x02U
+endif
+ifeq ($(TARGET),FORD132_CD542_CY8C4147AZS-S285_POSA)
+DEFINES=MCU_POSITION=0x0AU
+endif
+ifeq ($(TARGET),FORD132_CD542_CY8C4147AZS-S285_POSB)
+DEFINES=MCU_POSITION=0x0BU
+endif
 
 # Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT=
