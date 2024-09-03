@@ -26,7 +26,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include <TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg_routing.h>
+#include "cycfg_routing.h"
 #include "cy_trigmux.h"
 #include "cy_device_headers.h"
 

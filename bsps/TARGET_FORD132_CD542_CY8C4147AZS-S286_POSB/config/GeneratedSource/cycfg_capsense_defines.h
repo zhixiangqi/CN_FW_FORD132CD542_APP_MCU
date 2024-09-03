@@ -32,9 +32,8 @@
 #define CYCFG_CAPSENSE_DEFINES_H
 
 #include <stddef.h>
-
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg_peripherals.h"
 #include "cy_device_headers.h"
+#include "cycfg_peripherals.h"
 
 #if (defined(CY_IP_M0S8MSCV3))
 

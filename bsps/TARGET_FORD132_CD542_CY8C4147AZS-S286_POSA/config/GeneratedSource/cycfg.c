@@ -27,7 +27,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include <TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg.h>
+#include "cycfg.h"
 
 /* This function is provided for compatibility with older 2.X style projects. */
 void init_cycfg_all(void)
