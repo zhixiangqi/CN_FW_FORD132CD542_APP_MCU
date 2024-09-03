@@ -39,7 +39,7 @@ MTB_TYPE=COMBINED
 # To change the target, it is recommended to use the Library manager
 # ('make library-manager' from command line), which will also update Eclipse IDE launch
 # configurations.
-TARGET=FORD123_CD542_CY8C4147AZS-S285
+TARGET=FORD132_CD542_CY8C4147AZS-S285
 
 
 # Name of application (used to derive name of final linked file).
