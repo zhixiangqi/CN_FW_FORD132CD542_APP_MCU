@@ -35,18 +35,18 @@
 # PROJECT     -- Project Makefile under Application
 #
 MTB_TYPE=COMBINED
+
 # Target board/hardware (BSP).
 # To change the target, it is recommended to use the Library manager
 # ('make library-manager' from command line), which will also update Eclipse IDE launch
 # configurations.
 TARGET=FORD123_CD542_CY8C4147AZS-S285
 
-
 # Name of application (used to derive name of final linked file).
 #
 # If APPNAME is edited, ensure to update or regenerate launch
 # configurations for your IDE.
-APPNAME=mtb-example-psoc4-empty-app
+APPNAME=CN_FW_FORD123CD542_APP_MCU
 
 # Name of toolchain to use. Options include:
 #
@@ -101,7 +101,15 @@ SOURCES=
 INCLUDES=
 
 # Add additional defines to the build process (without a leading -D).
-DEFINES=
+ifeq ($(TARGET),FORD123_CD542_CY8C4147AZS-S285)
+DEFINES=MCU_POSITION=0x02U
+endif
+ifeq ($(TARGET),FORD123_CD542_CY8C4147AZS-S285_POSA)
+DEFINES=MCU_POSITION=0x0AU
+endif
+ifeq ($(TARGET),FORD123_CD542_CY8C4147AZS-S285_POSB)
+DEFINES=MCU_POSITION=0x0BU
+endif
 
 # Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT=
@@ -137,7 +145,9 @@ LINKER_SCRIPT=
 PREBUILD=
 
 # Custom post-build commands to run.
-POSTBUILD=
+POSTBUILD="$(CY_TOOLS_PATHS)/gcc/bin/arm-none-eabi-objcopy.exe" \
+			../$(APPNAME)/build/$(TARGET)/$(CONFIG)/$(APPNAME).elf \
+			../$(APPNAME)/build/$(TARGET)/$(CONFIG)/$(APPNAME).bin -O binary --gap-fill=0xff --pad-to=0x20000
 
 
 ################################################################################
@@ -193,5 +203,8 @@ $(error Unable to find any of the available CY_TOOLS_PATHS -- $(CY_TOOLS_PATHS).
 endif
 
 $(info Tools Directory: $(CY_TOOLS_DIR))
+# Debug output
+$(info TARGET is $(TARGET))
+$(info MCU_POSITION is $(MCU_POSITION))
 
 include $(CY_TOOLS_DIR)/make/start.mk
