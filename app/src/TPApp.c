@@ -27,11 +27,11 @@ void TPApp_TscEnFlow(void)
         if (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_HIGH)
         {
             bTscAttnState = TRUE;
-            RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS+1,DISP1_TSCST_MASK | RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS+1));
+            DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
         }
     }else{
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-        RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS+1,DISP1_DISPST_MASK & RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS+1));
+        DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
     }
 }
 void TPApp_TscIntFlow(void)
