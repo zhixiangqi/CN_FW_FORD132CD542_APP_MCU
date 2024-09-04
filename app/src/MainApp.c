@@ -109,8 +109,8 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     I2C4MDriver_Initialize();
     TC0App_NormalWorkStartSet(TRUE);
     DiagApp_CheckFlowInitial();
-    // sprintf((char *)u8TxBuffer,"BOOT FINISHED, PC:0x%lX, POS:%02X\r\n",PC,MCU_POSITION);
-    // UartDriver_TxWriteString(u8TxBuffer);
+	sprintf((char *)u8TxBuffer,"BOOT FINISHED, PC:0x%lX, POS:%02X\r\n",PC,MCU_POSITION);
+	UartDriver_TxWriteString(u8TxBuffer);
     /* Only for flash w/r test*/
     // uint8_t Flag[4] = {0x0F, 0x00, 0x00, 0x00};
     // FlashApp_WriteRowFlash(&Flag[0],0x0001F000,4U);

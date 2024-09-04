@@ -26,7 +26,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "cycfg_system.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSB/config/GeneratedSource/cycfg_system.h"
 
 #define CY_CFG_SYSCLK_HFCLK_ENABLED 1
 #define CY_CFG_SYSCLK_HFCLK_FREQ_MHZ 48UL

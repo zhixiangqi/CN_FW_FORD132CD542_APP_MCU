@@ -39,7 +39,7 @@ MTB_TYPE=COMBINED
 # To change the target, it is recommended to use the Library manager
 # ('make library-manager' from command line), which will also update Eclipse IDE launch
 # configurations.
-TARGET=FORD132_CD542_CY8C4147AZS-S285
+TARGET=FORD132_CD542_CY8C4147AZS-S285_POSB
 
 
 # Name of application (used to derive name of final linked file).
@@ -145,7 +145,9 @@ LINKER_SCRIPT=
 PREBUILD=
 
 # Custom post-build commands to run.
-POSTBUILD=
+POSTBUILD="$(CY_TOOLS_PATHS)/gcc/bin/arm-none-eabi-objcopy.exe" \
+			../$(APPNAME)/build/$(TARGET)/$(CONFIG)/$(APPNAME).elf \
+			../$(APPNAME)/build/$(TARGET)/$(CONFIG)/$(APPNAME).bin -O binary --gap-fill=0xff --pad-to=0x20000
 
 
 ################################################################################
@@ -201,5 +203,6 @@ $(error Unable to find any of the available CY_TOOLS_PATHS -- $(CY_TOOLS_PATHS).
 endif
 
 $(info Tools Directory: $(CY_TOOLS_DIR))
+$(info Tools Directory: $(CY_TOOLS_PATHS))
 
 include $(CY_TOOLS_DIR)/make/start.mk

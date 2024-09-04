@@ -1,5 +1,5 @@
 /*******************************************************************************
- * File Name: cycfg.c
+ * File Name: cycfg.h
  *
  * Description:
  * Simple wrapper containing all generated files and function to initialize
@@ -27,25 +27,26 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "cycfg.h"
+#if !defined(CYCFG_H)
+#define CYCFG_H
 
-/* This function is provided for compatibility with older 2.X style projects. */
-void init_cycfg_all(void)
-{
-    cycfg_config_init();
-    cycfg_config_reservations();
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_clocks.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_notices.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_peripherals.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_pins.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_routing.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_system.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif /* defined(__cplusplus) */
+
+void init_cycfg_all(void);
+void cycfg_config_init(void);
+void cycfg_config_reservations(void);
+
+#if defined(__cplusplus)
 }
-void cycfg_config_init(void)
-{
-    init_cycfg_system();
-    init_cycfg_clocks();
-    init_cycfg_routing();
-    init_cycfg_peripherals();
-    init_cycfg_pins();
-}
-void cycfg_config_reservations(void)
-{
-    reserve_cycfg_clocks();
-    reserve_cycfg_peripherals();
-    reserve_cycfg_pins();
-}
+#endif /* defined(__cplusplus) */
+
+#endif /* CYCFG_H */

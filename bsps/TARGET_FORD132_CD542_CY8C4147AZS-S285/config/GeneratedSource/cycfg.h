@@ -30,12 +30,12 @@
 #if !defined(CYCFG_H)
 #define CYCFG_H
 
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg_clocks.h"
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg_notices.h"
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg_peripherals.h"
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg_pins.h"
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg_routing.h"
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285/config/GeneratedSource/cycfg_system.h"
+#include "cycfg_notices.h"
+#include "cycfg_system.h"
+#include "cycfg_clocks.h"
+#include "cycfg_routing.h"
+#include "cycfg_peripherals.h"
+#include "cycfg_pins.h"
 
 #if defined(__cplusplus)
 extern "C" {

@@ -29,9 +29,9 @@
 #if !defined(CYCFG_PERIPHERALS_H)
 #define CYCFG_PERIPHERALS_H
 
-#include "cycfg_notices.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_notices.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_routing.h"
 #include "cy_sar.h"
-#include "cycfg_routing.h"
 #include "cy_sysclk.h"
 #include "cy_scb_spi.h"
 #include "cy_scb_i2c.h"

@@ -1,9 +1,8 @@
 /*******************************************************************************
- * File Name: cycfg.c
+ * File Name: cycfg_routing.c
  *
  * Description:
- * Simple wrapper containing all generated files and function to initialize
- * all generated code.
+ * Establishes all necessary connections between hardware elements.
  * This file was automatically generated and should not be modified.
  * Configurator Backend 3.20.0
  * device-db 4.17.0.6514
@@ -27,25 +26,20 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "cycfg.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSB/config/GeneratedSource/cycfg_routing.h"
 
-/* This function is provided for compatibility with older 2.X style projects. */
-void init_cycfg_all(void)
+#include "cy_trigmux.h"
+#include "cy_device_headers.h"
+
+void init_cycfg_routing(void)
 {
-    cycfg_config_init();
-    cycfg_config_reservations();
-}
-void cycfg_config_init(void)
-{
-    init_cycfg_system();
-    init_cycfg_clocks();
-    init_cycfg_routing();
-    init_cycfg_peripherals();
-    init_cycfg_pins();
-}
-void cycfg_config_reservations(void)
-{
-    reserve_cycfg_clocks();
-    reserve_cycfg_peripherals();
-    reserve_cycfg_pins();
+    SAR0->MUX_SWITCH0 = SAR_MUX_SWITCH0_MUX_FW_P0_VPLUS_Msk |
+        SAR_MUX_SWITCH0_MUX_FW_P1_VPLUS_Msk |
+        SAR_MUX_SWITCH0_MUX_FW_P2_VPLUS_Msk |
+        SAR_MUX_SWITCH0_MUX_FW_P3_VPLUS_Msk;
+    SAR0->MUX_SWITCH_HW_CTRL = SAR_MUX_SWITCH_HW_CTRL_MUX_HW_CTRL_P0_Msk |
+        SAR_MUX_SWITCH_HW_CTRL_MUX_HW_CTRL_P1_Msk |
+        SAR_MUX_SWITCH_HW_CTRL_MUX_HW_CTRL_P2_Msk |
+        SAR_MUX_SWITCH_HW_CTRL_MUX_HW_CTRL_P3_Msk;
+    SAR0->CTRL |= SAR_CTRL_ENABLED_Msk;
 }

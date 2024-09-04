@@ -14,7 +14,8 @@
 
 #include "cy_pdl.h"
 #include <stdio.h>
-#include "bsps/TARGET_FORD132_CD542_CY8C4147AZS-S285/cybsp.h"
+
+#include "cybsp.h"
 
 #define TRUE                1U
 #define FALSE               0U

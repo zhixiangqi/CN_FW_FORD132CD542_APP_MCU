@@ -26,7 +26,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "cycfg_clocks.h"
+#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_clocks.h"
 
 #if defined (CY_USING_HAL)
 const cyhal_resource_inst_t peri_0_div_16_0_obj =
