@@ -1,3 +1,27 @@
+/* ************************************************************************** */
+/** Descriptive File Name
+
+  @Company
+    AUO
+
+  @File Name
+    DiagApp.c
+
+  @Summary
+    Report Diag Information for Host cmd DISP_STATUS(0x00) & DTC(0xA3).
+
+  @Description
+    -Setup a function for IO/Register Check flow mechanism.
+    -Setup a function for Host cmd DISP_STATUS content status change.
+ */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Included Files                                                    */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
 #include "app/inc/DiagApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/INTBApp.h"
@@ -144,9 +168,9 @@ void DiagApp_I2CMasterFaultCheck(bool set ,uint8_t u8DiagI2cFaultMask)
 {
     if(set)
     {
-        u8DiagI2cFaultStatus &= u8DiagI2cFaultMask;
+        u8DiagI2cFaultStatus |= u8DiagI2cFaultMask;
     }else{
-        u8DiagI2cFaultStatus &= !u8DiagI2cFaultMask;
+        u8DiagI2cFaultStatus &= ~u8DiagI2cFaultMask;
     }
     RegisterApp_DHU_Setup(CMD_DTC,DTC_I2CM_FAULT,u8DiagI2cFaultStatus);
 }

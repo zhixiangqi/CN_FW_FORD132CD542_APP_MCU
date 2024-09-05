@@ -2,16 +2,17 @@
 /** Descriptive File Name
 
   @Company
-    Company Name
+    AUO
 
   @File Name
-    filename.c
+    BatteryApp.c
 
   @Summary
-    Brief description of the file.
+    Encounter Battery Voltage detection and Battery protection mechanism.
 
   @Description
-    Describe the purpose of this file.
+    -Polling 10ms 20times moving average for battery protection mechanism.
+    -Setup a state machine to behavior the mechanism.
  */
 /* ************************************************************************** */
 
@@ -68,9 +69,10 @@ uint16_t gu16BattVoltSample[BATT_SAMPLE_CNT] = {0U};
 #define BT_STAGE5   0x05U
 #define BT_STAGE6   0x06U
 
+static uint8_t u8TxBuffer[60] = {0};
+
 void BatteryApp_PowerMonitor(void)
 {
-    static uint8_t u8TxBuffer[60] = {0};
     uint16_t BatteryVolt = 0U;
     BatteryVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH2_BATVOLT);
     sprintf((char *)u8TxBuffer,"BAT SENSE %d SAFE KEY %d STATE %d\r\n",BatteryVolt,guBatterySafeKey,guBatteryStatus);
@@ -180,6 +182,10 @@ static uint8_t BatteryApp_OverPower_Mode(uint8_t STAGE)
     default:
         /*TURN OFF(BACKLIGHT PWM)*/
         BacklightApp_BattProtectSet(TRUE);
+        /*POWER OFF(SHUT-DOWN)*/
+        sprintf((char *)u8TxBuffer,"[BATT]OVER-POWWER:SAFE KEY %d STATE %d\r\n",guBatterySafeKey,guBatteryStatus);
+        UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+        RegisterApp_DHU_Setup(CMD_DISP_SHUTD,CMD_DATA_POS,0x01);
         u8Return = BT_OVERPOWER;
         break;
     }

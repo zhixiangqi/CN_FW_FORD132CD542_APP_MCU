@@ -1,3 +1,28 @@
+/* ************************************************************************** */
+
+/** Descriptive File Name
+
+  @Company
+    AUO
+
+  @File Name
+    UartApp.c
+
+  @Summary
+    Setup Uart function for Debug Insight GUI usage.
+
+  @Description
+    -Design Uart Debug message.
+    -Design Uart back door cmd usage for GUI.
+ */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Included Files                                                    */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
 #include "app/inc/UartApp.h"
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/RegisterApp.h"
@@ -157,6 +182,10 @@ void UartApp_ReadFlow()
                     }
                     break;
 
+                case 0xA0U:
+                    I2C4MDriver_Initialize();
+                    break;
+                
                 case 0xFFU:
                     /* Write-Read code */
                     if(rdBuffer[0] > UART_CMD_WR_DATA_POS)
