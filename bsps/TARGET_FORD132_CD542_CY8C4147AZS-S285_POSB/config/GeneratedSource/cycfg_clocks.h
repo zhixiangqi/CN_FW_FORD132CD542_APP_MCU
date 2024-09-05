@@ -29,7 +29,7 @@
 #if !defined(CYCFG_CLOCKS_H)
 #define CYCFG_CLOCKS_H
 
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSB/config/GeneratedSource/cycfg_notices.h"
+#include "cycfg_notices.h"
 #include "cy_sysclk.h"
 
 #if defined (CY_USING_HAL)

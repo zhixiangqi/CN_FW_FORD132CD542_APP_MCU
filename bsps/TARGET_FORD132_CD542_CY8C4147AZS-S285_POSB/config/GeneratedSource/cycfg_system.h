@@ -29,7 +29,7 @@
 #if !defined(CYCFG_SYSTEM_H)
 #define CYCFG_SYSTEM_H
 
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSB/config/GeneratedSource/cycfg_notices.h"
+#include "cycfg_notices.h"
 #include "cy_sysclk.h"
 #include "cy_syspm.h"
 #include "cy_gpio.h"

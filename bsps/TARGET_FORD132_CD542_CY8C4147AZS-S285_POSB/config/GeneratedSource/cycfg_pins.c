@@ -26,7 +26,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSB/config/GeneratedSource/cycfg_pins.h"
+#include "cycfg_pins.h"
 
 const cy_stc_gpio_pin_config_t PCBA_A0_config =
 {

@@ -26,7 +26,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_peripherals.h"
+#include "cycfg_peripherals.h"
 
 #define TC0_TIMER_INPUT_DISABLED 0x7U
 #define TC5_INTB_INPUT_DISABLED 0x7U

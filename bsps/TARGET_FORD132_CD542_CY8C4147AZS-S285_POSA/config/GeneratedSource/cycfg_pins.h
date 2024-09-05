@@ -29,9 +29,9 @@
 #if !defined(CYCFG_PINS_H)
 #define CYCFG_PINS_H
 
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_notices.h"
-#include "../../../TARGET_FORD132_CD542_CY8C4147AZS-S285_POSA/config/GeneratedSource/cycfg_routing.h"
+#include "cycfg_notices.h"
 #include "cy_gpio.h"
+#include "cycfg_routing.h"
 
 #if defined (CY_USING_HAL)
 #include "cyhal_hwmgr.h"
