@@ -1,3 +1,27 @@
+/* ************************************************************************** */
+/** Descriptive File Name
+
+  @Company
+    AUO
+
+  @File Name
+    DiagApp.c
+
+  @Summary
+    Report Diag Information for Host cmd DISP_STATUS(0x00) & DTC(0xA3).
+
+  @Description
+    -Setup a function for IO/Register Check flow mechanism.
+    -Setup a function for Host cmd DISP_STATUS content status change.
+ */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Included Files                                                    */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
 #include "app/inc/DiagApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/INTBApp.h"
@@ -11,6 +35,7 @@ static uint8_t u8DiagDispByte0 = 0x00U;
 static uint8_t u8DiagDispByte1 = 0x01U;
 static uint8_t u8TxBuffer[80] = {0};
 static uint8_t u8DiagRstReqStatus = 0x00U;
+static uint8_t u8DiagIsrStatus = 0x00U;
 static uint8_t u8DiagI2cFaultStatus = 0x00U;
 
 void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue)
@@ -34,7 +59,8 @@ void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue)
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
     {
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-        RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET | RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS));
+        //RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET);
+        DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
     }
     (void)u8OldByte0;
     (void)u8OldByte1;
@@ -61,7 +87,8 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
     {
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-        RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET | RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS));
+        //RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET);
+        DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
     }
     (void)u8OldByte0;
     (void)u8OldByte1;
@@ -140,23 +167,35 @@ bool DiagApp_RtnRstRequestCheck(bool set ,uint8_t u8DiagRstReqMask)
     return breturn;
 }
 
+bool DiagApp_RtnIsrCheck(bool set,uint8_t u8DiagIsrMask)
+{
+    bool breturn = false;
+    if(set)
+    {
+        u8DiagIsrStatus |= u8DiagIsrMask;
+    }else{
+        u8DiagIsrStatus &= ~u8DiagIsrMask;
+    }
+    RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,u8DiagIsrStatus);
+    return breturn;
+}
+
 void DiagApp_I2CMasterFaultCheck(bool set ,uint8_t u8DiagI2cFaultMask)
 {
     if(set)
     {
-        u8DiagI2cFaultStatus &= u8DiagI2cFaultMask;
+        u8DiagI2cFaultStatus |= u8DiagI2cFaultMask;
     }else{
-        u8DiagI2cFaultStatus &= !u8DiagI2cFaultMask;
+        u8DiagI2cFaultStatus &= ~u8DiagI2cFaultMask;
     }
     RegisterApp_DHU_Setup(CMD_DTC,DTC_I2CM_FAULT,u8DiagI2cFaultStatus);
 }
 
 DiagIO FAULT_LED;
 DiagIO FAULT_LCD;
-DiagIO FAULT_TOUCH;
 DiagIO FAULT_BIAS;
 DiagIO STATUS_LOCK;
-DiagIO STATUS_RFPC;
+DiagIO STATUS_FPC;
 void DiagApp_CheckFlowInitial()
 {
     FAULT_LED.Status = IO_STATUS_SWIM;
@@ -175,13 +214,6 @@ void DiagApp_CheckFlowInitial()
     FAULT_LCD.ConsecutiveLowCnt = 0;
     FAULT_LCD.Report = true;
 
-    FAULT_TOUCH.Status = IO_STATUS_SWIM;
-    FAULT_TOUCH.Port = DISP_FAULT_PORT;
-    FAULT_TOUCH.PortNumber = DISP_FAULT_PIN;
-    FAULT_TOUCH.Threshlod = 5;
-    FAULT_TOUCH.ConsecutiveHighCnt =  0;
-    FAULT_TOUCH.ConsecutiveLowCnt = 0;
-
     FAULT_BIAS.Status = IO_STATUS_SWIM;
     FAULT_BIAS.Port = BIAS_FAULT_PORT;
     FAULT_BIAS.PortNumber = BIAS_FAULT_PIN;
@@ -190,12 +222,12 @@ void DiagApp_CheckFlowInitial()
     FAULT_BIAS.ConsecutiveLowCnt = 0;
     FAULT_BIAS.Report = true;
 
-    STATUS_RFPC.Status = IO_STATUS_SWIM;
-    STATUS_RFPC.Port = FPCACHK_RIN_PORT;
-    STATUS_RFPC.PortNumber = FPCACHK_RIN_PIN;
-    STATUS_RFPC.Threshlod = 5;
-    STATUS_RFPC.ConsecutiveHighCnt = 0;
-    STATUS_RFPC.ConsecutiveLowCnt = 0;
+    STATUS_FPC.Status = IO_STATUS_SWIM;
+    STATUS_FPC.Port = FPC_DET_RX_OUT_PORT;
+    STATUS_FPC.PortNumber = FPC_DET_RX_OUT_PIN;
+    STATUS_FPC.Threshlod = 5;
+    STATUS_FPC.ConsecutiveHighCnt = 0;
+    STATUS_FPC.ConsecutiveLowCnt = 0;
 
     STATUS_LOCK.Status = IO_STATUS_SWIM;
     STATUS_LOCK.Port = DES_LOCK_PORT;
@@ -260,7 +292,6 @@ void DiagApp_BiasFaultCheckFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     uint8_t u8Status2 = IO_STATUS_SWIM;
-    uint8_t u8Status3 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_BIAS);
     if(IO_STATUS_HIGH == u8Status1){
         /* Recovery mechanism merge to LCD FAULT
@@ -281,33 +312,22 @@ void DiagApp_BiasFaultCheckFlow(void)
         FAULT_BIAS.Report = true;
         /* When voltage at swim state, Do nothing*/
     }
-
-    u8Status3 = DiagApp_ConsecutiveCheckIO(&FAULT_TOUCH);
-    if(IO_STATUS_HIGH == u8Status3){
-        DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_TSCERR_MASK);
-    }else if(IO_STATUS_LOW == u8Status3){
-        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_TSCERR_MASK);
-    }else{
-        /* When voltage at swim state, Do nothing*/
-    }
-    sprintf((char *)u8TxBuffer,"FAULT CHECK FLOW> LED 0x%02x LCD 0x%02x TOUCH 0x%02x\r\n",u8Status1,u8Status2,u8Status3);
+    sprintf((char *)u8TxBuffer,"FAULT CHECK FLOW> LED 0x%02x LCD 0x%02x\r\n",u8Status1,u8Status2);
     //UartDriver_TxWriteString(u8TxBuffer);
 }
 
 void DiagApp_FpcCheckFlow(void)
 {
-    uint8_t u8StatusR = IO_STATUS_SWIM;
-    u8StatusR = DiagApp_ConsecutiveCheckIO(&STATUS_RFPC);
-    if(IO_STATUS_SWIM == u8StatusR){
-        /* When voltage at swim state, Do nothing*/
-    }else if(IO_STATUS_HIGH == (u8StatusR & IO_STATUS_HLMASK)){
-        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_DCERR_MASK);
-    }else if(IO_STATUS_LOW == (u8StatusR & IO_STATUS_HLMASK)){
+    uint8_t u8Status1 = IO_STATUS_SWIM;
+    u8Status1 = DiagApp_ConsecutiveCheckIO(&STATUS_FPC);
+    if(IO_STATUS_HIGH == u8Status1){
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_DCERR_MASK);
+    }else if(IO_STATUS_LOW == u8Status1){
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_DCERR_MASK);
     }else{
         /* When voltage at swim state, Do nothing*/
     }
-    sprintf((char *)u8TxBuffer,"FPC CHECK FLOW> STATUS_RFPC 0x%02x,0x%02x\r\n",u8StatusR,STATUS_RFPC.ConsecutiveLowCnt);
+    sprintf((char *)u8TxBuffer,"FPC CHECK FLOW> STATUS_RFPC 0x%02x,0x%02x\r\n",u8Status1,STATUS_FPC.ConsecutiveLowCnt);
     //UartDriver_TxWriteString(u8TxBuffer);
 }
 

@@ -1,3 +1,27 @@
+/* ************************************************************************** */
+/** Descriptive File Name
+
+  @Company
+    AUO
+
+  @File Name
+    I2CSlaveApp.c
+
+  @Summary
+    Design I2c Slave interrupt behavior to fit FORD CD542 FIDM Interface.
+
+  @Description
+    -Design the behavior to fit IFS-MMI2C-SR-REQ-XXXXX.
+    -Transfer Task to Timer counter App (TC0App).
+ */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Included Files                                                    */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
 #include "I2C2SlaveApp.h"
 #include "I2C2SDriver.h"
 #include "app/inc/RegisterApp.h"
@@ -5,6 +29,7 @@
 #include "app/inc/TC0App.h"
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/BacklightApp.h"
+#include "app/inc/DiagApp.h"
 
 #define DHU_CMD_TOTAL_NUM    25U
 #define DHU_WRITE_APPROVED_CMD_NUM    10U
@@ -257,7 +282,8 @@ static void I2CSlaveApp_TxReadTransferDone(uint8_t subaddr)
         {
         case CMD_DISP_STATUS:
             /* Check the DISP_STATUS has been sent, then Clear INT_ERR*/
-            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_TCH_CLEAR | INTB_INT_TCH_SET);
+            //RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_CLEAR);
+            DiagApp_RtnIsrCheck(false,INTB_INT_ERR_MASK);
             break;
         
         case CMD_CRC_FB:

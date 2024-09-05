@@ -14,7 +14,6 @@
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/UartDriver.h"
 
-static uint8_t u8TxBuffer[60] = {0};
 static uint8_t u8TouchCount;
 bool bTscAttnState = FALSE;
 void TPApp_TscEnFlow(void)
@@ -38,24 +37,20 @@ void TPApp_TscIntFlow(void)
 {    
     if (bTscAttnState)
     {
-        /*First,read ISR state to judge*/
-        uint8_t u8ISRState = RegisterApp_DHU_Read(CMD_ISR_STATUS,CMD_DATA_POS);
-        // /*Falling edge trigger*/
+        /*Falling edge trigger*/
         if (tp_interr_low_flag == TRUE)
         {
             INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_TCH_SET | u8ISRState);
+            DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
             tp_interr_low_flag = FALSE;
             // sprintf((char *)u8TxBuffer,"TP_INT LOW %d\r\n",tp_interr_low_flag);
-            // UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
         }
         /*Rising edge trigger*/
         else if (tp_interr_high_flag == TRUE)
         {
-            RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET & u8ISRState);
             tp_interr_high_flag = FALSE;
+            DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
             // sprintf((char *)u8TxBuffer,"TP_INT HIGH %d\r\n",tp_interr_high_flag);
-            // UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
         }
         /*If lost trigger,judge PIN whether is LOW,debouce 400ms*/
         else if ((PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW) && (tp_interr_high_flag == FALSE))
@@ -65,14 +60,14 @@ void TPApp_TscIntFlow(void)
                 u8TouchCount++;
                 bTscIntKeepLow = FALSE;
                 INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-                RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_TCH_SET | u8ISRState);
+                DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
                 // sprintf((char *)u8TxBuffer,"TP_INT KEPEP LOW %d\r\n",u8ISRState);
-                // UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
             }
         }else{
             u8TouchCount =0U;
             bTscIntKeepLow = FALSE;
         }
+        // UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
     }else{
         bTscIntKeepLow = FALSE;
     }

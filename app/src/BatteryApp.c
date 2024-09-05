@@ -2,16 +2,17 @@
 /** Descriptive File Name
 
   @Company
-    Company Name
+    AUO
 
   @File Name
-    filename.c
+    BatteryApp.c
 
   @Summary
-    Brief description of the file.
+    Encounter Battery Voltage detection and Battery protection mechanism.
 
   @Description
-    Describe the purpose of this file.
+    -Polling 10ms 20times moving average for battery protection mechanism.
+    -Setup a state machine to behavior the mechanism.
  */
 /* ************************************************************************** */
 
@@ -43,13 +44,13 @@ bool u8SYNCSampleReady = FALSE;
 bool bSyncVolatgeState = TRUE;
 
 /*DTC 240321*/
-#define BT_VOLT0   1102U    
-/*7.5V*/
-#define BT_VOLT1   1176U    
-/*8V*/
-#define BT_VOLT2   1329U    
-/*9V-Hysteresis*/
-#define BT_VOLT3   2688U    
+#define BT_VOLT0   755U
+/*5V*/
+#define BT_VOLT1   815U    
+/*5.4V*/
+#define BT_VOLT2   906U    
+/*6V-Hysteresis*/
+#define BT_VOLT3   2718U    
 /*18V*/
 #define BT_VOLT4   3020U    
 /*20V-Hysteresis*/
@@ -72,35 +73,10 @@ bool bSyncVolatgeState = TRUE;
 #define BT_STAGE5   0x05U
 #define BT_STAGE6   0x06U
 
-void BatteryApp_SYNCVolatgeCheck(void)
-{
-    uint16_t u16AdcSyncVolt;
-    /* Get SYNC Voltage */
-    u16AdcSyncVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH3_SYNCVOLT);
-    /* Do check the data base(samples) is ready for result output (SYNC_VOLT_SAMPLE_CNT = 3 times)*/
-    u16SyncVoltSample[u8SYNCSampleCount] = u16AdcSyncVolt;
-    if(u8SYNCSampleCount == (SYNC_VOLT_SAMPLE_CNT - 1U)){u8SYNCSampleReady = TRUE;}
-    u8SYNCSampleCount = ((u8SYNCSampleCount + 1U) > (SYNC_VOLT_SAMPLE_CNT - 1U)) ? 0U : (u8SYNCSampleCount + 1U);
-    if (u8SYNCSampleReady == TRUE)
-    {
-        u8SYNCSampleReady = FALSE;
-        uint16_t u16SyncVolDebounce = 0U;
-        for(uint8_t u8count = 0U; u8count < SYNC_VOLT_SAMPLE_CNT; u8count++)
-        {
-            u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
-        }
-        if (u16SyncVolDebounce > 413U && u16SyncVolDebounce < 3745U)
-        {
-            bSyncVolatgeState = TRUE;
-        }else
-        {
-            bSyncVolatgeState = FALSE;
-        }
-    }
-}
+static uint8_t u8TxBuffer[60] = {0};
+
 void BatteryApp_PowerMonitor(void)
 {
-    static uint8_t u8TxBuffer[60] = {0};
     uint16_t BatteryVolt = 0U;
     BatteryVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH2_BATVOLT);
     sprintf((char *)u8TxBuffer,"BAT SENSE %d SAFE KEY %d STATE %d\r\n",BatteryVolt,guBatterySafeKey,guBatteryStatus);
@@ -210,7 +186,9 @@ static uint8_t BatteryApp_OverPower_Mode(uint8_t STAGE)
     default:
         /*TURN OFF(BACKLIGHT PWM)*/
         BacklightApp_BattProtectSet(TRUE);
-        /* GO TO SHUTDOWN*/
+        /*POWER OFF(SHUT-DOWN)*/
+        sprintf((char *)u8TxBuffer,"[BATT]OVER-POWWER:SAFE KEY %d STATE %d\r\n",guBatterySafeKey,guBatteryStatus);
+        UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
         RegisterApp_DHU_Setup(CMD_DISP_SHUTD,CMD_DATA_POS,0x01);
         u8Return = BT_OVERPOWER;
         break;
@@ -305,6 +283,33 @@ void BatteryApp_Flow(void)
 	(void)VoltStage;
 	(void)u16MABatt;
 	
+}
+
+void BatteryApp_SYNCVolatgeCheck(void)
+{
+    uint16_t u16AdcSyncVolt;
+    /* Get SYNC Voltage */
+    u16AdcSyncVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE, ADC_SAR0_CH3_SYNCVOLT);
+    /* Do check the data base(samples) is ready for result output (SYNC_VOLT_SAMPLE_CNT = 3 times)*/
+    u16SyncVoltSample[u8SYNCSampleCount] = u16AdcSyncVolt;
+    if(u8SYNCSampleCount == (SYNC_VOLT_SAMPLE_CNT - 1U)){u8SYNCSampleReady = TRUE;}
+    u8SYNCSampleCount = ((u8SYNCSampleCount + 1U) > (SYNC_VOLT_SAMPLE_CNT - 1U)) ? 0U : (u8SYNCSampleCount + 1U);
+    if (u8SYNCSampleReady == TRUE)
+    {
+        u8SYNCSampleReady = FALSE;
+        uint16_t u16SyncVolDebounce = 0U;
+        for(uint8_t u8count = 0U; u8count < SYNC_VOLT_SAMPLE_CNT; u8count++)
+        {
+            u16SyncVolDebounce += u16SyncVoltSample[u8count]/SYNC_VOLT_SAMPLE_CNT;
+        }
+        if (u16SyncVolDebounce > 413U && u16SyncVolDebounce < 3745U)
+        {
+            bSyncVolatgeState = TRUE;
+        }else
+        {
+            bSyncVolatgeState = FALSE;
+        }
+    }
 }
 /* *****************************************************************************
  End of File

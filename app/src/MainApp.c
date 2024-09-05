@@ -5,7 +5,7 @@
   @File Name
     MainApp.c
   @Summary
-    Start state machine with function - Power Management APP.
+    Start state machine with function - Main Management APP.
   @Description
     RUN Main APP with State .
  **/
@@ -17,8 +17,7 @@
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-/* This section lists the other files that are included in this file.
- */
+#include "main.h"
 #include "app/inc/MainApp.h"
 #include "app/inc/TC0App.h"
 #include "app/inc/StackTaskApp.h"
@@ -43,11 +42,7 @@
 
 
 #define CY_ASSERT_FAILED          (0u)
-/* ************************************************************************** */
-/* ************************************************************************** */
-/* Section: File Scope or Global Data                                         */
-/* ************************************************************************** */
-/* ************************************************************************** */
+#define APP_START_ADDR          0x3000U
 
 static uint8_t u8MAIN_STATUS = STATE_BOOT;
 static uint8_t u8TxBuffer[60] = {0};

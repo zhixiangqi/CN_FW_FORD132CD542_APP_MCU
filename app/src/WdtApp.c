@@ -1,6 +1,28 @@
-#include "app/inc/WdtApp.h"
-#include "app/inc/RegisterApp.h"
-#include "app/inc/TC0App.h"
+/* ************************************************************************** */
+
+/** Descriptive File Name
+
+  @Company
+    AUO
+
+  @File Name
+    WdtApp.c
+
+  @Summary
+    Implement WDT function.
+
+  @Description
+    -Wdt Clean function.
+    -Wdt Reset Cause dectection.
+ */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Included Files                                                    */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
 #include "driver/inc/WdtDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/PortDriver.h"

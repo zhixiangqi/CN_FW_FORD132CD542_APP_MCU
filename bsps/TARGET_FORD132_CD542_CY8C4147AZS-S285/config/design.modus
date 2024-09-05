@@ -280,7 +280,7 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[2].pin[4]" locked="true">
                         <Aliases>
-                            <Alias value="FPCACHK_ROUT"/>
+                            <Alias value="FPC_DET_TX_OUT"/>
                         </Aliases>
                     </Block>
                     <Parameters>
@@ -296,7 +296,7 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[2].pin[5]" locked="true">
                         <Aliases>
-                            <Alias value="FPCACHK_RIN"/>
+                            <Alias value="FPC_DET_RX_OUT"/>
                         </Aliases>
                     </Block>
                     <Parameters>
