@@ -232,10 +232,6 @@ void StackTaskApp_MissionAction(void)
             DiagApp_LcdFaultCheckFlow();
         break;
 
-        case TASK_TSCINTLOW:
-            TPApp_TscIntFlow();
-        break;
-
         case TASK_SYNCCHECKLOW:
             BatteryApp_SYNCVolatgeCheck();
         break;

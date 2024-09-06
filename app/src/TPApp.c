@@ -14,61 +14,83 @@
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/UartDriver.h"
 
-static uint8_t u8TouchCount;
-bool bTscAttnState = FALSE;
-void TPApp_TscEnFlow(void)
+static uint8_t u8TouchCount = 0U;
+static bool    bTscAttnSafeKey = FALSE;
+static bool    bTscAttnState = FALSE;
+static bool    bTscIntKeepLow = FALSE;
+void TPApp_IntTscStateFlow(uint8_t u8TscEnState)
 {
-    uint8_t u8TscEnState;
-    u8TscEnState = RegisterApp_DHU_Read(CMD_DISP_EN,1U);
-    if (u8TscEnState == DISPLAY_ON_TOUCH_ON)
+    if ((u8TscEnState & 0x02U) == 0x02U)
     {
-        PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-        if (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_HIGH)
+        if (bTscAttnSafeKey == FALSE)
         {
-            bTscAttnState = TRUE;
+            PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
+            /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 1.*/
             DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+            TC0App_TimerReset(TIMER_INT_ATTN_COUNT);
+            TC0App_IntbAttnCountStartSet(TRUE);
+            bTscAttnSafeKey = TRUE;
+        }
+        else
+        {
+            if(TC0App_TimerReturn(TIMER_INT_ATTN_COUNT) > 250U)
+            {
+                bTscAttnState = TRUE;
+                TC0App_TimerReset(TIMER_INT_ATTN_COUNT);
+                TC0App_IntbAttnCountStartSet(FALSE);
+            }
+        }
+        if (bTscAttnState == TRUE)
+        {
+            /*Falling edge trigger*/
+            if (tp_interr_low_flag == TRUE)
+            {
+                INTBApp_PullReqSetOrClear(INTB_REQ_SET);
+                DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
+                tp_interr_low_flag = FALSE;
+            }
+            /*Rising edge trigger*/
+            if (tp_interr_high_flag == TRUE)
+            {
+                tp_interr_high_flag = FALSE;
+                DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
+            }
+            /*If lost trigger,judge PIN whether is LOW,debouce 400ms*/
+            else if ((tp_interr_low_flag == FALSE) && (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW))
+            {
+                if (bTscIntKeepLow == FALSE)
+                {
+                    TC0App_TimerReset(TIMER_INT_ATTN_COUNT);
+                    TC0App_IntbAttnCountStartSet(TRUE);
+                    bTscIntKeepLow = TRUE;
+                }
+                else
+                {
+                    if(TC0App_TimerReturn(TIMER_INT_ATTN_COUNT) > 50U)
+                    {
+                        TC0App_TimerReset(TIMER_INT_ATTN_COUNT);
+                        TC0App_IntbAttnCountStartSet(FALSE);
+                        if (u8TouchCount < 5U)
+                        {
+                            u8TouchCount++;
+                            bTscIntKeepLow = FALSE;
+                            INTBApp_PullReqSetOrClear(INTB_REQ_SET);
+                            DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
+                        }
+                    }
+                }
+            }
+        }else{
+            tp_interr_low_flag = FALSE;
+            tp_interr_high_flag = FALSE;
         }
     }else{
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
+        /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 0.*/
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
-    }
-}
-void TPApp_TscIntFlow(void)
-{    
-    if (bTscAttnState)
-    {
-        /*Falling edge trigger*/
-        if (tp_interr_low_flag == TRUE)
-        {
-            INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-            DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
-            tp_interr_low_flag = FALSE;
-            // sprintf((char *)u8TxBuffer,"TP_INT LOW %d\r\n",tp_interr_low_flag);
-        }
-        /*Rising edge trigger*/
-        else if (tp_interr_high_flag == TRUE)
-        {
-            tp_interr_high_flag = FALSE;
-            DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
-            // sprintf((char *)u8TxBuffer,"TP_INT HIGH %d\r\n",tp_interr_high_flag);
-        }
-        /*If lost trigger,judge PIN whether is LOW,debouce 400ms*/
-        else if ((PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW) && (tp_interr_high_flag == FALSE))
-        {
-            if (bTscIntKeepLow && u8TouchCount < 5U)
-            {
-                u8TouchCount++;
-                bTscIntKeepLow = FALSE;
-                INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-                DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
-                // sprintf((char *)u8TxBuffer,"TP_INT KEPEP LOW %d\r\n",u8ISRState);
-            }
-        }else{
-            u8TouchCount =0U;
-            bTscIntKeepLow = FALSE;
-        }
-        // UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
-    }else{
-        bTscIntKeepLow = FALSE;
+        bTscAttnSafeKey = FALSE;
+        bTscAttnState   = FALSE;
+        bTscIntKeepLow  = FALSE;
+        u8TouchCount    = 0U;
     }
 }

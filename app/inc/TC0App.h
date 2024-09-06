@@ -11,10 +11,9 @@
 #define TIMER_BATTERYCOUNT      0x05U
 #define TIMER_WDTCOUNT          0x06U
 #define TIMER_HOLDCOUNT         0x07U
+#define TIMER_INT_ATTN_COUNT    0x08U
 
 #define DHUCmdBufferSize 256U
-
-extern bool bTscIntKeepLow;
 
 void TC0App_Initial(void);
 void TC0App_DHUTaskClean(void);
@@ -24,6 +23,7 @@ void TC0App_BatteryCntStartSet(uint8_t SetValue);
 void TC0App_NormalWorkStartSet(uint8_t SetValue);
 void TC0App_IntbSetCountStartSet(uint8_t SetValue);
 void TC0App_IntbHoldCountStartSet(uint8_t SetValue);
+void TC0App_IntbAttnCountStartSet(uint8_t SetValue);
 uint8_t TC0App_TimerReturn(uint8_t Request);
 void TC0App_TimerReset(uint8_t Request);
 uint8_t TC0App_DelayMS(uint16_t delay);

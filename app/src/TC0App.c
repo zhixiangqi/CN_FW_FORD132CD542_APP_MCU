@@ -39,6 +39,7 @@ static long int derating_timer_sec =0;
 static long int batteryprotect_timer_sec =0;
 static long int intb_set_timer_ms=0;
 static long int intb_hold_timer_ms=0;
+static long int intb_attn_timer_ms=0;
 static long int wdt_timer_ms=0;
 static long int hold_timer_ms=1001;
 uint8_t FLAG_DERATINGCNT_START = FALSE;
@@ -46,17 +47,13 @@ uint8_t FLAG_BATTERYPROT_START = FALSE;
 uint8_t FLAG_STARTTOWORK_START = FALSE;
 uint8_t FLAG_INTBSETTCNT_START = FALSE;
 uint8_t FLAG_INTBHOLDCNT_START = FALSE;
+uint8_t FLAG_INTBATTNCNT_START = FALSE;
 volatile bool DHUTaskFlag[DHUCmdBufferSize] = {0};
 volatile static bool StopperEN = false;
-bool bTscIntKeepLow = FALSE;
+
 static void TC0APP_TC0_Task_1000msec(void)
 {
     StackTaskApp_MissionPush(TASK_MONITOR);
-}
-
-static void TC0APP_TC0_Task_2msec(void)
-{
-    StackTaskApp_MissionPush(TASK_TSCINTLOW);
 }
 
 static void TC0APP_TC0_Task_3msec(void)
@@ -128,15 +125,14 @@ static void TC0App_Callback_InterruptHandler(void)
     {
         intb_hold_timer_ms = intb_hold_timer_ms+1;
     }
+    if(FLAG_INTBATTNCNT_START == TRUE)
+    {
+        intb_attn_timer_ms = intb_attn_timer_ms+1;
+    }
 
     if(FLAG_STARTTOWORK_START == TRUE)
     {
         TC0APP_TC0_Task_1msec();
-
-        if ((timercount_ms % 2) ==0)
-        {
-            TC0APP_TC0_Task_2msec();
-        }else{/*Do Nothing*/}
 
         if ((timercount_ms % 3) ==0)
         {
@@ -156,11 +152,6 @@ static void TC0App_Callback_InterruptHandler(void)
         if ((timercount_ms % 15) ==0)
         {
             TC0APP_TC0_Task_15msec();
-        }else{/*Do Nothing*/}
-
-        if ((timercount_ms % 20) ==0)
-        {
-            bTscIntKeepLow = TRUE;
         }else{/*Do Nothing*/}
 
         if ((timercount_ms % 100) ==0)
@@ -234,6 +225,11 @@ void TC0App_IntbHoldCountStartSet(uint8_t SetValue)
     FLAG_INTBHOLDCNT_START = SetValue;
 }
 
+void TC0App_IntbAttnCountStartSet(uint8_t SetValue)
+{
+    FLAG_INTBATTNCNT_START = SetValue;
+}
+
 void TC0App_Initial(void)
 {
     if(true == TC0Driver_TimerCallbackRegister(TC0App_Callback_InterruptHandler))
@@ -296,6 +292,11 @@ uint8_t TC0App_TimerReturn(uint8_t Request)
         }
         break;
 
+    case TIMER_INT_ATTN_COUNT:
+        /* code */
+        u8Return = intb_attn_timer_ms;
+        break;
+    
     default:
         u8Return = 0xFFU;
         break;
@@ -344,6 +345,11 @@ void TC0App_TimerReset(uint8_t Request)
 
     case TIMER_HOLDCOUNT:
         hold_timer_ms = 0U;
+        break;
+
+    case TIMER_INT_ATTN_COUNT:
+        /* code */
+        intb_attn_timer_ms = 0U;
         break;
 
     default:

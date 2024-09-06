@@ -46,7 +46,6 @@
 
 static uint8_t u8MAIN_STATUS = STATE_BOOT;
 static uint8_t u8TxBuffer[60] = {0};
-
 /*  Function: MainApp_Boot_Mode
 **  Callfrom: Main_Flow state machine
 **        Do: Do basic initial like PORT/CLOCK and other mustbe function.
@@ -121,8 +120,15 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
 {
     WdtApp_CleanCounter();
-    /*Do LCD Power On Sequence*/
+    /*Do TSC_EN and LCD Power On Sequence*/
     TC0App_TimerTaskStopper(true);
+    /* Check TSC EN Cmd*/
+    if ((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x02U) == 0x02U)
+    {
+        PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
+        /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 1.*/
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+    }
     PowerApp_Sequence(LCD_ON);
     /*Exit SourceIc StandyMode*/
     DDIApp_StandbyMode(EXIT_STANDBY_MODE);
@@ -171,6 +177,7 @@ static uint8_t MainApp_HandShake_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
+    uint8_t u8TscEnState;
     WdtApp_CleanCounter();
     /* Do task & INTB flow*/
     StackTaskApp_MissionAction();
@@ -178,9 +185,13 @@ static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
     /*Check Disp Shutdown and SYNC Volatge State*/
     if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && bSyncVolatgeState)
     {
-        if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
+        u8TscEnState = RegisterApp_DHU_Read(CMD_DISP_EN,1U);
+        /* Check Disp En Cmd*/
+        if((u8TscEnState & 0x01U) == 0x01U)
         {
             u8Return = STATE_NORMAL;
+            /* Check TSC EN Cmd*/
+            TPApp_IntTscStateFlow(u8TscEnState);
         }else{
             u8Return = STATE_PRESLEEP;
         }
@@ -188,8 +199,6 @@ static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
         INTBApp_InitSwitch(INTB_DEINITIAL);
         u8Return = STATE_SHUTDOWN;
     }
-    /*Check TSC_EN flow*/
-    TPApp_TscEnFlow();
     /* Test WDT timeout - ~3.2sec reset (ILO has 40Kz +/- 50%, so it should consider as 2.5)*/
     // TC0App_DelayMS(3000U);
     // WdtApp_CleanCounter();
@@ -208,9 +217,10 @@ static uint8_t MainApp_PreSleep_Mode(uint8_t u8Nothing)
     WdtApp_CleanCounter();
     /*Enter SourceIc StandyMode*/
     DDIApp_StandbyMode(ENTER_STANDBY_MODE);
-    /* SWRA-01-05: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST & BL_ST set as 0.*/
+    /* SWRA-01-05: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST & BL_ST & TSC_ST set as 0.*/
     DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPST_MASK);
     DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
+    DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
     /* Do LCD Power Off Sequence*/
     TC0App_TimerTaskStopper(true);
     PowerApp_Sequence(LCD_OFF);
@@ -244,6 +254,7 @@ static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
     /*Check Disp Shutdown and SYNC Volatge State*/
     if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && bSyncVolatgeState)
     {
+        /* Check Disp En Cmd*/
         if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
         {
             /* SWRA-01-05: Timer Lock Hold set as 1000ms, avoid rapid-off/on behavior*/
