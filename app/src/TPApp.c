@@ -55,7 +55,7 @@ void TPApp_IntTscStateFlow(uint8_t u8TscEnState)
                 tp_interr_high_flag = FALSE;
                 DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
             }
-            /*If lost trigger,judge PIN whether is LOW,debouce 400ms*/
+            /*If lost trigger,judge PIN whether is LOW,debouce 250ms*/
             else if ((tp_interr_low_flag == FALSE) && (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW))
             {
                 if (bTscIntKeepLow == FALSE)
