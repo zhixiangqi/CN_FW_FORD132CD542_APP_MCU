@@ -12,7 +12,7 @@
 #include "main.h"
 
 
-void EicDriver_Initial(void);
+bool EicDriver_Initial(void);
 
 extern bool tp_interr_low_flag;
 extern bool tp_interr_high_flag;

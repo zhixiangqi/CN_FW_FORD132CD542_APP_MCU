@@ -11,39 +11,43 @@
 
 bool tp_interr_low_flag = false;
 bool tp_interr_high_flag = false;
-static uint8_t u8ISRState = 0;
-const static cy_stc_sysint_t gtdATTNCfg =
+
+const cy_stc_sysint_t intTsc_intr_config =
 {
     .intrSrc = U301_TSC_ATTN_IRQ,	/* Interrupt source is U301_TSC_ATTN_PIN interrupt */
     .intrPriority = 3UL,    		/* Interrupt priority is 3 */
 };
 
-static void EicDriver_U301_TSC_ATTN_ISR(void)
+void EicDriver_U301_TSC_ATTN_ISR(void)
 {
-	/*Both edge,by reading PIN state to judge*/
-    u8ISRState = Cy_GPIO_Read(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
-    if (u8ISRState == PIN_LOW)
+    /* Clears the triggered pin interrupt */
+	Cy_GPIO_ClearInterrupt(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
+	NVIC_ClearPendingIRQ(intTsc_intr_config.intrSrc);
+
+    /*Both edge,by reading PIN state to judge*/
+    if (Cy_GPIO_Read(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW)
     {
         tp_interr_low_flag = TRUE;
     }else{
         tp_interr_high_flag = TRUE;
     }
-    /* Clears the triggered pin interrupt */
-	Cy_GPIO_ClearInterrupt(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN);
-	NVIC_ClearPendingIRQ(gtdATTNCfg.intrSrc);
 }
 
-void EicDriver_Initial(void)
+bool EicDriver_Initial(void)
 {
-    cy_rslt_t result;
+    bool bresult = true;
+
+    cy_en_sysint_status_t sysStatus;
 
     /* Initialize and enable GPIO interrupt */
-    result = Cy_SysInt_Init(&gtdATTNCfg, EicDriver_U301_TSC_ATTN_ISR);
-    if(result != CY_SYSINT_SUCCESS)
+    sysStatus = Cy_SysInt_Init(&intTsc_intr_config, EicDriver_U301_TSC_ATTN_ISR);
+    if(sysStatus != CY_SYSINT_SUCCESS)
     {
-        CY_ASSERT(0);
+        bresult = false;
     }
     /* Clearing and enabling the GPIO interrupt in NVIC */
-    NVIC_ClearPendingIRQ(gtdATTNCfg.intrSrc);
-    NVIC_EnableIRQ(gtdATTNCfg.intrSrc);
+    NVIC_ClearPendingIRQ(intTsc_intr_config.intrSrc);
+    NVIC_EnableIRQ(intTsc_intr_config.intrSrc);
+
+    return bresult;
 }

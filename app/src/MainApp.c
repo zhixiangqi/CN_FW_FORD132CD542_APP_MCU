@@ -36,6 +36,7 @@
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/I2C4MDriver.h"
+#include "driver/inc/SPIMDriver.h"
 #include "driver/inc/PwmDriver.h"
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/EicDriver.h"
@@ -73,6 +74,10 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     else{
         u8Return = STATE_SLEEP;
     }
+
+    /* Enable global interrupts */
+    __enable_irq();
+
     WdtApp_CleanCounter();
     /* Configure and enable the UART peripheral */
     UartDriver_Initial();
@@ -80,6 +85,16 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     if(I2C4MDriver_Initialize() == false)
     {
         UartDriver_TxWriteString((uint8_t *)"I2C M driver init fail\r\n");
+    }
+    /* Initialize the SPI Master */
+    if(SPIMDriver_Initial() == false)
+    {
+        UartDriver_TxWriteString((uint8_t *)"SPI M driver init fail\r\n");
+    }
+    /*EIC initial*/
+    if(EicDriver_Initial() == false)
+    {
+        UartDriver_TxWriteString((uint8_t *)"EIC driver init fail\r\n");
     }
     RegisterApp_ALL_Initial();
     I2C2SlaveApp_Initial();
@@ -90,10 +105,6 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     /*ADC initial*/
     AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
     PowerApp_PowerGoodInitial();
-    /* Enable global interrupts */
-    __enable_irq();
-    /*EIC initial*/
-    EicDriver_Initial();
     /* WDT Init*/
     WdtApp_CheckResetCause();
     WdtApp_Initial();
