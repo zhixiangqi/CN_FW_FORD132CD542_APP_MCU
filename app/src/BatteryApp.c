@@ -46,10 +46,10 @@ bool bSyncVolatgeState = TRUE;
 /*DTC 240321*/
 #define BT_VOLT0   755U
 /*5V*/
-#define BT_VOLT1   815U    
-/*5.4V*/
-#define BT_VOLT2   906U    
-/*6V-Hysteresis*/
+#define BT_VOLT1   906U    
+/*6V*/
+#define BT_VOLT2   1208U    
+/*8V-Hysteresis*/
 #define BT_VOLT3   2718U    
 /*18V*/
 #define BT_VOLT4   3020U    
@@ -140,6 +140,8 @@ static uint8_t BatteryApp_LowHigh_Mode(uint8_t STAGE)
         break;
 
     default:
+        /*TURN OFF(BACKLIGHT PWM)*/
+        BacklightApp_BattProtectSet(TRUE);
         /*20 SECOND SAFE KEY CHECK*/
         if (guBatterySafeKey == FALSE){
             /*COUNTER RESET*/
