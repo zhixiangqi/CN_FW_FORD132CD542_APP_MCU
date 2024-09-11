@@ -16,10 +16,6 @@
         "locked-commit": "release-v4.17.0"
     },
     {
-        "asset-name": "mtb-pdl-cat2",
-        "locked-commit": "release-v2.11.0"
-    },
-    {
         "asset-name": "recipe-make-cat2",
         "locked-commit": "release-v2.2.0"
     }
