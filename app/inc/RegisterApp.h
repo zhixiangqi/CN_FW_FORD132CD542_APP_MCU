@@ -38,6 +38,8 @@
 #define CMD_CRC_FB                  0xF8U
 #define CMD_UPDATESTATUS_FB         0xF9U
 
+#define CMD_FAB_CTRL                0xF1U
+
 /* Define DHU Update Command reply*/
 #define CMD_FB_MCU_OK               0x43U
 #define CMD_FB_FAIL                 0x74U
@@ -67,7 +69,8 @@
 #define DTC_LCD_FAULT_0x1A          0x0FU
 #define DTC_LCD_FAULT_0x1B          0x10U
 #define DTC_LCD_FAULT_0x1C          0x11U
-#define DTC_I2CM_FAULT              0x12U
+#define DTC_LCD_FAULT_0x1F          0x12U
+#define DTC_I2CM_FAULT              0x13U
 #define DTC_BATT_VOLT_ADC           0x17U
 #define DTC_BLT_TEMP_ADC            0x19U
 #define DTC_PCB_TEMP_ADC            0x1BU
