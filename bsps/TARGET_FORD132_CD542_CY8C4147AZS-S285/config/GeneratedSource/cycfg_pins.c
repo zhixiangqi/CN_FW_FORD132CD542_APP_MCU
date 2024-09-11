@@ -6,7 +6,7 @@
  * This file was automatically generated and should not be modified.
  * Configurator Backend 3.20.0
  * device-db 4.17.0.6514
- * mtb-pdl-cat2 2.11.0.12518
+ * mtb-pdl-cat2 2.12.0.12916
  *
  *******************************************************************************
  * Copyright 2024 Cypress Semiconductor Corporation (an Infineon company) or
@@ -430,7 +430,7 @@ const cyhal_resource_inst_t DES_PASS_obj =
 const cy_stc_gpio_pin_config_t EXFLASH_WP_config =
 {
     .outVal = 0,
-    .driveMode = CY_GPIO_DM_PULLUP_IN_OFF,
+    .driveMode = CY_GPIO_DM_PULLDOWN_IN_OFF,
     .hsiom = EXFLASH_WP_HSIOM,
     .intEdge = CY_GPIO_INTR_DISABLE,
     .vtrip = CY_GPIO_VTRIP_CMOS,

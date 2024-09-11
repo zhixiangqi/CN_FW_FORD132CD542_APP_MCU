@@ -22,7 +22,6 @@
  * Global Variables
  ******************************************************************************/
 cy_stc_scb_spi_context_t SPI0M_MCU_context;
-
 /*******************************************************************************
  * Function Name: SPIMDriver_Interrupt
  *******************************************************************************
@@ -93,29 +92,13 @@ bool SPIMDriver_Initial(void)
     return bresult;
 }
 
-/*******************************************************************************
- * Function Name: sendPacket
- *******************************************************************************
- *
- * Summary:
- * This function sends the data to the slave.
- *
- * Parameters:
- * txBuffer - Pointer to the transmit buffer
- * transferSize - Number of bytes to be transmitted
- *
- * Return:
- * cy_en_scb_spi_status_t - CY_SCB_SPI_SUCCESS if the transaction completes
- * successfully. Otherwise it returns the error status
- *
- ******************************************************************************/
-cy_en_scb_spi_status_t I2C4MDriver_SendPacket(uint8_t *txBuffer, uint32_t transferSize)
+cy_en_scb_spi_status_t SPIMDriver_SendReceivePacket(uint8_t *txBuffer, uint8_t *rxBuffer)
 {
     cy_en_scb_spi_status_t masterStatus;
 
     /* Initiate SPI Master write transaction. */
-    masterStatus = Cy_SCB_SPI_Transfer(SPI0M_MCU_HW, txBuffer, NULL,
-                                       transferSize, &SPI0M_MCU_context);
+    masterStatus = Cy_SCB_SPI_Transfer(SPI0M_MCU_HW, txBuffer, rxBuffer,
+                                       sizeof(txBuffer), &SPI0M_MCU_context);
 
     /* Blocking wait for transfer completion */
     while (0UL != (CY_SCB_SPI_TRANSFER_ACTIVE &

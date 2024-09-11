@@ -28,6 +28,6 @@
 
 void SPIMDriver_Interrupt(void);
 bool SPIMDriver_Initial(void);
-cy_en_scb_spi_status_t I2C4MDriver_SendPacket(uint8_t *txBuffer, uint32_t transferSize);
+cy_en_scb_spi_status_t SPIMDriver_SendReceivePacket(uint8_t *txBuffer, uint8_t *rxBuffer);
 
 #endif /* DRIVER_INC_SPIMDRIVER_H_ */

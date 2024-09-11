@@ -6,7 +6,7 @@
  * This file was automatically generated and should not be modified.
  * Configurator Backend 3.20.0
  * device-db 4.17.0.6514
- * mtb-pdl-cat2 2.11.0.12518
+ * mtb-pdl-cat2 2.12.0.12916
  *
  *******************************************************************************
  * Copyright 2024 Cypress Semiconductor Corporation (an Infineon company) or
@@ -486,7 +486,7 @@ extern "C" {
 #define EXFLASH_WP_PORT_NUM 3U
 #define EXFLASH_WP_PIN 0U
 #define EXFLASH_WP_NUM 0U
-#define EXFLASH_WP_DRIVEMODE CY_GPIO_DM_PULLUP_IN_OFF
+#define EXFLASH_WP_DRIVEMODE CY_GPIO_DM_PULLDOWN_IN_OFF
 #define EXFLASH_WP_INIT_DRIVESTATE 0
 #ifndef ioss_0_port_3_pin_0_HSIOM
     #define ioss_0_port_3_pin_0_HSIOM HSIOM_SEL_GPIO
@@ -499,7 +499,7 @@ extern "C" {
 #define EXFLASH_WP P3_0
 #define EXFLASH_WP_HAL_IRQ CYHAL_GPIO_IRQ_NONE
 #define EXFLASH_WP_HAL_DIR CYHAL_GPIO_DIR_OUTPUT 
-#define EXFLASH_WP_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_PULLUP
+#define EXFLASH_WP_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_PULLDOWN
 #endif /* defined (CY_USING_HAL) */
 
 #define DISP_FAULT_ENABLED 1U
