@@ -81,6 +81,7 @@ void TPApp_IntTscStateFlow(uint8_t u8TscEnState)
                 }
             }
         }else{
+            /*Prevent false triggering of initialization power-up*/
             tp_interr_low_flag = FALSE;
             tp_interr_high_flag = FALSE;
         }

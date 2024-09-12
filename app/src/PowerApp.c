@@ -43,11 +43,10 @@ void PowerApp_Sequence(uint8_t u8Action)
     case POWER_ON: //total ms
         /* code */
         PortDriver_PinSet(HVLDO_EN_PORT,HVLDO_EN_PIN);
-        TC0App_DelayMS(2U);
         PortDriver_PinSet(VBATT_EN_PORT,VBATT_EN_PIN);
         TC0App_DelayMS(10U);
         PortDriver_PinSet(P3V3_EN_PORT,P3V3_EN_PIN);
-        TC0App_DelayMS(2U);
+        TC0App_DelayMS(10U);
         PortDriver_PinSet(P1V2_EN_PORT,P1V2_EN_PIN);
         TC0App_DelayMS(10U);
         PortDriver_PinSet(DES_PDB_PORT,DES_PDB_PIN);
@@ -60,10 +59,12 @@ void PowerApp_Sequence(uint8_t u8Action)
         TC0App_DelayMS(10U);
         PortDriver_PinClear(DES_PDB_PORT,DES_PDB_PIN);
         TC0App_DelayMS(5U);
-        PortDriver_PinClear(P3V3_EN_PORT,P3V3_EN_PIN);
         PortDriver_PinClear(P1V2_EN_PORT,P1V2_EN_PIN);
         TC0App_DelayMS(5U);
+        PortDriver_PinClear(P3V3_EN_PORT,P3V3_EN_PIN);
+        TC0App_DelayMS(5U);
         PortDriver_PinClear(VBATT_EN_PORT,VBATT_EN_PIN);
+        TC0App_DelayMS(100U);
         PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
         break;
 
@@ -82,7 +83,6 @@ void PowerApp_Sequence(uint8_t u8Action)
         TC0App_DelayMS(5U);
         PortDriver_PinClear(DISP_STBY_PORT,DISP_STBY_PIN);
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-        TC0App_DelayMS(5U);
         PortDriver_PinClear(BIAS_EN_PORT,BIAS_EN_PIN);
         TC0App_DelayMS(5U);
         PortDriver_PinClear(DISP_RESX_PORT,DISP_RESX_PIN);

@@ -397,46 +397,46 @@ extern "C" {
 #define ADC_SYNCCHECK_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_ANALOG
 #endif /* defined (CY_USING_HAL) */
 
-#define FPC_DET_TX_OUT_ENABLED 1U
-#define FPC_DET_TX_OUT_PORT GPIO_PRT2
-#define FPC_DET_TX_OUT_PORT_NUM 2U
-#define FPC_DET_TX_OUT_PIN 4U
-#define FPC_DET_TX_OUT_NUM 4U
-#define FPC_DET_TX_OUT_DRIVEMODE CY_GPIO_DM_PULLDOWN_IN_OFF
-#define FPC_DET_TX_OUT_INIT_DRIVESTATE 0
+#define FPC_DET_TX_LOUT_ENABLED 1U
+#define FPC_DET_TX_LOUT_PORT GPIO_PRT2
+#define FPC_DET_TX_LOUT_PORT_NUM 2U
+#define FPC_DET_TX_LOUT_PIN 4U
+#define FPC_DET_TX_LOUT_NUM 4U
+#define FPC_DET_TX_LOUT_DRIVEMODE CY_GPIO_DM_HIGHZ
+#define FPC_DET_TX_LOUT_INIT_DRIVESTATE 0
 #ifndef ioss_0_port_2_pin_4_HSIOM
     #define ioss_0_port_2_pin_4_HSIOM HSIOM_SEL_GPIO
 #endif
-#define FPC_DET_TX_OUT_HSIOM ioss_0_port_2_pin_4_HSIOM
-#define FPC_DET_TX_OUT_IRQ ioss_interrupts_gpio_2_IRQn
+#define FPC_DET_TX_LOUT_HSIOM ioss_0_port_2_pin_4_HSIOM
+#define FPC_DET_TX_LOUT_IRQ ioss_interrupts_gpio_2_IRQn
 
 #if defined (CY_USING_HAL)
-#define FPC_DET_TX_OUT_HAL_PORT_PIN P2_4
-#define FPC_DET_TX_OUT P2_4
-#define FPC_DET_TX_OUT_HAL_IRQ CYHAL_GPIO_IRQ_NONE
-#define FPC_DET_TX_OUT_HAL_DIR CYHAL_GPIO_DIR_OUTPUT 
-#define FPC_DET_TX_OUT_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_PULLDOWN
+#define FPC_DET_TX_LOUT_HAL_PORT_PIN P2_4
+#define FPC_DET_TX_LOUT P2_4
+#define FPC_DET_TX_LOUT_HAL_IRQ CYHAL_GPIO_IRQ_NONE
+#define FPC_DET_TX_LOUT_HAL_DIR CYHAL_GPIO_DIR_INPUT 
+#define FPC_DET_TX_LOUT_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_NONE
 #endif /* defined (CY_USING_HAL) */
 
-#define FPC_DET_RX_OUT_ENABLED 1U
-#define FPC_DET_RX_OUT_PORT GPIO_PRT2
-#define FPC_DET_RX_OUT_PORT_NUM 2U
-#define FPC_DET_RX_OUT_PIN 5U
-#define FPC_DET_RX_OUT_NUM 5U
-#define FPC_DET_RX_OUT_DRIVEMODE CY_GPIO_DM_HIGHZ
-#define FPC_DET_RX_OUT_INIT_DRIVESTATE 0
+#define FPC_DET_RX_ROUT_ENABLED 1U
+#define FPC_DET_RX_ROUT_PORT GPIO_PRT2
+#define FPC_DET_RX_ROUT_PORT_NUM 2U
+#define FPC_DET_RX_ROUT_PIN 5U
+#define FPC_DET_RX_ROUT_NUM 5U
+#define FPC_DET_RX_ROUT_DRIVEMODE CY_GPIO_DM_HIGHZ
+#define FPC_DET_RX_ROUT_INIT_DRIVESTATE 0
 #ifndef ioss_0_port_2_pin_5_HSIOM
     #define ioss_0_port_2_pin_5_HSIOM HSIOM_SEL_GPIO
 #endif
-#define FPC_DET_RX_OUT_HSIOM ioss_0_port_2_pin_5_HSIOM
-#define FPC_DET_RX_OUT_IRQ ioss_interrupts_gpio_2_IRQn
+#define FPC_DET_RX_ROUT_HSIOM ioss_0_port_2_pin_5_HSIOM
+#define FPC_DET_RX_ROUT_IRQ ioss_interrupts_gpio_2_IRQn
 
 #if defined (CY_USING_HAL)
-#define FPC_DET_RX_OUT_HAL_PORT_PIN P2_5
-#define FPC_DET_RX_OUT P2_5
-#define FPC_DET_RX_OUT_HAL_IRQ CYHAL_GPIO_IRQ_NONE
-#define FPC_DET_RX_OUT_HAL_DIR CYHAL_GPIO_DIR_INPUT 
-#define FPC_DET_RX_OUT_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_NONE
+#define FPC_DET_RX_ROUT_HAL_PORT_PIN P2_5
+#define FPC_DET_RX_ROUT P2_5
+#define FPC_DET_RX_ROUT_HAL_IRQ CYHAL_GPIO_IRQ_NONE
+#define FPC_DET_RX_ROUT_HAL_DIR CYHAL_GPIO_DIR_INPUT 
+#define FPC_DET_RX_ROUT_HAL_DRIVEMODE CYHAL_GPIO_DRIVE_NONE
 #endif /* defined (CY_USING_HAL) */
 
 #define DES_LOCK_ENABLED 1U
@@ -1150,16 +1150,16 @@ extern const cy_stc_gpio_pin_config_t ADC_SYNCCHECK_config;
 extern const cyhal_resource_inst_t ADC_SYNCCHECK_obj;
 #endif /* defined (CY_USING_HAL) */
 
-extern const cy_stc_gpio_pin_config_t FPC_DET_TX_OUT_config;
+extern const cy_stc_gpio_pin_config_t FPC_DET_TX_LOUT_config;
 
 #if defined (CY_USING_HAL)
-extern const cyhal_resource_inst_t FPC_DET_TX_OUT_obj;
+extern const cyhal_resource_inst_t FPC_DET_TX_LOUT_obj;
 #endif /* defined (CY_USING_HAL) */
 
-extern const cy_stc_gpio_pin_config_t FPC_DET_RX_OUT_config;
+extern const cy_stc_gpio_pin_config_t FPC_DET_RX_ROUT_config;
 
 #if defined (CY_USING_HAL)
-extern const cyhal_resource_inst_t FPC_DET_RX_OUT_obj;
+extern const cyhal_resource_inst_t FPC_DET_RX_ROUT_obj;
 #endif /* defined (CY_USING_HAL) */
 
 extern const cy_stc_gpio_pin_config_t DES_LOCK_config;

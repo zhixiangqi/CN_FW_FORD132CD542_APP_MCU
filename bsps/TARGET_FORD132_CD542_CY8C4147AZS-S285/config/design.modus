@@ -280,11 +280,11 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[2].pin[4]" locked="true">
                         <Aliases>
-                            <Alias value="FPC_DET_TX_OUT"/>
+                            <Alias value="FPC_DET_TX_LOUT"/>
                         </Aliases>
                     </Block>
                     <Parameters>
-                        <Param id="DriveModes" value="CY_GPIO_DM_PULLDOWN_IN_OFF"/>
+                        <Param id="DriveModes" value="CY_GPIO_DM_HIGHZ"/>
                         <Param id="inFlash" value="true"/>
                         <Param id="initialState" value="0"/>
                         <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>
@@ -296,7 +296,7 @@
                 <Personality template="m0s8pin" version="2.0">
                     <Block location="ioss[0].port[2].pin[5]" locked="true">
                         <Aliases>
-                            <Alias value="FPC_DET_RX_OUT"/>
+                            <Alias value="FPC_DET_RX_ROUT"/>
                         </Aliases>
                     </Block>
                     <Parameters>
