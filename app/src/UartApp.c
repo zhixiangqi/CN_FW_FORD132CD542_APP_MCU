@@ -29,6 +29,7 @@
 #include "driver/inc/I2C4MDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/PortDriver.h"
+#include "driver/inc/SPIMDriver.h"
 
 #define UART_MARK_POS   7U
 #define UART_CMD_ADDR_POS       (UART_MARK_POS+1U)
@@ -69,6 +70,7 @@ void UartApp_ReadFlow()
     uint8_t u8ParseTxBuffer[255] = {0};
     uint8_t u8ParseRxBuffer[255] = {0};
     uint8_t u8CmdLength = 0U;
+    uint8_t u8CmdLength1 = 0U;
     uint8_t result = UART_RX_EMPTY;
     uint8_t u8i2cstatus = ERROR_FAIL;
     uint8_t u8temp[1] = {0U};
@@ -219,6 +221,17 @@ void UartApp_ReadFlow()
                     }else{
                         /* No read need*/
                     }
+                    break;
+
+                case 0x33U:
+                    u8CmdLength = rdBuffer[UART_CMD_ADDR_POS+1];
+                    u8CmdLength1 = rdBuffer[UART_CMD_ADDR_POS+2];
+                    u8ParseTxBuffer[0]=rdBuffer[UART_CMD_ADDR_POS];
+                    for(uint8_t index = 0U; index < u8CmdLength;index++)
+                    {
+                        u8ParseTxBuffer[index+1] = rdBuffer[index+UART_CMD_ADDR_POS+3];
+                    }
+                    SPIMDriver_Transfer(u8ParseTxBuffer,u8ParseRxBuffer,u8CmdLength+1,u8CmdLength1);
                     break;
 
                 default:

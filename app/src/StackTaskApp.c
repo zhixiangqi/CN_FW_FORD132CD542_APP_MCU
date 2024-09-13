@@ -39,6 +39,7 @@
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"
 #include "driver/inc/EicDriver.h"
+#include "driver/inc/SPIMDriver.h"
 
 #define FIFO true
 

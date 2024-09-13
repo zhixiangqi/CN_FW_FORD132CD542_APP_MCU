@@ -11,6 +11,7 @@
 // *****************************************************************************
 
 #include "driver/inc/SPIMDriver.h"
+#include "driver/inc/PortDriver.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -35,7 +36,7 @@ void SPIMDriver_Interrupt(void)
 }
 
 /*******************************************************************************
- * Function Name: SPIMDriver_Initial
+ * Function Name: SPIMDriver_Initialize
  *******************************************************************************
  *
  * Summary:
@@ -51,7 +52,7 @@ void SPIMDriver_Interrupt(void)
  *
  ******************************************************************************/
 
-bool SPIMDriver_Initial(void)
+bool SPIMDriver_Initialize(void)
 {
     bool bresult = true;
 
@@ -89,22 +90,67 @@ bool SPIMDriver_Initial(void)
     /* Enable the SPI Master block */
     Cy_SCB_SPI_Enable(SPI0M_MCU_HW);
 
+    PortDriver_PinSet(EXFLASH_WP_PORT, EXFLASH_WP_PIN);
+
     return bresult;
 }
 
-cy_en_scb_spi_status_t SPIMDriver_SendReceivePacket(uint8_t *txBuffer, uint8_t *rxBuffer)
+uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t txSize, uint32_t rxSize)
 {
-    cy_en_scb_spi_status_t masterStatus;
-
-    /* Initiate SPI Master write transaction. */
-    masterStatus = Cy_SCB_SPI_Transfer(SPI0M_MCU_HW, txBuffer, rxBuffer,
-                                       sizeof(txBuffer), &SPI0M_MCU_context);
-
-    /* Blocking wait for transfer completion */
-    while (0UL != (CY_SCB_SPI_TRANSFER_ACTIVE &
-                   Cy_SCB_SPI_GetTransferStatus(SPI0M_MCU_HW, &SPI0M_MCU_context)))
+    uint8_t status = ERROR_TX_FAIL;
+    cy_en_scb_spi_status_t errorStatus;
+    uint32_t masterStatus;
+    
+    errorStatus = Cy_SCB_SPI_Transfer(SPI0M_MCU_HW, txBuffer, rxBuffer,
+                                      txSize + rxSize , &SPI0M_MCU_context);
+    if(errorStatus == CY_SCB_SPI_SUCCESS)
     {
-    }
+        /* Wait until master complete read transfer or time out has occurred */
+        do
+        {
+            masterStatus = Cy_SCB_SPI_GetTransferStatus(SPI0M_MCU_HW, &SPI0M_MCU_context);
+            Cy_SysLib_DelayUs(CY_SCB_WAIT_1_UNIT);
 
-    return (masterStatus);
+        } while (0UL != (masterStatus & CY_SCB_SPI_TRANSFER_ACTIVE));
+        /* Check transfer status */
+        switch (masterStatus & CY_SCB_SPI_TX_INTR_MASK)
+        {
+        case 0:
+            status = ERROR_TX_NONE;
+            break;
+        case CY_SCB_SPI_TX_TRIGGER:
+            /* code */
+            status = ERROR_TX_TRIGGER;
+            break;
+        
+        case CY_SCB_SPI_TX_NOT_FULL:
+            /* code */
+            status = ERROR_TX_NOT_FULL;
+            break;
+
+        case CY_SCB_SPI_TX_EMPTY:
+            /* code */
+            status = ERROR_TX_EMPTY;
+            break;
+
+        case CY_SCB_SPI_TX_OVERFLOW:
+            /* code */
+            status = ERROR_TX_OVERFLOW;
+            break;
+
+        case CY_SCB_SPI_TX_UNDERFLOW:
+            /* code */
+            status = ERROR_TX_UNDERFLOW;
+            break;
+
+        default:
+            status = ERROR_TX_FAIL;
+            break;
+        }
+    }
+    if(status != CY_SCB_SPI_SUCCESS){
+        Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
+        SPIMDriver_Initialize();
+    }
+    return (status);
 }

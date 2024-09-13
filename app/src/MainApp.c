@@ -88,7 +88,7 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
         UartDriver_TxWriteString((uint8_t *)"I2C M driver init fail\r\n");
     }
     /* Initialize the SPI Master */
-    if(SPIMDriver_Initial() == false)
+    if(SPIMDriver_Initialize() == false)
     {
         UartDriver_TxWriteString((uint8_t *)"SPI M driver init fail\r\n");
     }
