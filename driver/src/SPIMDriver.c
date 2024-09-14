@@ -90,8 +90,6 @@ bool SPIMDriver_Initialize(void)
     /* Enable the SPI Master block */
     Cy_SCB_SPI_Enable(SPI0M_MCU_HW);
 
-    PortDriver_PinSet(EXFLASH_WP_PORT, EXFLASH_WP_PIN);
-
     return bresult;
 }
 

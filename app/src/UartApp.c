@@ -26,6 +26,7 @@
 #include "app/inc/UartApp.h"
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/RegisterApp.h"
+#include "app/inc/FlashApp.h"
 #include "driver/inc/I2C4MDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/PortDriver.h"
@@ -232,6 +233,25 @@ void UartApp_ReadFlow()
                         u8ParseTxBuffer[index+1] = rdBuffer[index+UART_CMD_ADDR_POS+3];
                     }
                     SPIMDriver_Transfer(u8ParseTxBuffer,u8ParseRxBuffer,u8CmdLength+1,u8CmdLength1);
+                    break;
+
+                case 0x34U:
+                    if (rdBuffer[UART_CMD_ADDR_POS]==0x90)
+                    {
+                       Flash_ReadDeviceId();
+                    }
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x9F)
+                    {
+                        Flash_ReadJedecId();
+                    }
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x03)
+                    {
+                        FlashApp_ReadDataBytes(0x4000, 10);
+                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x02)
+                    {
+                        uint8_t WriteBuff[10]={0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59};
+                        Flash_WritePage(0x4000, WriteBuff, 10);
+                    }
                     break;
 
                 default:
