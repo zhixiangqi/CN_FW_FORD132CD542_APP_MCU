@@ -93,57 +93,67 @@ bool SPIMDriver_Initialize(void)
     return bresult;
 }
 
-uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t txSize, uint32_t rxSize)
+uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t bufferSize)
 {
     uint8_t status = ERROR_TX_FAIL;
     cy_en_scb_spi_status_t errorStatus;
     uint32_t masterStatus;
-    
-    errorStatus = Cy_SCB_SPI_Transfer(SPI0M_MCU_HW, txBuffer, rxBuffer,
-                                      txSize + rxSize , &SPI0M_MCU_context);
-    if(errorStatus == CY_SCB_SPI_SUCCESS)
+    /* Timeout 1 sec (one unit is us) */
+    uint32_t timeout = 8000UL;
+
+    /* Master: start a transfer. Slave: prepare for a transfer. */
+    errorStatus = Cy_SCB_SPI_Transfer(SPI0M_MCU_HW, txBuffer, rxBuffer, bufferSize, &SPI0M_MCU_context);
+    if (errorStatus == CY_SCB_SPI_SUCCESS)
     {
-        /* Wait until master complete read transfer or time out has occurred */
+        /* Blocking wait for transfer completion */
         do
         {
             masterStatus = Cy_SCB_SPI_GetTransferStatus(SPI0M_MCU_HW, &SPI0M_MCU_context);
             Cy_SysLib_DelayUs(CY_SCB_WAIT_1_UNIT);
-
-        } while (0UL != (masterStatus & CY_SCB_SPI_TRANSFER_ACTIVE));
-        /* Check transfer status */
-        switch (masterStatus & CY_SCB_SPI_TX_INTR_MASK)
+            timeout--;
+        } while (0UL != (CY_SCB_SPI_TRANSFER_ACTIVE & masterStatus));
+        if (timeout <= 0)
         {
-        case 0:
-            status = ERROR_TX_NONE;
-            break;
-        case CY_SCB_SPI_TX_TRIGGER:
-            /* code */
-            status = ERROR_TX_TRIGGER;
-            break;
-        
-        case CY_SCB_SPI_TX_NOT_FULL:
-            /* code */
-            status = ERROR_TX_NOT_FULL;
-            break;
+            status = ERROR_TX_TIMEOUT;
+            /* Timeout recovery */
+            Cy_SCB_SPI_Disable(SPI0M_MCU_HW, &SPI0M_MCU_context);
+            Cy_SCB_SPI_Enable(SPI0M_MCU_HW);
+        }else{
+            /* Check transfer status */
+            switch (masterStatus & CY_SCB_SPI_TX_INTR_MASK)
+            {
+            case 0:
+                status = ERROR_TX_NONE;
+                break;
+            case CY_SCB_SPI_TX_TRIGGER:
+                /* code */
+                status = ERROR_TX_TRIGGER;
+                break;
+            
+            case CY_SCB_SPI_TX_NOT_FULL:
+                /* code */
+                status = ERROR_TX_NOT_FULL;
+                break;
 
-        case CY_SCB_SPI_TX_EMPTY:
-            /* code */
-            status = ERROR_TX_EMPTY;
-            break;
+            case CY_SCB_SPI_TX_EMPTY:
+                /* code */
+                status = ERROR_TX_EMPTY;
+                break;
 
-        case CY_SCB_SPI_TX_OVERFLOW:
-            /* code */
-            status = ERROR_TX_OVERFLOW;
-            break;
+            case CY_SCB_SPI_TX_OVERFLOW:
+                /* code */
+                status = ERROR_TX_OVERFLOW;
+                break;
 
-        case CY_SCB_SPI_TX_UNDERFLOW:
-            /* code */
-            status = ERROR_TX_UNDERFLOW;
-            break;
+            case CY_SCB_SPI_TX_UNDERFLOW:
+                /* code */
+                status = ERROR_TX_UNDERFLOW;
+                break;
 
-        default:
-            status = ERROR_TX_FAIL;
-            break;
+            default:
+                status = ERROR_TX_FAIL;
+                break;
+            }
         }
     }
     if(status != CY_SCB_SPI_SUCCESS){

@@ -18,12 +18,13 @@
  * Macros
  ******************************************************************************/
 #define ERROR_TX_NONE           0x00U
-#define ERROR_TX_TRIGGER        CY_SCB_SPI_TX_TRIGGER
-#define ERROR_TX_NOT_FULL       CY_SCB_SPI_TX_NOT_FULL
-#define ERROR_TX_EMPTY          CY_SCB_SPI_TX_EMPTY
-#define ERROR_TX_OVERFLOW       CY_SCB_SPI_TX_OVERFLOW
-#define ERROR_TX_UNDERFLOW      CY_SCB_SPI_TX_UNDERFLOW
-#define ERROR_TX_FAIL           0xFFU
+#define ERROR_TX_TRIGGER        0x01U
+#define ERROR_TX_NOT_FULL       0x02U
+#define ERROR_TX_TIMEOUT        0x03U
+#define ERROR_TX_EMPTY          0x10U
+#define ERROR_TX_OVERFLOW       0x20U
+#define ERROR_TX_UNDERFLOW      0x40U
+#define ERROR_TX_FAIL           0x73U
 
 /* Re-Name Macro for project use*/
 #define SPI0M_MCU_HW    SCB_SPI0M_HW
@@ -35,6 +36,5 @@
 
 void SPIMDriver_Interrupt(void);
 bool SPIMDriver_Initialize(void);
-uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t txSize, uint32_t rxSize);
-
+uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t bufferSize);
 #endif /* DRIVER_INC_SPIMDRIVER_H_ */

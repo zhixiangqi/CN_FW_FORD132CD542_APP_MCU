@@ -71,7 +71,6 @@ void UartApp_ReadFlow()
     uint8_t u8ParseTxBuffer[255] = {0};
     uint8_t u8ParseRxBuffer[255] = {0};
     uint8_t u8CmdLength = 0U;
-    uint8_t u8CmdLength1 = 0U;
     uint8_t result = UART_RX_EMPTY;
     uint8_t u8i2cstatus = ERROR_FAIL;
     uint8_t u8temp[1] = {0U};
@@ -226,32 +225,44 @@ void UartApp_ReadFlow()
 
                 case 0x33U:
                     u8CmdLength = rdBuffer[UART_CMD_ADDR_POS+1];
-                    u8CmdLength1 = rdBuffer[UART_CMD_ADDR_POS+2];
                     u8ParseTxBuffer[0]=rdBuffer[UART_CMD_ADDR_POS];
                     for(uint8_t index = 0U; index < u8CmdLength;index++)
                     {
-                        u8ParseTxBuffer[index+1] = rdBuffer[index+UART_CMD_ADDR_POS+3];
+                        u8ParseTxBuffer[index+1] = rdBuffer[index+UART_CMD_ADDR_POS+2];
                     }
-                    SPIMDriver_Transfer(u8ParseTxBuffer,u8ParseRxBuffer,u8CmdLength+1,u8CmdLength1);
+                    SPIMDriver_Transfer(u8ParseTxBuffer,u8ParseRxBuffer,u8CmdLength);
                     break;
 
                 case 0x34U:
-                    if (rdBuffer[UART_CMD_ADDR_POS]==0x90)
+                    if (rdBuffer[UART_CMD_ADDR_POS]==0x9F)
                     {
-                       Flash_ReadDeviceId();
+                        GD25Q80E_ReadJedecId();
                     }
-                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x9F)
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0xC7)
                     {
-                        Flash_ReadJedecId();
+                        GD25Q80E_EraseChip();
                     }
                     else if (rdBuffer[UART_CMD_ADDR_POS]==0x03)
                     {
-                        FlashApp_ReadDataBytes(0x4000, 10);
+                        uint8_t ReadBuff[100]={0};
+                        GD25Q80_ReadData(0x4000, sizeof(ReadBuff), &ReadBuff[0]);
                     }else if (rdBuffer[UART_CMD_ADDR_POS]==0x02)
                     {
-                        uint8_t WriteBuff[10]={0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59};
-                        Flash_WritePage(0x4000, WriteBuff, 10);
+                        uint8_t WriteBuff[100]={rdBuffer[UART_CMD_ADDR_POS+1],0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,rdBuffer[UART_CMD_ADDR_POS+2]};
+                        GD25Q80E_PageProgram(0x4000, sizeof(WriteBuff), &WriteBuff[0]);
+                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x01)
+                    {
+                       GD25Q80E_WriteStatusRegister(rdBuffer[UART_CMD_ADDR_POS+1]);
                     }
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x06)
+                    {
+                        GD25Q80E_WriteEnable(TRUE);
+                    }
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x05)
+                    {
+                        GD25Q80E_ReadStatusRegister();
+                    }
+                    
                     break;
 
                 default:
