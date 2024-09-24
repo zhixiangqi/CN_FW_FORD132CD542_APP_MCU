@@ -12,7 +12,7 @@
 
 #include "driver/inc/SPIMDriver.h"
 #include "driver/inc/PortDriver.h"
-
+#include "driver/inc/UartDriver.h"
 // *****************************************************************************
 // *****************************************************************************
 // Section: PORT Implementation
@@ -95,7 +95,7 @@ bool SPIMDriver_Initialize(void)
 
 uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t bufferSize)
 {
-    uint8_t status = ERROR_TX_FAIL;
+    uint8_t status = ERROR_SPI_FAIL;
     cy_en_scb_spi_status_t errorStatus;
     uint32_t masterStatus;
     /* Timeout 1 sec (one unit is us) */
@@ -114,44 +114,36 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
         } while (0UL != (CY_SCB_SPI_TRANSFER_ACTIVE & masterStatus));
         if (timeout <= 0)
         {
-            status = ERROR_TX_TIMEOUT;
+            status = ERROR_SPI_TIMEOUT;
             /* Timeout recovery */
             Cy_SCB_SPI_Disable(SPI0M_MCU_HW, &SPI0M_MCU_context);
             Cy_SCB_SPI_Enable(SPI0M_MCU_HW);
         }else{
             /* Check transfer status */
-            switch (masterStatus & CY_SCB_SPI_TX_INTR_MASK)
+            switch (masterStatus & CY_SCB_SPI_TRANSFER_ERR)
             {
             case 0:
-                status = ERROR_TX_NONE;
+                status = ERROR_SPI_NONE;
                 break;
-            case CY_SCB_SPI_TX_TRIGGER:
+
+            case CY_SCB_SPI_SLAVE_TRANSFER_ERR:
                 /* code */
-                status = ERROR_TX_TRIGGER;
+                status = ERROR_SPI_BUSNG;
                 break;
             
-            case CY_SCB_SPI_TX_NOT_FULL:
+            case CY_SCB_SPI_TRANSFER_OVERFLOW:
                 /* code */
-                status = ERROR_TX_NOT_FULL;
+                status = ERROR_SPI_ORFW;
                 break;
 
-            case CY_SCB_SPI_TX_EMPTY:
+            case CY_SCB_SPI_TRANSFER_UNDERFLOW:
                 /* code */
-                status = ERROR_TX_EMPTY;
+                status = ERROR_SPI_UDFW;
                 break;
 
-            case CY_SCB_SPI_TX_OVERFLOW:
-                /* code */
-                status = ERROR_TX_OVERFLOW;
-                break;
-
-            case CY_SCB_SPI_TX_UNDERFLOW:
-                /* code */
-                status = ERROR_TX_UNDERFLOW;
-                break;
 
             default:
-                status = ERROR_TX_FAIL;
+                status = ERROR_SPI_FAIL;
                 break;
             }
         }

@@ -42,6 +42,7 @@ static long int intb_hold_timer_ms=0;
 static long int intb_attn_timer_ms=0;
 static long int wdt_timer_ms=0;
 static long int hold_timer_ms=1001;
+static long int flashlog_timer_ms=0;
 uint8_t FLAG_DERATINGCNT_START = FALSE;
 uint8_t FLAG_BATTERYPROT_START = FALSE;
 uint8_t FLAG_STARTTOWORK_START = FALSE;
@@ -117,6 +118,7 @@ static void TC0App_Callback_InterruptHandler(void)
     }
     hold_timer_ms = hold_timer_ms+1;
     cpu_timer_ms = cpu_timer_ms+1;
+    flashlog_timer_ms = flashlog_timer_ms+1;
     if(FLAG_INTBSETTCNT_START == TRUE)
     {
         intb_set_timer_ms = intb_set_timer_ms+1;
@@ -296,6 +298,11 @@ uint8_t TC0App_TimerReturn(uint8_t Request)
         /* code */
         u8Return = intb_attn_timer_ms;
         break;
+
+    case TIMER_FLASH_LOG_COUNT:
+        /* code */
+        u8Return = flashlog_timer_ms;
+        break;
     
     default:
         u8Return = 0xFFU;
@@ -350,6 +357,11 @@ void TC0App_TimerReset(uint8_t Request)
     case TIMER_INT_ATTN_COUNT:
         /* code */
         intb_attn_timer_ms = 0U;
+        break;
+
+    case TIMER_FLASH_LOG_COUNT:
+        /* code */
+        flashlog_timer_ms = 0U;
         break;
 
     default:

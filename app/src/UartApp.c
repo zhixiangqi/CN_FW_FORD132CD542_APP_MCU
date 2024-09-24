@@ -31,6 +31,7 @@
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/SPIMDriver.h"
+#include "driver/inc/GD25QDriver.h"
 
 #define UART_MARK_POS   7U
 #define UART_CMD_ADDR_POS       (UART_MARK_POS+1U)
@@ -234,35 +235,38 @@ void UartApp_ReadFlow()
                     break;
 
                 case 0x34U:
-                    if (rdBuffer[UART_CMD_ADDR_POS]==0x9F)
+                    if (rdBuffer[UART_CMD_ADDR_POS]==0x90)
                     {
-                        GD25Q80E_ReadJedecId();
+                        uint16_t u8TxBuffer[30] = {0};
+                        sprintf((char *)u8TxBuffer,"I2C FAIL> 0x%02x\r\n",GD25QDriver_ReadDeviceID());
+                        UartDriver_TxWriteString(u8TxBuffer);
                     }
                     else if (rdBuffer[UART_CMD_ADDR_POS]==0xC7)
                     {
-                        GD25Q80E_EraseChip();
+                        GD25QDriver_EraseChip();
                     }
                     else if (rdBuffer[UART_CMD_ADDR_POS]==0x03)
                     {
                         uint8_t ReadBuff[100]={0};
-                        GD25Q80_ReadData(0x4000, sizeof(ReadBuff), &ReadBuff[0]);
+                        GD25QDriver_ReadData(&ReadBuff[0],0x4000, sizeof(ReadBuff));
                     }else if (rdBuffer[UART_CMD_ADDR_POS]==0x02)
                     {
                         uint8_t WriteBuff[100]={rdBuffer[UART_CMD_ADDR_POS+1],0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,rdBuffer[UART_CMD_ADDR_POS+2]};
-                        GD25Q80E_PageProgram(0x4000, sizeof(WriteBuff), &WriteBuff[0]);
+                        GD25QDriver_PageProgram(&WriteBuff[0], 0x4000, sizeof(WriteBuff));
                     }else if (rdBuffer[UART_CMD_ADDR_POS]==0x01)
                     {
-                       GD25Q80E_WriteStatusRegister(rdBuffer[UART_CMD_ADDR_POS+1]);
+                       GD25QDriver_WriteSR(rdBuffer[UART_CMD_ADDR_POS+1]);
                     }
                     else if (rdBuffer[UART_CMD_ADDR_POS]==0x06)
                     {
-                        GD25Q80E_WriteEnable(TRUE);
+                        GD25QDriver_WriteEnable(TRUE);
                     }
                     else if (rdBuffer[UART_CMD_ADDR_POS]==0x05)
                     {
-                        GD25Q80E_ReadStatusRegister();
+                        uint8_t u8TxBuffer[30] = {0};
+                        sprintf((char *)u8TxBuffer,"I2C FAIL> 0x%02x\r\n",GD25QDriver_ReadSR());
+                        UartDriver_TxWriteString(u8TxBuffer);
                     }
-                    
                     break;
 
                 default:

@@ -12,6 +12,7 @@
 #define TIMER_WDTCOUNT          0x06U
 #define TIMER_HOLDCOUNT         0x07U
 #define TIMER_INT_ATTN_COUNT    0x08U
+#define TIMER_FLASH_LOG_COUNT   0x09U
 
 #define DHUCmdBufferSize 256U
 

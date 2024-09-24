@@ -17,14 +17,13 @@
 /*******************************************************************************
  * Macros
  ******************************************************************************/
-#define ERROR_TX_NONE           0x00U
-#define ERROR_TX_TRIGGER        0x01U
-#define ERROR_TX_NOT_FULL       0x02U
-#define ERROR_TX_TIMEOUT        0x03U
-#define ERROR_TX_EMPTY          0x10U
-#define ERROR_TX_OVERFLOW       0x20U
-#define ERROR_TX_UNDERFLOW      0x40U
-#define ERROR_TX_FAIL           0x73U
+#define ERROR_SPI_NONE    0x00U
+#define ERROR_SPI_PARA    0x01U
+#define ERROR_SPI_BUSNG   0x02U
+#define ERROR_SPI_ORFW    0x03U
+#define ERROR_SPI_UDFW    0x04U
+#define ERROR_SPI_TIMEOUT 0x05U
+#define ERROR_SPI_FAIL    0xFAU
 
 /* Re-Name Macro for project use*/
 #define SPI0M_MCU_HW    SCB_SPI0M_HW
