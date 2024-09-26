@@ -33,8 +33,6 @@
 #include "app/inc/UartApp.h"
 #include "app/inc/PowerApp.h"
 #include "app/inc/UpdateApp.h"
-#include "app/inc/TPApp.h"
-#include "app/inc/DDIApp.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -95,7 +93,7 @@ static uint8_t StackTaskApp_Push(Stack* stack, uint8_t u8TaskNumber)
     {
         /*Over Flow Error Flag*/
         ErrorFlag = 1U;
-        //RegisterApp_DHU_Setup(CMDID_COMP,COMP_OFFSET_OVERFLOW,0xFF);
+        RegisterApp_DHU_Setup(CMD_DTC,DTC_TASK_OVERFLOW,0xEFU);
     }
     else
     {
@@ -231,6 +229,10 @@ void StackTaskApp_MissionAction(void)
 
         case TASK_LCDFLOW:
             DiagApp_LcdFaultCheckFlow();
+        break;
+
+        case TASK_LCDVERS:
+            DisplayChipApp_VerCheck();
         break;
 
         case TASK_SYNCCHECKLOW:
