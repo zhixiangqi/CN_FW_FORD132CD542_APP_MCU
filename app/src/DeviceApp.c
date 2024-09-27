@@ -66,7 +66,7 @@ static uint8_t DV_SW_FPN[NUM_SW_FPN] = {
 #define NUM_SERIAL_FPN    25U
 static uint8_t DV_SERIAL_FPN[NUM_SERIAL_FPN] = {
     /* EXAMPLE: H1BT-14F180-FA*/
-    0x48,0x31,0x42,0x54,0x2d,0x31,0x34,0x46,0x31,0x38,0x30,0x2d,0x46,0x41
+    0
 };
 #define NUM_MAINCAL_FPN    25U
 static uint8_t DV_MAINCAL_FPN[NUM_MAINCAL_FPN] = {
@@ -107,6 +107,7 @@ void DeviceApp_Intial(void)
     {
         RegisterApp_DHU_Setup(CMD_SW_FPN,CMD_DATA_POS+index,DV_SW_FPN[index]);
     }
+    (void)memcpy((void *)DV_SERIAL_FPN, (void *)(ADDR_MCUFLASH_SNUMBER), sizeof(DV_SERIAL_FPN));
     for(uint16_t index=0;index<NUM_SERIAL_FPN;index++)
     {
         RegisterApp_DHU_Setup(CMD_SN,CMD_DATA_POS+index,DV_SERIAL_FPN[index]);
@@ -125,19 +126,24 @@ void DeviceApp_0xF1FabCommCtrl(void)
     uint8_t u8CommLength; /*Length*/
     uint8_t TxBuff[256] = {0U};
     uint8_t RxBuff[256] = {0U};
+    uint8_t u8TxBuffer[60] = {0};
 
     u8CommObject = RegisterApp_DHU_Read(CMD_FAB_CTRL, CMD_DATA_POS + 2U);
     u8CommType = RegisterApp_DHU_Read(CMD_FAB_CTRL, CMD_DATA_POS + 3U);
     u8CommAddr = RegisterApp_DHU_Read(CMD_FAB_CTRL, CMD_DATA_POS + 4U);
     u8CommLength = RegisterApp_DHU_Read(CMD_FAB_CTRL, CMD_DATA_POS + 5U);
-
+    u8CommLength = (u8CommLength < 65U) ? u8CommLength : 64U;
+    for(uint32_t u32index = 0U; u32index < RegisterMaxSize; u32index++)
+    {
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, u32index, 0xFFU);
+    }
     switch (u8CommType)
     {
     case CommType_WRITE:
         /* code */
         for(uint8_t index = 0U; index < u8CommLength; index++)
         {
-            TxBuff[index] = RegisterApp_DHU_Read(CMD_FAB_CTRL,CMD_DATA_POS+2U+4U+index);
+            TxBuff[index] = RegisterApp_DHU_Read(CMD_FAB_CTRL,CMD_DATA_POS + 6U + index);
         }
         (void)I2C4MDriver_Write(u8CommAddr,TxBuff,u8CommLength);
         break;
@@ -145,12 +151,14 @@ void DeviceApp_0xF1FabCommCtrl(void)
     case CommType_READ:
         /* code */
         (void)I2C4MDriver_Read(u8CommAddr,RxBuff,u8CommLength);
-        RegisterApp_DHU_Setup(0xF2U,0x00U,u8CommObject);
-        RegisterApp_DHU_Setup(0xF2U,0x01U,u8CommAddr);
-        RegisterApp_DHU_Setup(0xF2U,0x02U,u8CommLength);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x00U,CMD_FAB_CTRLRD);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x01U,u8CommObject);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x02U,u8CommAddr);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x03U,u8CommType);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x04U,u8CommLength);
         for(uint8_t index = 0U; index < u8CommLength; index++)
         {
-            RegisterApp_DHU_Setup(0xF2U,index+3U,RxBuff[index]);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,index+5U,RxBuff[index]);
         }
         break;
 
@@ -176,36 +184,99 @@ void DeviceApp_0xF1FabCommCtrl(void)
 
     case CommType_PortRead:
         /* code */
-        RegisterApp_DHU_Setup(0xF2U,0x00U,0xFFU);
-        RegisterApp_DHU_Setup(0xF2U,0x01U,u8CommAddr);
-        RegisterApp_DHU_Setup(0xF2U,0x02U,0xFFU);
-        RegisterApp_DHU_Setup(0xF2U,0x03U,PortDrvier_PinRead(((GPIO_PRT_Type*) &GPIO->PRT[(u8CommAddr>>4)]),(u8CommAddr&0x0F)));
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x00U,0xFFU);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x01U,u8CommAddr);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x02U,0xFFU);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x03U,PortDrvier_PinRead(((GPIO_PRT_Type*) &GPIO->PRT[(u8CommAddr>>4)]),(u8CommAddr&0x0F)));
         break;
 
     case CommType_PortSet:
         /* code */
-        RegisterApp_DHU_Setup(0xF2U,0x00U,0xFFU);
-        RegisterApp_DHU_Setup(0xF2U,0x01U,u8CommAddr);
-        RegisterApp_DHU_Setup(0xF2U,0x02U,0xFFU);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x00U,0xFFU);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x01U,u8CommAddr);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x02U,0xFFU);
         (void)PortDriver_PinSet(((GPIO_PRT_Type*) &GPIO->PRT[(u8CommAddr>>4)]),(u8CommAddr&0x0F));
-        RegisterApp_DHU_Setup(0xF2U,0x03U,PortDrvier_PinRead(((GPIO_PRT_Type*) &GPIO->PRT[(u8CommAddr>>4)]),(u8CommAddr&0x0F)));
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x03U,PortDrvier_PinRead(((GPIO_PRT_Type*) &GPIO->PRT[(u8CommAddr>>4)]),(u8CommAddr&0x0F)));
         break;
 
     case CommType_PortClean:
         /* code */
-        RegisterApp_DHU_Setup(0xF2U,0x00U,0xFFU);
-        RegisterApp_DHU_Setup(0xF2U,0x01U,u8CommAddr);
-        RegisterApp_DHU_Setup(0xF2U,0x02U,0xFFU);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x00U,0xFFU);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x01U,u8CommAddr);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x02U,0xFFU);
         (void)PortDriver_PinClear(((GPIO_PRT_Type*) &GPIO->PRT[(u8CommAddr>>4)]),(u8CommAddr&0x0F));
-        RegisterApp_DHU_Setup(0xF2U,0x03U,PortDrvier_PinRead(((GPIO_PRT_Type*) &GPIO->PRT[(u8CommAddr>>4)]),(u8CommAddr&0x0F)));
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD,0x03U,PortDrvier_PinRead(((GPIO_PRT_Type*) &GPIO->PRT[(u8CommAddr>>4)]),(u8CommAddr&0x0F)));
         break;
 
     case CommType_FLASHWRITE:
-        
+        if(u8CommLength == 8U)
+        {
+            uint32_t u32TxBuffIndex = 0U;
+            uint32_t u32TxBuffAddr  = 0U;
+            uint32_t u32RegOffeset = CMD_DATA_POS + 6U;
+            // Record Address
+            u32TxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 0U) << 24);
+            u32TxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 1U) << 16);
+            u32TxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 2U) << 8);
+            u32TxBuffAddr += RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 3U);
+            // MSB First in, Flash Data
+            TxBuff[u32TxBuffIndex] = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 4U);
+            u32TxBuffIndex += 1U;
+            TxBuff[u32TxBuffIndex] = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 5U);
+            u32TxBuffIndex += 1U;
+            TxBuff[u32TxBuffIndex] = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 6U);
+            u32TxBuffIndex += 1U;
+            TxBuff[u32TxBuffIndex] = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 7U);
+            u32TxBuffIndex += 1U;
+            // Flashing
+            if((u32TxBuffAddr >= ADDR_MCUFLASH_FABCTRL) && (u32TxBuffAddr < ADDR_MCUFLASH_MAXIMUM))
+            {
+                FlashApp_WriteRowFlash(&TxBuff[0],u32TxBuffAddr,4U);
+                RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, CMD_FAB_CTRLRD);
+                RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
+                RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
+                RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x03U, u8CommAddr);
+                RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x04U, (u8CommLength));
+                for (uint32_t i = 0U; i < 4U; i++)
+                {
+                    // MSB forward
+                    RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, (0x05U - i +3U), (uint8_t)(u32TxBuffAddr >> (8*i)));
+                    RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, (0x05U + i +4U), TxBuff[i]);
+                }
+            }
+            else{}
+            sprintf((char *)u8TxBuffer,"u32TxBuffAddr:%08lX\r\n",u32TxBuffAddr);
+            UartDriver_TxWriteString(u8TxBuffer);
+        }
+        else{}
         break;
 
     case CommType_FLASHREAD:
-        
+        if (u8CommLength == 4U)
+        {
+            uint32_t u32TxBuffAddr  = 0U;
+            uint32_t u32RegOffeset = CMD_DATA_POS + 6U;
+            u32TxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 0U) << 24);
+            u32TxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 1U) << 16);
+            u32TxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 2U) << 8);
+            u32TxBuffAddr += RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RegOffeset + 3U);
+            if(u32TxBuffAddr < ADDR_MCUFLASH_MAXIMUM)
+            {
+                uint8_t dataStr[4] = {0};
+                (void)memcpy((void *)dataStr, (void *) u32TxBuffAddr, sizeof(dataStr));
+                RegisterApp_DHU_Setup(0xF2U, 0x00U, 0xF2U);
+                RegisterApp_DHU_Setup(0xF2U, 0x01U, u8CommObject);
+                RegisterApp_DHU_Setup(0xF2U, 0x02U, u8CommType);
+                RegisterApp_DHU_Setup(0xF2U, 0x03U, u8CommAddr);
+                RegisterApp_DHU_Setup(0xF2U, 0x04U, (u8CommLength));
+                for (uint32_t i = 0U; i < u8CommLength; i++)
+                {
+                    RegisterApp_DHU_Setup(0xF2U, (0x05U + i), dataStr[i]);
+                }
+            }
+            else{}
+        }
+        else{}
         break;
 
     default:
