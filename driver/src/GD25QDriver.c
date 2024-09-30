@@ -7,6 +7,8 @@
 #include "driver/inc/GD25QDriver.h"
 #include "driver/inc/SPIMDriver.h"
 
+uint8_t u8gd25qBuff[GD25Q_PAGESIZE]={0xFF};
+
 uint8_t GD25QDriver_ReadSR(void)
 {
   uint8_t u8result;
@@ -255,48 +257,94 @@ uint8_t GD25QDriver_EraseChip(void)
   return u8result;
 }
 
-uint8_t GD25Q_BUFFER[4096];		 
-void GD25QDriver_WriteAppoint(uint8_t* u8pBuffer,uint32_t u32WriteAddr,uint16_t u16NumByteToWrite)  
-{ 
-	uint32_t secpos;
-	uint16_t secoff;
-	uint16_t secremain;	  
-  uint16_t i;    
-	uint8_t * GD25Q_BUF;	  
-  GD25Q_BUF=GD25Q_BUFFER;	     
- 	secpos=u32WriteAddr/4096;//sector address  
-	secoff=u32WriteAddr%4096;//Offset within a sector
-	secremain=4096-secoff;//Remaining space size of sector   
+uint8_t GD25QDriver_WriteSector(uint8_t* pdata, uint32_t addr, uint16_t size)
+{
+    uint8_t u8result = 0;
+    uint16_t page_offset = 0;
+    uint16_t page_remain = 0;
 
- 	if(u16NumByteToWrite<=secremain)secremain=u16NumByteToWrite;//No more than 4096 bytes
-	while(1) 
-	{	
-		GD25QDriver_ReadData(GD25Q_BUF,secpos*4096,4096);//Read out the content of the entire sector
-		for(i=0;i<secremain;i++)//Verify data
-		{
-			if(GD25Q_BUF[secoff+i]!=0XFF)break;//Need to erase  	  
-		}
-		if(i<secremain)//Need to erase
-		{
-			GD25QDriver_SectorErase(secpos);		//erase this sector
-			for(i=0;i<secremain;i++)	   		//copy
-			{
-				GD25Q_BUF[i+secoff]=u8pBuffer[i];	  
-			}
-			GD25QDriver_PageProgram_NoCheck(GD25Q_BUF,secpos*4096,4096);//Write the entire sector  
+    /* Calculate the offset address within the page */
+    page_offset = addr%GD25Q_SECTORSIZE;
+    /* Calculate the remaining space on the page */
+    page_remain = GD25Q_SECTORSIZE - page_offset;
+    
+    if(size <= page_remain){
+        page_remain = size;
+    }
+    
+    while(1)
+    {
+        u8result = GD25QDriver_PageProgram(pdata, addr, page_remain);
+        if(page_remain != size){
+            addr += page_remain;
+            pdata += page_remain;
+            size -= page_remain;
+            if(size > GD25Q_SECTORSIZE){
+                page_remain = GD25Q_SECTORSIZE;
+            }
+            else{
+                page_remain = size;
+            }
+        }else{
+            break;
+        }
+    }
+    return u8result;
+}
 
-		}else GD25QDriver_PageProgram_NoCheck(u8pBuffer,u32WriteAddr,secremain);//Write the erased data directly into the remaining section of the sector 				   
-		if(u16NumByteToWrite==secremain)break;//Writing completed
-		else//Writing not completed
-		{
-			secpos++;//Increase sector address by 1
-			secoff=0;//The offset position is 0 	 
-
-      u8pBuffer+=secremain;  				//Pointer offset
-			u32WriteAddr+=secremain;				//Write address offset	   
-      u16NumByteToWrite-=secremain;			//Decreasing byte count
-			if(u16NumByteToWrite>4096)secremain=4096;//The next sector still cannot be written
-			else secremain=u16NumByteToWrite;		//The next sector can be completed now
-		}	 
-	};	 
+uint8_t GD25QDriver_WriteData(uint8_t* pdata, uint32_t address, uint16_t size)
+{
+    uint8_t u8result = 0;    
+    uint32_t sector_pos = 0;
+    uint16_t sector_offset = 0;            
+    uint16_t sector_remain = 0;
+    uint32_t i;
+    
+    /* sector address */
+    sector_pos = address/GD25Q_PAGESIZE;
+    /* Calculate the address offset within the sector */
+    sector_offset = address%GD25Q_PAGESIZE;
+    /* Calculate the remaining space within the sector */
+    sector_remain = GD25Q_PAGESIZE - sector_offset;
+    
+    if(size <= sector_remain){
+        sector_remain = size;
+    }
+    while(1)
+    {
+        /* Read all data in the current sector */
+        GD25QDriver_ReadData(u8gd25qBuff, sector_pos*GD25Q_PAGESIZE, GD25Q_PAGESIZE);
+        for(i = 0; i < sector_remain; i++){
+            if(u8gd25qBuff[sector_offset + i] != 0xFF)
+                break;
+        }
+        if(i < sector_remain){
+            /* Erase the current sector */
+            GD25QDriver_SectorErase(sector_pos*GD25Q_PAGESIZE);
+            for(i = 0; i < sector_remain; i++){
+            	u8gd25qBuff[sector_offset + i] = pdata[i];
+            }
+            u8result = GD25QDriver_WriteSector(u8gd25qBuff, sector_pos*GD25Q_PAGESIZE, GD25Q_PAGESIZE);
+        }else{
+            u8result = GD25QDriver_WriteSector(pdata, address, sector_remain);
+        }
+        
+        if(size == sector_remain){
+            break;
+        }else{
+            sector_pos++;
+            sector_offset = 0;
+            
+            pdata += sector_remain;
+            address += sector_remain;
+            size -= sector_remain;
+            if(size > GD25Q_PAGESIZE){
+                sector_remain = GD25Q_PAGESIZE;
+            }else{
+                sector_remain = size;
+            }
+        }
+    }
+    
+    return u8result;
 }

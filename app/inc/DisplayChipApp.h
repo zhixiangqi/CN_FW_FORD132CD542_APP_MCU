@@ -5,5 +5,6 @@
 
 void DisplayChipApp_FaultCheck(void);
 void DisplayChipApp_VerCheck(void);
+void DisplayChipApp_TpVerCheck(void);
 
 #endif

@@ -24,8 +24,14 @@
 
 #include "app/inc/FlashApp.h"
 #include "app/inc/TC0App.h"
+#include "app/inc/RegisterApp.h"
 #include "driver/inc/NVMDriver.h"
 #include "driver/inc/GD25QDriver.h"
+
+uint8_t u8writeCounter=0;
+uint8_t u8pageNum=0;
+uint8_t u8EraseFlag=0;
+uint32_t u32firstPageAddr=0x0000;
 
 void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t length)
 {
@@ -42,38 +48,64 @@ void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t leng
     NVMDriver_PageWrite(dataStr,FLASH_ROW_ADDRESS(address));
 }
 
-// uint8_t FlashApp_CheckNroFlash()
-// {
-//   GD25Q80_ReadData(uint32_t u32addr, uint16_t u16len, uint8_t* u8data);
-
-// }
-// void FlashApp_WriteNorFlash(uint32_t u32addr, uint16_t u16status)
-// {
-//   uint8_t u8dataStr[256] = {0};
-
-//   dataStr[0] = u32addr >> 24;
-//   dataStr[1] = u32addr >> 16;
-//   dataStr[2] = u32addr >> 8;
-//   dataStr[3] = u32addr >> 0;
-
-//   dataStr[4] = u16status >> 8;
-//   dataStr[5] = u16status >> 0;
+void FlashApp_CheckNorFlash(void)
+{
+  uint8_t u8RegisterState;
+  uint8_t u8EraseState;
+  uint8_t u8sendBuff[256];
+  uint8_t u8recvBuff[256];
   
-//   GD25Q80E_PageProgram(u32addr, 6U, u8dataStr);
+  /*Check Status Register Whether to enable data protection*/
+  u8RegisterState = GD25QDriver_ReadSR();
+  if (u8RegisterState != 0U)
+  {
+    GD25QDriver_WriteSR(0);
+  }else{
+    /*Nothing*/
+  }
+  /*Check Erase flag */
+  u8EraseState = GD25QDriver_ReadData(u8recvBuff,0x0000,0x01);
+  if (u8EraseState)
+  {
+    if (u8recvBuff[0] == 0x00)
+    {
+      GD25QDriver_EraseChip();
+      u8EraseFlag = 1;//Set Erase Flag is 1;
+      u8sendBuff[0] = u8EraseFlag;
+      GD25QDriver_WriteData(u8sendBuff,0x0000,0x01);
+    }else{
+      /* Nothing*/
+    }
+  }
+}
 
-// }
+void FlashApp_WriteNorFlash(uint32_t u32PageAddr, uint8_t u8length)
+{
+  uint8_t dataStr[256] = {0};
 
-// void FlashApp_WriteNorFlash(uint8_t data[], const uint32_t address, uint8_t length)
-// {
-//   uint8_t dataStr[256] = {0};
-//   uint32_t u32PageAddr = 0x00FF;
+  // if (u32PageAddr == )
+  // {
+  //   /* code */
+  // }
+  
+  dataStr[0] = (uint8_t)(TC0App_TimerReturn(TIMER_FLASH_LOG_COUNT) >> 24);
+  dataStr[1] = (uint8_t)(TC0App_TimerReturn(TIMER_FLASH_LOG_COUNT) >> 16);
+  dataStr[2] = (uint8_t)(TC0App_TimerReturn(TIMER_FLASH_LOG_COUNT) >> 8);
+  dataStr[3] = (uint8_t)(TC0App_TimerReturn(TIMER_FLASH_LOG_COUNT) >> 0);
+  dataStr[4] = 0xFF;  //reversed
+  dataStr[5] = 0xFF;  //reversed
 
-//   dataStr[0] = (uint8_t)(TC0App_TimerReturn(TIMER_FLASH_LOG_COUNT) >> 24);
-//   dataStr[1] = (uint8_t)(TC0App_TimerReturn(TIMER_FLASH_LOG_COUNT) >> 16);
-//   dataStr[2] = (uint8_t)(TC0App_TimerReturn(TIMER_FLASH_LOG_COUNT) >> 8);
-//   dataStr[3] = (uint8_t)(TC0App_TimerReturn(TIMER_FLASH_LOG_COUNT) >> 0);
+  dataStr[6] = 0x0A;  //Function type
+  dataStr[7] = CMD_DISP_STATUS; //Error Code
+  dataStr[8] = RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS);
+  dataStr[9] = RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS+1);
 
-//   GD25Q80E_PageProgram();
+  dataStr[10] = 0x0B;  //Function type
+  dataStr[11] = CMD_DTC; //Error Code
+  for (uint8_t i = 0; i < 40; i++)
+  {
+    dataStr[12+i] = RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS+i);
+  }
 
-
-// }
+  GD25QDriver_WriteData(dataStr,u32PageAddr,64U);
+}

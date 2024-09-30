@@ -33,6 +33,7 @@
 #include "app/inc/UartApp.h"
 #include "app/inc/PowerApp.h"
 #include "app/inc/UpdateApp.h"
+#include "app/inc/DisplayChipApp.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"

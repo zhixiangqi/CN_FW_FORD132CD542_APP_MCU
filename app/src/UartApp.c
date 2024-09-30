@@ -225,6 +225,7 @@ void UartApp_ReadFlow()
                     break;
 
                 case 0x33U:
+                    /* Read Nor Flash Cmd */
                     u8CmdLength = rdBuffer[UART_CMD_ADDR_POS+1];
                     u8ParseTxBuffer[0]=rdBuffer[UART_CMD_ADDR_POS];
                     for(uint8_t index = 0U; index < u8CmdLength;index++)
@@ -237,9 +238,7 @@ void UartApp_ReadFlow()
                 case 0x34U:
                     if (rdBuffer[UART_CMD_ADDR_POS]==0x90)
                     {
-                        uint16_t u8TxBuffer[30] = {0};
-                        sprintf((char *)u8TxBuffer,"I2C FAIL> 0x%02x\r\n",GD25QDriver_ReadDeviceID());
-                        UartDriver_TxWriteString(u8TxBuffer);
+                        GD25QDriver_ReadDeviceID();
                     }
                     else if (rdBuffer[UART_CMD_ADDR_POS]==0xC7)
                     {

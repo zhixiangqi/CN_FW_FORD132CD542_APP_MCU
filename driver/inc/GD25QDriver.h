@@ -10,6 +10,9 @@
 
 #include "main.h"
 
+#define GD25Q_SECTORSIZE        256U
+#define GD25Q_PAGESIZE          4096U
+
 #define GD25Q_WriteEnable		0x06 
 #define GD25Q_WriteDisable		0x04 
 #define GD25Q_ReadStatusReg		0x05 
@@ -37,6 +40,7 @@ uint8_t GD25QDriver_PageProgram(uint8_t* u8pBuffer,uint32_t u32WriteAddr,uint16_
 uint8_t GD25QDriver_PageProgram_NoCheck(uint8_t* u8pBuffer,uint32_t u32WriteAddr,uint16_t u16NumByteToWrite);
 uint8_t GD25QDriver_SectorErase(uint32_t u32DstAddr);
 uint8_t GD25QDriver_EraseChip(void);
-void GD25QDriver_WriteAppoint(uint8_t* u8pBuffer,uint32_t u32WriteAddr,uint16_t u16NumByteToWrite);
+uint8_t GD25QDriver_WriteSector(uint8_t* pdata, uint32_t addr, uint16_t size);
+uint8_t GD25QDriver_WriteData(uint8_t* pdata, uint32_t address, uint16_t size);
 
 #endif /* DRIVER_INC_GD25QDRIVER_H_ */
