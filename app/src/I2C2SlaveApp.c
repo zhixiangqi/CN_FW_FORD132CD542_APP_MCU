@@ -393,6 +393,8 @@ static void SlaveCallback(uint32_t event)
                 /* Clean Buffer Return Default High (0xFF)*/
                 memset(i2cReadBuffer,0xFFU,SL_RD_BUFFER_SIZE);
             }
+            /* Clean Tx Buffer after finish event*/
+            memset(i2cWriteBuffer,0xFFU,SL_WR_BUFFER_SIZE);
             /* Clean Tx Buffer after event is over*/
             if(length > LENGTH_ZERO)
             {
