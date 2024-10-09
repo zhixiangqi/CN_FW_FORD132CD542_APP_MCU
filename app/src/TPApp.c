@@ -9,6 +9,7 @@
 #include "app/inc/INTBApp.h"
 #include "app/inc/DiagApp.h"
 #include "app/inc/TC0App.h"
+#include "app/inc/StackTaskApp.h"
 #include "driver/inc/EicDriver.h"
 #include "driver/inc/TC0Driver.h"
 #include "driver/inc/PortDriver.h"
@@ -38,6 +39,7 @@ void TPApp_IntTscStateFlow(uint8_t u8TscEnState)
                 bTscAttnState = TRUE;
                 TC0App_TimerReset(TIMER_INT_ATTN_COUNT);
                 TC0App_IntbAttnCountStartSet(FALSE);
+                StackTaskApp_MissionPush(TASK_LCDVERS);
             }
         }
         if (bTscAttnState == TRUE)

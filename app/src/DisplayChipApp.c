@@ -138,30 +138,3 @@ void DisplayChipApp_VerCheck(void)
         DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_LCD_MASK);
     }
 }
-void DisplayChipApp_TpVerCheck()
-{
-    uint8_t u8Status;
-    uint8_t u8TouchVersion[1] = {0};
-    uint8_t u8PageCmd[2] = {0x1EU,0x10U};
-    uint8_t u8ReadRegister[1] = {0x17U};
-    u8Status = I2C4MDriver_Write(CHIP_ADDR,u8PageCmd,sizeof(u8PageCmd));
-    if(u8Status == ERROR_NONE){
-        u8Status = I2C4MDriver_WriteRead(CHIP_ADDR,u8ReadRegister,sizeof(u8ReadRegister),&u8TouchVersion[0],1U);
-        if(u8Status != ERROR_NONE){
-            /* Do nothing*/
-        }else{
-            RegisterApp_DHU_Setup(CMD_DTC,DTC_DDI_VERSION,u8TouchVersion[0]);
-            sprintf((char *)u8TxBuffer,"VERSION CHECK > TOUCH Ver: 0x%02x\r\n",u8TouchVersion[0]);
-            UartDriver_TxWriteString(u8TxBuffer);
-        }
-    }else{
-        /* Do nothing*/
-    }
-    if(u8Status != ERROR_NONE){
-        DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
-        UartDriver_TxWriteString(u8TxBuffer);
-    }else{
-        /* Do nothing*/
-        DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_LCD_MASK);
-    }
-}

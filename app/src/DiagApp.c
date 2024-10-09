@@ -28,6 +28,7 @@
 #include "app/inc/PowerApp.h"
 #include "app/inc/DisplayChipApp.h"
 #include "app/inc/BacklightApp.h"
+#include "app/inc/FlashApp.h"
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/UartDriver.h"
 
