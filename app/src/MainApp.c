@@ -41,7 +41,7 @@
 #include "driver/inc/PwmDriver.h"
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/EicDriver.h"
-
+#include "driver/inc/GD25QDriver.h"
 
 #define CY_ASSERT_FAILED          (0u)
 #define APP_START_ADDR          0x3000U
@@ -91,6 +91,9 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     if(SPIMDriver_Initialize() == false)
     {
         UartDriver_TxWriteString((uint8_t *)"SPI M driver init fail\r\n");
+    }else{
+        /*Initial the Nor Flash*/
+        GD25Q_SPIFLASH_Init();
     }
     /*EIC initial*/
     if(EicDriver_Initial() == false)
@@ -149,6 +152,8 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST & BL_ST set as 1.*/
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPST_MASK);
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
+    /* Check Nor Flash*/
+    FlashApp_CheckNorFlash();
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
     /* Need to put at the end of prenormal task*/

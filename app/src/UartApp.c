@@ -250,7 +250,7 @@ void UartApp_ReadFlow()
                     break;
 
                 case 0x33U:
-                    /* Read Nor Flash Cmd */
+                    /* Read Nor Flash Cmd and Write */
                     u8CmdLength = rdBuffer[UART_CMD_ADDR_POS+1];
                     u8ParseTxBuffer[0]=rdBuffer[UART_CMD_ADDR_POS];
                     for(uint8_t index = 0U; index < u8CmdLength;index++)
@@ -258,6 +258,33 @@ void UartApp_ReadFlow()
                         u8ParseTxBuffer[index+1] = rdBuffer[index+UART_CMD_ADDR_POS+2];
                     }
                     SPIMDriver_Transfer(u8ParseTxBuffer,u8ParseRxBuffer,u8CmdLength);
+                    break;
+
+                case 0x34U:
+                    /* Read Nor Flash Cmd and Write */
+                    if (rdBuffer[UART_CMD_ADDR_POS]==0xAB)
+                    {
+                        GD25Q_SPIFLASH_ReadDeviceID();
+                    }
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x90)
+                    {
+                        GD25Q_SPIFLASH_ReadManufactureID();
+                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x9F)
+                    {
+                        GD25Q_SPIFLASH_ReadIdentificationID();
+                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x05)
+                    {
+                        GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg1);
+                    }
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x35)
+                    {
+                        GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg2);
+                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0xC7)
+                    {
+                        GD25Q_SPIFLASH_EraseChip();
+                    }else{
+
+                    }
                     break;
 
                 default:

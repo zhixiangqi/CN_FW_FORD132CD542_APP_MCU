@@ -9,7 +9,9 @@
 #define ADDR_MCUFLASH_SNUMBER   0x0001F100U
 #define ADDR_MCUFLASH_DIMMING   0x0001F200U
 
-#define FIRST_PAGE_ADDR 0x0040
+#define FIRST_PAGE_ADDR 0x0000
+#define PAGE_SIZE       256
+
 void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t length);
 void FlashApp_CheckNorFlash(void);
 void FlashApp_WriteNorFlash(void);
