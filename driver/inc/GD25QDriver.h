@@ -116,14 +116,14 @@ void GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead);			
 void GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite);					//GD25Q SPIFLASH 写入SPI FLASH数据Page
 void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite);				//GD25Q SPIFLASH 写入SPI FLASH数据
  
-unsigned char GD25Q_SPIFLASH_GetByte(u32 ReadAddr);										//GD25Q SPIFLASH 读取1个Byte
-unsigned short GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr);									//GD25Q SPIFLASH 读取2个Byte
-unsigned int GD25Q_SPIFLASH_GetWord(u32 ReadAddr);										//GD25Q SPIFLASH 读取4个Byte
+u8 GD25Q_SPIFLASH_GetByte(u32 ReadAddr);										//GD25Q SPIFLASH 读取1个Byte
+u16 GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr);									//GD25Q SPIFLASH 读取2个Byte
+u32 GD25Q_SPIFLASH_GetWord(u32 ReadAddr);										//GD25Q SPIFLASH 读取4个Byte
  
-void GD25Q_SPIFLASH_SetByte(u32 WriteAddr, unsigned char val);								//GD25Q SPIFLASH 写入1个Byte
-void GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, unsigned short val);							//GD25Q SPIFLASH 写入2个Byte
-void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, unsigned int val);								//GD25Q SPIFLASH 写入4个Byte
+void GD25Q_SPIFLASH_SetByte(u32 WriteAddr, u8 val);								//GD25Q SPIFLASH 写入1个Byte
+void GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, u16 val);							//GD25Q SPIFLASH 写入2个Byte
+void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, u32 val);								//GD25Q SPIFLASH 写入4个Byte
  
-unsigned int GD25Q_SPIFLASH_GetNumofByte(u32 ReadAddr, u16 AllNum, u8 ByteVal);					//GD25Q SPIFLASH 读取指定地址中指定字节中有该值的个数
+u32 GD25Q_SPIFLASH_GetNumofByte(u32 ReadAddr, u16 AllNum, u8 ByteVal);					//GD25Q SPIFLASH 读取指定地址中指定字节中有该值的个数
 
 #endif /* DRIVER_INC_GD25QDRIVER_H_ */
