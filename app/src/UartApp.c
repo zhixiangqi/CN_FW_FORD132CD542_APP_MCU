@@ -27,7 +27,6 @@
 #include "app/inc/StackTaskApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/FlashApp.h"
-#include "app/inc/DDIApp.h"
 #include "driver/inc/I2C4MDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/PortDriver.h"

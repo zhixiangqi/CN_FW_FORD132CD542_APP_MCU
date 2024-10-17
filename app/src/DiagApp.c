@@ -90,8 +90,6 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
         //RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_SET);
         DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
-        /* Write DTC information into Nor Flash*/
-        FlashApp_WriteNorFlash();
     }
     (void)u8OldByte0;
     (void)u8OldByte1;
