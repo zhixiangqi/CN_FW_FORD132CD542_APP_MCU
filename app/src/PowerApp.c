@@ -60,11 +60,10 @@ void PowerApp_Sequence(uint8_t u8Action)
         TC0App_DelayMS(10U);
         PortDriver_PinClear(DES_PDB_PORT,DES_PDB_PIN);
         TC0App_DelayMS(5U);
-        PortDriver_PinClear(P1V2_EN_PORT,P1V2_EN_PIN);
+        PortDriver_PinClear(DES_INTB_PORT,DES_INTB_PIN);
         TC0App_DelayMS(5U);
-        // PortDriver_PinClear(DES_INTB_PORT,DES_INTB_PIN);
-        // TC0App_DelayMS(5U);
         PortDriver_PinClear(P3V3_EN_PORT,P3V3_EN_PIN);
+        PortDriver_PinClear(P1V2_EN_PORT,P1V2_EN_PIN);
         TC0App_DelayMS(5U);
         PortDriver_PinClear(VBATT_EN_PORT,VBATT_EN_PIN);
         TC0App_DelayMS(100U);
@@ -79,6 +78,8 @@ void PowerApp_Sequence(uint8_t u8Action)
         PortDriver_PinSet(DISP_STBY_PORT,DISP_STBY_PIN);
         TC0App_DelayMS(5U);
         PortDriver_PinSet(LED_EN_PORT,LED_EN_PIN);
+        TC0App_DelayMS(15U);
+        PowerApp_LP8664_CurrentSet();
         break;
 
     case LCD_OFF:
@@ -208,7 +209,7 @@ void PowerApp_LP8664_CurrentSet()
     uint8_t u8FlashData[2] = {0};
     uint8_t Status = ERROR_NONE;
     (void)memcpy((void *)u8FlashData,(void *)(ADDR_MCUFLASH_DIMMING), 2U);
-    if(((u8FlashData[0U]+u8FlashData[1U]*256) > 0x09FFU) && ((u8FlashData[0U]+u8FlashData[1U]*256) < 0x0FFFU))
+    if(((u8FlashData[0U]+u8FlashData[1U]*256) > 0x09FFU) && ((u8FlashData[0U]+u8FlashData[1U]*256) <= 0x0FFFU))
     {
         u8CurrentSet[1U] = u8FlashData[0U];
         u8CurrentSet[2U] = u8FlashData[1U] & 0x0FU;
