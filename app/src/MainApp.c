@@ -87,16 +87,18 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     {
         UartDriver_TxWriteString((uint8_t *)"I2C M driver init fail\r\n");
     }
-    /* Initialize the SPI Master */
+    /* Only for Nor Flash Test
+    // Initialize the SPI Master
     if(SPIMDriver_Initialize() == false)
     {
         UartDriver_TxWriteString((uint8_t *)"SPI M driver init fail\r\n");
     }else{
-        /*Initial the Nor Flash*/
+        // Initial the Nor Flash
         GD25Q_SPIFLASH_Init();
-        /* Check Nor Flash*/
+        // Check Nor Flash
         FlashApp_CheckNorFlash();
     }
+    */
     /*EIC initial*/
     if(EicDriver_Initial() == false)
     {
