@@ -98,9 +98,9 @@ void FlashApp_WriteNorFlash(void)
 
     dataSend[10] = 0x0B;  //Function type
     dataSend[11] = CMD_DTC; //Error Code
-    for (uint8_t i = 0; i < 40; i++)
+    for (uint8_t i = 0; i < 41; i++)
     {
-      dataSend[12+i] = RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS+i);
+      dataSend[12+i] = RegisterApp_DHU_Read(CMD_DTC,CMD_DATA_POS+i);
     }
 
     dataSend[53] = 0xFF;   //reversed
