@@ -22,14 +22,6 @@
 	#error MCU_POSITION IS NOT DEFINED OR INVALID
 #endif
 
-#define FIRST_PAGE_ADDR          0x0000U
-#define SECOND_PAGE_ADDR         0x0100U
-#define PAGE_SIZE                0x100U
-#define LOG_LENGTH               0x40U
-#define ERASE_FLAG               0xC7U
-
-#define ERASE_FLAG_OFFEST        55U
-#define WRITECOUNT_OFFEST        56U
 
 void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t length);
 void FlashApp_CheckNorFlash(void);
