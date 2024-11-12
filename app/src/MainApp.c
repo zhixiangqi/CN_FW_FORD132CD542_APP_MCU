@@ -125,6 +125,7 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     sprintf((char *)u8TxBuffer,"BOOT FINISHED, PC:0x%lX, POS:%02X\r\n",PC,MCU_POSITION);
     RegisterApp_DHU_Setup(CMD_DTC,DTC_APP_POS,MCU_POSITION);
     UartDriver_TxWriteString(u8TxBuffer);
+    DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_INIT_MASK);
     /* Only for LED Driver test*/
     // PowerApp_LP8664_CurrentSet();
     /* Only for flash w/r test*/
@@ -157,9 +158,10 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     TC0App_TimerTaskStopper(false);
     /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST set as 1.*/
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPST_MASK);
-    /* [Fix] Set BL_ST in BacklightApp_DimmingControl.
+    /* [Fix]Set at BacklightApp_Dimming Control.
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
     */
+    
     sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxBuffer);
     /* Need to put at the end of prenormal task*/
@@ -310,9 +312,10 @@ static uint8_t MainApp_Shutdown_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
     WdtApp_CleanCounter();
-     /* SWRA-01-07: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST & BL_ST set as 0.*/
+    /* SWRA-01-07: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST & BL_ST & INIT set as 0.*/
     DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPST_MASK);
     DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
+    DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_INIT_MASK);
     /* SWRA-05-04: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 0.*/
     DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
     TC0App_NormalWorkStartSet(FALSE);
