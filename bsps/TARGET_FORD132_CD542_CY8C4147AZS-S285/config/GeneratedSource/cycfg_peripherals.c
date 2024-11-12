@@ -4,7 +4,7 @@
  * Description:
  * Peripheral Hardware Block configuration
  * This file was automatically generated and should not be modified.
- * Configurator Backend 3.20.0
+ * Configurator Backend 3.30.0
  * device-db 4.17.0.6514
  * mtb-pdl-cat2 2.12.0.12916
  *
