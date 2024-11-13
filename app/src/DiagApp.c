@@ -90,8 +90,7 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
         /* Only for Nor Flash Test
         // Write DTC information into Nor Flash
-        FlashApp_WriteNorFlash();
-        */
+        FlashApp_WriteNorFlash();*/
     }
     (void)u8OldByte0;
     (void)u8OldByte1;
