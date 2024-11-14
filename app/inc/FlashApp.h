@@ -22,6 +22,16 @@
 	#error MCU_POSITION IS NOT DEFINED OR INVALID
 #endif
 
+#define SECTOR_SERIAL_NUM(nsector)    	nsector
+#define PAGE_SERIAL_NUM(npage)    		npage
+#define WRITE_SERIAL_NUM(nwrite)    	nwrite
+#define READ_SERIAL_NUM(nread)    		nread
+#define POS_NUM(npos)    				npos
+
+#define CHIP_ERASE_FALG  	0xC7U
+#define WRITE_CYCLE_FALG  	0x80U
+#define SECTOR_COMPLETE     0x01U
+#define SECTOR_UNCOMPLETE   0x00U
 
 void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t length);
 void FlashApp_CheckNorFlash(void);
