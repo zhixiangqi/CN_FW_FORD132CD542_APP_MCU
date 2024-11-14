@@ -33,8 +33,8 @@
 uint8_t dataSend[64] = {0xFF};
 uint8_t dataRecv[64] = {0xFF};
 
-uint8_t u8SendBuffLen = sizeof(dataSend);
-uint8_t u8RecvBuffLen = sizeof(dataRecv);
+uint8_t u8SendBuffLen = 64U;
+uint8_t u8RecvBuffLen = 64U;
 
 uint8_t u8EraseFlag = 0;
 uint8_t u8SectorFlag = 0;
@@ -74,7 +74,7 @@ void FlashApp_CheckNorFlash()
     //Set Sector Flag
     // GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(0)+1,0U);
     //Set Sector Number
-    GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(1),0U);
+    GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(1)+u8SectorNum,0U);
     //Set Page Number
     GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(2)+u8PageNum,0U);
     //Set Timer
@@ -87,15 +87,31 @@ void FlashApp_CheckNorFlash()
     //Get Sector Flag
     u8SectorFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(0)+1);
     //Get Sector Number
-    u8SectorNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(1));
+    while (u8SectorNum != 0xFFU)
+    {
+      u8SectorNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(1)+u8SectorNum);
+    }
     //Get Page Number
-    u8PageNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(2)+u8PageNum);
+    while (u8PageNum != 0xFFU)
+    {
+      u8PageNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(2)+u8PageNum);
+    }
     //Get Timer
-    u32Timer = GD25Q_SPIFLASH_GetWord(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(3)+4*u8WriteCount);
+    while (u32Timer != 0xFFFFU)
+    {
+      u32Timer = GD25Q_SPIFLASH_GetWord(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(3)+4*u8WriteCount);
+    }
     //Get Write Counter
-    u8WriteCount = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(4)+u8WriteCount);
+    while (u8WriteCount != 0xFFU)
+    {
+      u8WriteCount = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(4)+u8WriteCount);
+    }
     //Get Read Counter
-    u8ReadCount = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(4)+u8ReadCount);
+    while (u8ReadCount != 0xFFU)
+    {
+      u8ReadCount = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(4)+u8ReadCount);
+    }
+    
   }
   
   /*Check Block protection state*/
@@ -116,7 +132,7 @@ void FlashApp_WriteNorFlash()
   //Erase Flag
   // GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(0),u8EraseFlag);
   //Sector Number
-  GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(1),u8SectorNum);
+  GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(1)+u8SectorNum,u8SectorNum);
   //Page Number
   GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(2)+u8PageNum,u8PageNum);
   //Timer
@@ -153,7 +169,7 @@ void FlashApp_WriteNorFlash()
   //Get Sector Flag
   u8SectorFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(0)+1);
   //Get Sector Number
-  u8SectorNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(1));
+  u8SectorNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(1)+u8SectorNum);
   //Get Page Number
   u8PageNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorNum)+GD25Q80_PAGE_ADDRESS(2)+u8PageNum);
 
