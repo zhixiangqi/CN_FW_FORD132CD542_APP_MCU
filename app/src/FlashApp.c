@@ -36,13 +36,13 @@ uint8_t dataRecv[64] = {0xFF};
 uint8_t u8SendBuffLen = 64U;
 uint8_t u8RecvBuffLen = 64U;
 
-uint8_t u8SectorWriteFlag;
+uint8_t u8SectorSerialNum;
 uint8_t u8EraseFlag;
 uint8_t u8SectorWriteCycleFlag;
-uint8_t u8CurentSector;
-uint8_t u8CurnetPage;
-uint8_t u8CurnetWrite;
-uint8_t u8CurentRead;
+uint8_t u8SectorWriteFlag;
+uint8_t u8PageSerialNum;
+uint8_t u8SWriteSerialNum;
+uint8_t u8SReadSerialNum;
 uint8_t u8RegsState1,u8RegsState2;
 
 uint8_t u8testConunt = 0;
@@ -72,16 +72,15 @@ void FlashApp_CheckNorFlash()
     UartDriver_TxWriteString((uint8_t *)"GD25QDriver Erase Chip Success\r\n");
     
     /*Initial every sector Index information*/
-    GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(0)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(0),SECTOR_UNCOMPLETE);
     for (uint8_t i = 0; i < 128; i++)
     {
-      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(1),CHIP_ERASE_FALG);
-      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(2),SECTOR_SERIAL_NUM(0));
-      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(3),WRITE_CYCLE_FALG);
-      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+ GD25Q80_PAGE_ADDRESS(1)+POS_NUM(0),PAGE_SERIAL_NUM(0));
-      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+ GD25Q80_PAGE_ADDRESS(2)+POS_NUM(0),WRITE_SERIAL_NUM(0));
-      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+ GD25Q80_PAGE_ADDRESS(3)+POS_NUM(0),READ_SERIAL_NUM(0));
+      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(0),i);//Sector Serial Number
+      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(1),CHIP_ERASE_FALG);//Erase Chip Flag
     }
+
+    GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(0)+ GD25Q80_PAGE_ADDRESS(1)+POS_NUM(0),0U);//Page Serial Number
+    GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(0)+ GD25Q80_PAGE_ADDRESS(2)+POS_NUM(0),0U);//Write Serial Number
+    GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(0)+ GD25Q80_PAGE_ADDRESS(3)+POS_NUM(0),0U);//Read Serial Number
   }
   
   /*Check Block protection state*/
@@ -93,51 +92,43 @@ void FlashApp_CheckNorFlash()
   }else{
     UartDriver_TxWriteString((uint8_t *)"GD25QDriver is Already Disabel Block Protection\r\n");
   }
-  
+
   /*Check Sector Write Complete Flag*/
   u8testConunt = 0;
-  do
+  while (u8SectorWriteFlag == 0U)
   {
-    u8SectorWriteFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testConunt)+GD25Q80_PAGE_ADDRESS(0)+POS_NUM(0));
-    u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testConunt)+GD25Q80_PAGE_ADDRESS(0)+POS_NUM(1));
-    u8CurentSector = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testConunt)+GD25Q80_PAGE_ADDRESS(0)+POS_NUM(2));
-    u8SectorWriteCycleFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testConunt)+GD25Q80_PAGE_ADDRESS(0)+POS_NUM(3));
+    u8SectorWriteFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testConunt)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(3));
     u8testConunt++;
-  } while (u8SectorWriteFlag == 0x00U);
-  sprintf((char *)u8TxBuffer,"u8SectorWriteFlag%d,u8EraseFlag%d,u8CurentSector%d\r\n",u8SectorWriteFlag,u8EraseFlag,u8CurentSector);
-  UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+  }
+  /*Get Index information*/
+  u8SectorSerialNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testConunt)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(0));
+  u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testConunt)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(1));
+  u8SectorWriteCycleFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testConunt)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(2));
 
-  /*Check Current Page*/
+  /*Get Page Serial Number*/
   u8testConunt = 0;
-  do
+  while (u8PageSerialNum == 0xFFU)
   {
-    u8CurnetPage = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(1)+POS_NUM(u8testConunt));
+    u8PageSerialNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(1)+POS_NUM(u8testConunt));
     u8testConunt++;
-  } while (u8CurnetPage == 0xFFU);
-  sprintf((char *)u8TxBuffer,"u8CurnetPage%d\r\n",u8CurnetPage);
-  UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+  }
+  
+  /*Get Write Serial Number*/
+  u8testConunt = 0;
+  while (u8SWriteSerialNum == 0xFFU)
+  {
+    u8SWriteSerialNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(2)+POS_NUM(u8testConunt));
+    u8testConunt++;
+  }
 
-  /*Check Current Write Counter*/
+  /*Get Write Serial Number*/
   u8testConunt = 0;
-  do
+  while (u8SReadSerialNum == 0xFFU)
   {
-    u8CurnetWrite = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(2)+POS_NUM(u8testConunt));
+    u8SReadSerialNum = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(3)+POS_NUM(u8testConunt));
     u8testConunt++;
-  } while (u8CurnetWrite == 0xFFU);
-  sprintf((char *)u8TxBuffer,"u8CurnetWrite%d\r\n",u8CurnetWrite);
-  UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
-
-  /*Check Current Read Counter*/
-  u8testConunt = 0;
-  do
-  {
-    u8CurentRead = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(3)+POS_NUM(u8testConunt));
-    u8testConunt++;
-  } while (u8CurentRead == 0xFFU);
-  sprintf((char *)u8TxBuffer,"u8CurentRead%d\r\n",u8CurentRead);
-  UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+  }
 }
-
 void FlashApp_WriteNorFlash()
 {
   //Write DTC Data,cycle 64 bytes every time
@@ -156,66 +147,55 @@ void FlashApp_WriteNorFlash()
   {
     dataSend[6+i] = RegisterApp_DHU_Read(CMD_DTC,CMD_DATA_POS+i);
   }
-  
-  /*Judge Current Page*/
-  if (u8CurnetWrite % 4 == 0U)
+  /*Judge Current Page if complete*/
+  if (u8SWriteSerialNum % 4 == 0U)//Complete
   {
-    u8CurnetPage++;
-    // Write DTC information,length cycle 64 byte
-    GD25Q_SPIFLASH_WriteBuffer(dataSend,GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(4+u8CurnetPage)+POS_NUM(0),u8SendBuffLen);
-    // Read DTC information,length cycle 64 byte
-    GD25Q_SPIFLASH_WriteBuffer(dataRecv,GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(4+u8CurnetPage)+POS_NUM(0),u8RecvBuffLen);
-  }else{
-    // Write DTC information,length cycle 64 byte
-    GD25Q_SPIFLASH_WriteBuffer(dataSend,GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(4+u8CurnetPage)+POS_NUM(u8CurnetWrite)*0x40U,u8SendBuffLen);
-    // Read DTC information,length cycle 64 byte
-    GD25Q_SPIFLASH_WriteBuffer(dataRecv,GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(4+u8CurnetPage)+POS_NUM(u8CurnetWrite)*0x40U,u8RecvBuffLen);
+   u8PageSerialNum++;
+   //Set Current Page Number into current address
+   GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(1)+POS_NUM(u8PageSerialNum),u8PageSerialNum);
+   //Write DTC information,length cycle 64 byte
+   GD25Q_SPIFLASH_WriteBuffer(dataSend,GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(4+u8PageSerialNum)+POS_NUM(0),u8SendBuffLen);
   }
-
-  if (u8CurnetPage == 12U)
+  else//Uncomplete
   {
-    u8CurnetPage = 0U;
-    u8SectorWriteFlag = SECTOR_COMPLETE;
-    /*Set Sector Write Complete Flag*/
-    GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8CurentSector)+GD25Q80_PAGE_ADDRESS(0)+POS_NUM(0),u8SectorWriteFlag);
+    // Write DTC information,length cycle 64 byte
+    GD25Q_SPIFLASH_WriteBuffer(dataSend,GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(4+u8PageSerialNum)+POS_NUM(u8SWriteSerialNum)*0x40U,u8SendBuffLen);
   }
-
-  if (u8SectorWriteFlag)
+  /*Judge Current Sector if comolete*/
+  if (u8PageSerialNum == 12U)
   {
-   u8CurentSector++;
-   if (u8CurentSector == 128U)
-   {
-    if (u8SectorWriteCycleFlag == 0U)
+    /*Set Sector Write Complete Flag into current sector*/
+    GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+GD25Q80_PAGE_ADDRESS(0)+POS_NUM(0),SECTOR_COMPLETE);
+
+    u8SectorSerialNum++;
+    /*Judeg Sector Erase start flag*/
+    if (u8SectorSerialNum == 4U && u8SectorWriteCycleFlag == 0U)
     {
-      /*Check SectorWriteCycleFlag*/
-      u8SectorWriteCycleFlag = 1U;
-      GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(3),u8SectorWriteCycleFlag);
       /*Erase 0 sector*/
-      u8CurentSector = 0;
-      GD25Q_SPIFLASH_EraseSector(GD25Q80_SECTOR_ADDRESS(u8CurentSector));
-    }else{
-      GD25Q_SPIFLASH_EraseSector(GD25Q80_SECTOR_ADDRESS(u8CurentSector));
+      u8SectorSerialNum = 0;
+      GD25Q_SPIFLASH_EraseSector(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum));
+      /*Set Sector Write Cycle Flag*/
+      u8SectorWriteCycleFlag == 1U;
+      for (uint8_t i = 0; i < 128; i++)
+      {
+        GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+GD25Q80_PAGE_ADDRESS(0)+POS_NUM(3),u8SectorWriteCycleFlag);
+      }
     }
-   }
-  }
-  if (u8CurnetWrite == 72U)
-  {
-    u8CurnetWrite = 0;
+    /*Satrt cycle Erase sector*/
+    if (u8SectorWriteCycleFlag == 1U)
+    {
+      GD25Q_SPIFLASH_EraseSector(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum));
+    }
   }else{
-    u8CurnetWrite++;
+    /*Nothing*/
   }
+
   
-  if (u8CurentRead == 72U)
-  {
-    u8CurentRead = 0;
-  }else{
-    u8CurentRead++;
-  }
-  
-  /*Set Current page*/
-  GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(1)+POS_NUM(u8CurnetPage),u8CurnetPage);
-  /*Set Current Write Counter*/
-  GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(2)+POS_NUM(u8CurnetWrite),u8CurnetWrite);
-  /*Set Current Read Counter*/
-  GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8CurentSector)+ GD25Q80_PAGE_ADDRESS(3)+POS_NUM(u8CurentRead),u8CurentRead);
+  /*DTC trigger,Write Serial Number add 1*/
+  u8SWriteSerialNum++;
+  GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(2)+POS_NUM(u8SWriteSerialNum),u8SWriteSerialNum);
+
+  /*DTC trigger,Read Serial Number add 1*/
+  u8SReadSerialNum++;
+  GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(3)+POS_NUM(u8SReadSerialNum),u8SReadSerialNum);
 }
