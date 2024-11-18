@@ -5,7 +5,7 @@
 
 /* TEST VERSION = MAIN VER + 0x80U*/
 #define IS_TEST_VERSION     (false)
-#define SUBREVISION_SW_VER  (0x03U + (IS_TEST_VERSION << 7))
+#define SUBREVISION_SW_VER  (0x04U + (IS_TEST_VERSION << 7))
 
 #define CommType_WRITE          0x01U
 #define CommType_READ           0x02U

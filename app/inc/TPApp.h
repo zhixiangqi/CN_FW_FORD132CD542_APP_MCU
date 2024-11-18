@@ -16,4 +16,5 @@
 #define DISPLAY_ON_TOUCH_ON					0x03U 
 
 void TPApp_IntTscStateFlow(uint8_t u8TscEnState);
+void TPApp_TPINTCheck(void);
 #endif /* APP_INC_TPAPP_H_ */

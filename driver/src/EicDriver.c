@@ -5,6 +5,8 @@
  *      Author: Administrator
  */
 #include "app/inc/TC0App.h"
+#include "app/inc/DiagApp.h"
+#include "app/inc/INTBApp.h"
 #include "driver/inc/EicDriver.h"
 #include "driver/inc/TC0Driver.h"
 #include "driver/inc/PortDriver.h"
@@ -28,8 +30,10 @@ void EicDriver_U301_TSC_ATTN_ISR(void)
     if (Cy_GPIO_Read(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW)
     {
         tp_interr_low_flag = TRUE;
+        DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
     }else{
         tp_interr_high_flag = TRUE;
+        DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
     }
 }
 

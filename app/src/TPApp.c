@@ -48,14 +48,12 @@ void TPApp_IntTscStateFlow(uint8_t u8TscEnState)
             if (tp_interr_low_flag == TRUE)
             {
                 INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-                DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
                 tp_interr_low_flag = FALSE;
             }
             /*Rising edge trigger*/
-            if (tp_interr_high_flag == TRUE)
+            else if (tp_interr_high_flag == TRUE)
             {
                 tp_interr_high_flag = FALSE;
-                DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
             }
             /*If lost trigger,judge PIN whether is LOW,debouce 250ms*/
             else if ((tp_interr_low_flag == FALSE) && (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW))
@@ -95,5 +93,25 @@ void TPApp_IntTscStateFlow(uint8_t u8TscEnState)
         bTscAttnState   = FALSE;
         bTscIntKeepLow  = FALSE;
         u8TouchCount    = 0U;
+    }
+}
+
+void TPApp_TPINTCheck(void){
+    uint8_t u8TscEnState = RegisterApp_DHU_Read(CMD_DISP_EN,1U);
+    /* Check Disp En Cmd*/
+    if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
+    {
+        /* Check TSC EN Cmd*/
+        if ((u8TscEnState & 0x02U) == 0x02U)
+        {
+           if (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW)
+           {
+            DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
+           }else{
+            DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
+           }
+        }
+    }else{
+        /*Do Nothing*/
     }
 }

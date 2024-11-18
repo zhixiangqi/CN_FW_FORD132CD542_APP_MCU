@@ -63,7 +63,7 @@ void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t leng
 
 void FlashApp_CheckNorFlash()
 {
-  uint8_t u8TxBuffer[60] = {0};
+//  uint8_t u8TxBuffer[60] = {0};
   /*Check Chip if Erase*/
   u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(0)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(1));
   if (u8EraseFlag != CHIP_ERASE_FALG)
@@ -175,7 +175,7 @@ void FlashApp_WriteNorFlash()
       u8SectorSerialNum = 0;
       GD25Q_SPIFLASH_EraseSector(GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum));
       /*Set Sector Write Cycle Flag*/
-      u8SectorWriteCycleFlag == 1U;
+      u8SectorWriteCycleFlag = 1U;
       for (uint8_t i = 0; i < 128; i++)
       {
         GD25Q_SPIFLASH_SetByte(GD25Q80_SECTOR_ADDRESS(i)+GD25Q80_PAGE_ADDRESS(0)+POS_NUM(3),u8SectorWriteCycleFlag);

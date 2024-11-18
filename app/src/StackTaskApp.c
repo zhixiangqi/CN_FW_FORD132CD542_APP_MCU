@@ -35,6 +35,7 @@
 #include "app/inc/UpdateApp.h"
 #include "app/inc/DisplayChipApp.h"
 #include "app/inc/DeviceApp.h"
+#include "app/inc/TPApp.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -245,8 +246,12 @@ void StackTaskApp_MissionAction(void)
             DisplayChipApp_VerCheck();
         break;
 
-        case TASK_SYNCCHECKLOW:
+        case TASK_SYNCVCFLOW:
             BatteryApp_SYNCVolatgeCheck();
+        break;
+
+        case TASK_TPINTFLOW:
+            TPApp_TPINTCheck();
         break;
 
         case TASK_UPDATE_ERASE:
