@@ -255,6 +255,8 @@ void BacklightApp_DimmingControl(void)
     BacklightSwitch = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS) 
                     & (!RegisterApp_DHU_Read(CMD_DISP_SHUTD,CMD_DATA_POS))
                     & (TC0App_TimerReturn(TIMER_HOLDCOUNT) != 0x00U)
+                    // /*Check LLOSS State*/
+                    // & (!((RegisterApp_DHU_Read(DISP_STATUS_BYTE0,CMD_DATA_POS) & DISP0_LLOSS_MASK) == DISP0_LLOSS_MASK))
                     /*Check if RST_RQ state*/
                     & u8RSTRQ_TYPEB_SW
                     /*Check SYNCK Volatge if below 2.2V*/
