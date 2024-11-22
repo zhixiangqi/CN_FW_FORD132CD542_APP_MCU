@@ -19,6 +19,8 @@
 #define CommType_PortClean      0x0AU
 #define CommType_FLASHWRITE     0xF1U
 #define CommType_FLASHREAD      0xF2U
+#define CommType_LOGWRITE       0xFAU
+#define CommType_LOGREAD        0xFBU
 
 void DeviceApp_Intial(void);
 void DeviceApp_0xF1FabCommCtrl(void);

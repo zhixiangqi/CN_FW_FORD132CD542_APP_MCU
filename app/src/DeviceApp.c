@@ -266,17 +266,47 @@ void DeviceApp_0xF1FabCommCtrl(void)
         {
             uint8_t dataStr[256] = {0};
             (void)memcpy((void *)dataStr, (void *) u32RxBuffAddr, u8CommLength);
-            RegisterApp_DHU_Setup(0xF2U, 0x00U, 0xF2U);
-            RegisterApp_DHU_Setup(0xF2U, 0x01U, u8CommObject);
-            RegisterApp_DHU_Setup(0xF2U, 0x02U, u8CommType);
-            RegisterApp_DHU_Setup(0xF2U, 0x03U, u8CommAddr);
-            RegisterApp_DHU_Setup(0xF2U, 0x04U, (u8CommLength));
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x03U, u8CommAddr);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x04U, (u8CommLength));
             for (uint32_t i = 0U; i < u8CommLength; i++)
             {
                 RegisterApp_DHU_Setup(0xF2U, (0x05U + i), dataStr[i]);
             }
         }
         else{}
+        break;
+
+    case CommType_LOGWRITE:
+        /* code */
+
+        break;
+
+    case CommType_LOGREAD:
+        /* code */
+        uint32_t u32RxBuffAddr  = 0U;
+        uint32_t u32RxRegOffeset = CMD_DATA_POS + 6U;
+        u32RxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 0U) << 24);
+        u32RxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 1U) << 16);
+        u32RxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 2U) << 8);
+        u32RxBuffAddr += RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 3U);
+        if(((u32RxBuffAddr+u8CommLength) < ADDR_MCUFLASH_MAXIMUM) && (u8CommLength < 256))
+        {
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x03U, u8CommAddr);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x04U, (u8CommLength));
+            uint8_t dataStr[256] = {0};
+            /*Read specified log address data*/
+            GD25Q_SPIFLASH_ReadBuffer(dataStr, u32RxBuffAddr, u8CommLength);
+            for (uint32_t i = 0U; i < u8CommLength; i++)
+            {
+                RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, (0x05U + i), dataStr[i]);
+            }
+        }
         break;
 
     default:
