@@ -82,6 +82,19 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         /*DO NOTHING*/
     }
 
+    /* Check DISP_ST is correct*/
+    if(RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS) == 0x01U){
+        if(((u8DiagDispByte0 & DISP0_DPSTOK_MASK) != 0x00) || ((u8DiagDispByte1 & DISP1_DPSTOK_MASK) != 0x00)){
+            /* Set DISP_ST as 0*/
+            u8DiagDispByte1 &= ~DISP1_DISPST_MASK;
+        }else{
+            /* Set DISP_ST as 1*/
+            u8DiagDispByte1 |= DISP1_DISPST_MASK;
+        }
+    }else{
+        /*DO NOTHING*/
+    }
+
     /* Check if the data is New event (Pull Request Necessary)*/
     if (((u8OldByte0 & DISP0_LATCHED_MASK) != (u8DiagDispByte0 & DISP0_LATCHED_MASK)) || 
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
