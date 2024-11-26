@@ -19,9 +19,9 @@ static uint8_t u8TouchCount = 0U;
 static bool    bTscAttnSafeKey = FALSE;
 static bool    bTscAttnState = FALSE;
 static bool    bTscIntKeepLow = FALSE;
-void TPApp_IntTscStateFlow(uint8_t u8TscEnState)
+void TPApp_IntTscStateFlow(uint8_t u8DispEnState)
 {
-    if ((u8TscEnState & 0x02U) == 0x02U)
+    if ((u8DispEnState & DISPEN_TSC_MASK) == DISPEN_TSC_MASK)
     {
         if (bTscAttnSafeKey == FALSE)
         {
@@ -97,12 +97,12 @@ void TPApp_IntTscStateFlow(uint8_t u8TscEnState)
 }
 
 void TPApp_TPINTCheck(void){
-    uint8_t u8TscEnState = RegisterApp_DHU_Read(CMD_DISP_EN,1U);
+    uint8_t u8DispEnState = RegisterApp_DHU_Read(CMD_DISP_EN,1U);
     /* Check Disp En Cmd*/
     if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
     {
         /* Check TSC EN Cmd*/
-        if ((u8TscEnState & 0x02U) == 0x02U)
+        if ((u8DispEnState & 0x02U) == 0x02U)
         {
            if (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW)
            {

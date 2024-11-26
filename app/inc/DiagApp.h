@@ -7,8 +7,10 @@
 #define DISP_STATUS_BYTE1   0x01U
 
 #define DISP0_LATCHED_MASK  0xEFU
-#define DISP0_TCERR_MASK    0x80U   /* [Latched] Touch Connection Error (FPC connection)*/
-#define DISP0_TSCERR_MASK   0x40U   /* [Latched] Touch Screen Controller Error */
+#define DISP0_DPSTOK_MASK   0x3BU   /* Display Status OK Mask*/
+#define DISP0_TSCTOK_MASK   0x7BU   /* Touch Status OK Mask*/
+#define DISP0_TCERR_MASK    0x80U   /* [Latched] Touch Connection Error (FPC connection)(No use)*/
+#define DISP0_TSCERR_MASK   0x40U   /* [Latched] Touch Screen Controller Error*/
 #define DISP0_LLOSS_MASK    0x20U   /* [Latched] Loss of Lock*/
 #define DISP0_RSTRQ_MASK    0x10U   /* Reset Request*/
 #define DISP0_DCERR_MASK    0x08U   /* [Latched] Disconnect Error (FPC connection)*/
@@ -17,6 +19,7 @@
 #define DISP0_LCDERR_MASK   0x01U   /* [Latched] LCD Error*/
 
 #define DISP1_LATCHED_MASK  0xB8U
+#define DISP1_DPSTOK_MASK   0x80U   /* Display Status OK Mask*/
 #define DISP1_DISPERR_MASK  0x80U   /* [Latched] Display Error*/
 #define DISP1_BLST_MASK     0x40U   /* Backlight Status*/
 #define DISP1_LOWERR_MASK   0x20U   /* [Latched] Low Priority Error Status*/
@@ -40,9 +43,9 @@
 #define IO_LOW      0U
 
 #define IO_STATUS_HLMASK    0x01U
-#define IO_STATUS_HIGH  0x01U
-#define IO_STATUS_LOW   0x00U
-#define IO_STATUS_SWIM  0x02U
+#define IO_STATUS_HIGH      0x01U
+#define IO_STATUS_LOW       0x00U
+#define IO_STATUS_SWIM      0x02U
 
 typedef struct{
     uint8_t Status;

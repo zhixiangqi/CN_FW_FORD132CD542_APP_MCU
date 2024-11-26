@@ -202,7 +202,7 @@ static uint8_t MainApp_HandShake_Mode(uint8_t u8Nothing)
 static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
 {
     uint8_t u8Return;
-    uint8_t u8TscEnState;
+    uint8_t u8DispEnState;
     WdtApp_CleanCounter();
     /* Do task & INTB flow*/
     StackTaskApp_MissionAction();
@@ -210,13 +210,13 @@ static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
     /*Check Disp Shutdown and SYNC Volatge State*/
     if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && bSyncVolatgeState)
     {
-        u8TscEnState = RegisterApp_DHU_Read(CMD_DISP_EN,1U);
+        u8DispEnState = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS);
         /* Check Disp En Cmd*/
-        if((u8TscEnState & 0x01U) == 0x01U)
+        if((u8DispEnState & DISPEN_DISP_MASK) == DISPEN_DISP_MASK)
         {
             u8Return = STATE_NORMAL;
             /* Check TSC EN Cmd*/
-            TPApp_IntTscStateFlow(u8TscEnState);
+            TPApp_IntTscStateFlow(u8DispEnState);
         }else{
             u8Return = STATE_PRESLEEP;
         }

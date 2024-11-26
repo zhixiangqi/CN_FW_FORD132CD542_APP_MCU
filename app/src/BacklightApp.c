@@ -261,6 +261,8 @@ void BacklightApp_DimmingControl(void)
                     & bSyncVolatgeState
                     /*Check if battery in protection state*/
                     & (!u8BATT_PROTECT_EN)
+                    /*Check LLOSS*/
+                    & (((RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS) & DISP0_LLOSS_MASK) != 0x00U) ? 0x00U : 0x01U)
                     & 0x01U ;
     
     /*Dimming target*/

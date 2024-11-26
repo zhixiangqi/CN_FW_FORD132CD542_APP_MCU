@@ -82,6 +82,40 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         /*DO NOTHING*/
     }
 
+   
+    uint8_t u8DispEnState = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS);
+    /* Check DISP_ST is correct*/
+    if((u8DispEnState & DISPEN_DISP_MASK)  == DISPEN_DISP_MASK){
+        if(((u8DiagDispByte0 & DISP0_DPSTOK_MASK) != 0x00) || ((u8DiagDispByte1 & DISP1_DPSTOK_MASK) != 0x00)){
+            /* Set DISP_ST as 0*/
+            u8DiagDispByte1 &= ~DISP1_DISPST_MASK;
+        }else{
+            /* Set DISP_ST as 1*/
+            u8DiagDispByte1 |= DISP1_DISPST_MASK;
+        }
+        RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS+1U,u8DiagDispByte1);
+    }else{
+        /*DO NOTHING*/
+    }
+
+    /* Check TSC_ST is correct*/
+    if((u8DispEnState & DISPEN_DISP_MASK)  == DISPEN_DISP_MASK){
+        if((u8DispEnState & DISPEN_TSC_MASK)  == DISPEN_TSC_MASK){
+            if(((u8DiagDispByte0 & DISP0_TSCTOK_MASK) != 0x00) || ((u8DiagDispByte1 & DISP1_DPSTOK_MASK) != 0x00)){
+                /* Set TSC_ST as 0*/
+                u8DiagDispByte1 &= ~DISP1_TSCST_MASK;
+            }else{
+                /* Set TSC_ST as 1*/
+                u8DiagDispByte1 |= DISP1_TSCST_MASK;
+            }
+            RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS+1U,u8DiagDispByte1);
+        }else{
+            /*DO NOTHING*/
+        }
+    }else{
+        /*DO NOTHING*/
+    }
+
     /* Check if the data is New event (Pull Request Necessary)*/
     if (((u8OldByte0 & DISP0_LATCHED_MASK) != (u8DiagDispByte0 & DISP0_LATCHED_MASK)) || 
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))

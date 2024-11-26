@@ -52,6 +52,9 @@
 #define CMD_FB_UPDATE_FAIL          0x01U
 #define CMD_FB_UPDATE_PROGRESSING   0x02U
 
+/*Display Enable */
+#define DISPEN_DISP_MASK         0x01U
+#define DISPEN_TSC_MASK          0x02U
 /*Flag Register Define*/
 #define DTC_SW_VERSION              0x01U
 #define DTC_BL_VERSION              0x02U
