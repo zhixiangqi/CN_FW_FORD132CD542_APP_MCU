@@ -80,6 +80,10 @@ void UartApp_ReadFlow()
             {
                 switch (rdBuffer[UART_MARK_POS])
                 {
+                case 0x00U:
+                    UartDriver_UartSwitch(rdBuffer[UART_REG_CMD_POS]);
+                    break;
+
                 case 0x01U:
                     /* Read Register data code */
                     for(uint8_t index = 0U;index < rdBuffer[UART_REG_R_LEN_POS];index ++)
@@ -151,10 +155,6 @@ void UartApp_ReadFlow()
                         sprintf((char *)u8TxBuffer,"I2C FAIL> 0x%02x\r\n",u8i2cstatus);
                         UartDriver_TxWriteString(u8TxBuffer);
                     }
-                    break;
-
-                case 0xA0U:
-                    I2C4MDriver_Initialize();
                     break;
 
                 case 0xF2U:

@@ -13,6 +13,12 @@
 // *****************************************************************************
 
 cy_stc_scb_uart_context_t SCB_UART3_DEBUG_context;
+bool UART_SWITCH = true;
+
+void UartDriver_UartSwitch(bool bset)
+{
+    UART_SWITCH = bset;
+}
 
 uint8_t UartDriver_Initial()
 {
@@ -58,7 +64,13 @@ void UartDriver_AbortReceive()
 
 void UartDriver_TxWriteString(uint8_t* u8TxBuffer)
 {
-    Cy_SCB_UART_PutString(SCB_UART3_DEBUG_HW, (const char_t *)u8TxBuffer);
+    if(UART_SWITCH)
+    {
+        Cy_SCB_UART_PutString(SCB_UART3_DEBUG_HW, (const char_t *)u8TxBuffer);
+    }else{
+        /* Do nothing*/
+    }
+    
 }
 
 void UartDriver_TxWriteArray(uint8_t* u8TxBuffer, uint32_t size)
