@@ -130,6 +130,7 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     /* Only for flash w/r test*/
     // uint8_t Flag[4] = {0x0F, 0x00, 0x00, 0x00};
     // FlashApp_WriteRowFlash(&Flag[0],0x0001F000,4U);
+    UartDriver_UartSwitch(IS_TEST_VERSION);
     (void) u8Nothing;
     return u8Return;
 }

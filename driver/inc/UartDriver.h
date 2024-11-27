@@ -32,6 +32,7 @@
 #define UART_RX_EMPTY   4U
 #define UART_FAIL       5U
 
+void UartDriver_UartSwitch(bool bset);
 uint8_t UartDriver_Receive(uint8_t RxBuffer[], uint32_t u32RxSize);
 uint32_t UartDriver_GetNumReceived();
 void UartDriver_AbortReceive();
