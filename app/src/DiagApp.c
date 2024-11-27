@@ -82,7 +82,6 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         /*DO NOTHING*/
     }
 
-   
     uint8_t u8DispEnState = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS);
     /* Check DISP_ST is correct*/
     if((u8DispEnState & DISPEN_DISP_MASK)  == DISPEN_DISP_MASK){

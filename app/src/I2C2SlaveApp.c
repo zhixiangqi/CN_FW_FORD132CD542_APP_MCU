@@ -90,7 +90,7 @@ static void I2CSlaveApp_CmdSizeInitial(void)
     CmdSizePool[CMD_UPDATESTATUS_FB]    = 4U;
 
     CmdSizePool[CMD_FAB_CTRL]           = 65U; /*No Limit*/
-    CmdSizePool[CMD_FAB_CTRLRD]         = 65U;
+    CmdSizePool[CMD_FAB_CTRLRD]         = 80U;
 }
 
 static uint32_t I2CSlaveApp_GetCmdSize(uint8_t subaddr)
