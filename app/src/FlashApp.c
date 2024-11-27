@@ -49,17 +49,17 @@ uint8_t u8CheckNorFlashFlag;
 uint8_t u8testCount = 0;
 void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t length)
 {
-  uint8_t dataSend[256] = {0};
-  (void)memcpy((void *)dataSend, (void *) FLASH_ROW_ADDRESS( address ), SIZE_ROW);
+  uint8_t dataStr[256] = {0};
+  (void)memcpy((void *)dataStr, (void *) FLASH_ROW_ADDRESS( address ), SIZE_ROW);
   uint8_t start_addr = (uint8_t)(address & 0xFF);
   for(uint16_t addr = 0U; addr < length; addr ++){
       if((start_addr + addr) <= 0xFF){
-          dataSend[start_addr + addr] = data[addr];
+          dataStr[start_addr + addr] = data[addr];
       }else{
           /* error write*/
       }
   }
-  NVMDriver_PageWrite(dataSend,FLASH_ROW_ADDRESS(address));
+  NVMDriver_PageWrite(dataStr,FLASH_ROW_ADDRESS(address));
 }
 
 void FlashApp_CheckNorFlash()
@@ -68,12 +68,14 @@ void FlashApp_CheckNorFlash()
   /*Initial Check Nor Flash Complete Flag*/
   u8CheckNorFlashFlag = 0x00U;
   /*Check Chip if Erase*/
-  u8testCount = 0;
-  while (u8EraseFlag != 0xFFU)
+  u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(0)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(1));
+  if (u8EraseFlag == 0xFFU)
   {
-    u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(u8testCount)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(1));
-    u8testCount++;
+    u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q80_SECTOR_ADDRESS(127)+ GD25Q80_PAGE_ADDRESS(0)+POS_NUM(1));
+  }else{
+    /*Do nothing*/
   }
+  
   if (u8EraseFlag != CHIP_ERASE_FALG)
   {
     GD25Q_SPIFLASH_EraseChip();//Erase Chip
@@ -154,6 +156,7 @@ void FlashApp_CheckNorFlash()
   sprintf((char *)u8TxBuffer,"Check Nor Flash Complete:%02d\r\n",u8CheckNorFlashFlag);
   UartDriver_TxWriteString(u8TxBuffer);
 }
+
 void FlashApp_WriteNorFlash()
 {
   if (u8CheckNorFlashFlag == 0x01U)

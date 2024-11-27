@@ -76,9 +76,6 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
         u8Return = STATE_SLEEP;
     }
 
-    /* Enable global interrupts */
-    __enable_irq();
-
     WdtApp_CleanCounter();
     /* Configure and enable the UART peripheral */
     UartDriver_Initial();
@@ -87,6 +84,17 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     {
         UartDriver_TxWriteString((uint8_t *)"I2C M driver init fail\r\n");
     }
+    RegisterApp_ALL_Initial();
+    I2C2SlaveApp_Initial();
+    StackTaskApp_Global_MissionInitial();
+    BacklightApp_Initial();
+    DeviceApp_Intial();
+    TC0App_DHUTaskClean();
+    /*ADC initial*/
+    AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
+    PowerApp_PowerGoodInitial();
+    /* Enable global interrupts */
+    __enable_irq();
     /* Only for Nor Flash Test*/
     // Initialize the SPI Master
     if(SPIMDriver_Initialize() == false)
@@ -103,15 +111,6 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     {
         UartDriver_TxWriteString((uint8_t *)"EIC driver init fail\r\n");
     }
-    RegisterApp_ALL_Initial();
-    I2C2SlaveApp_Initial();
-    StackTaskApp_Global_MissionInitial();
-    BacklightApp_Initial();
-    DeviceApp_Intial();
-    TC0App_DHUTaskClean();
-    /*ADC initial*/
-    AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
-    PowerApp_PowerGoodInitial();
     /* WDT Init*/
     WdtApp_CheckResetCause();
     WdtApp_Initial();

@@ -257,16 +257,16 @@ void DeviceApp_0xF1FabCommCtrl(void)
         break;
 
     case CommType_FLASHREAD:
-        uint32_t u32LogRxBuffAddr  = 0U;
-        uint32_t u32LogRxRegOffeset = CMD_DATA_POS + 6U;
-        u32LogRxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 0U) << 24);
-        u32LogRxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 1U) << 16);
-        u32LogRxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 2U) << 8);
-        u32LogRxBuffAddr += RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 3U);
-        if(((u32LogRxBuffAddr+u8CommLength) < ADDR_MCUFLASH_MAXIMUM) && (u8CommLength < 256))
+        uint32_t u32RxBuffAddr  = 0U;
+        uint32_t u32RxRegOffeset = CMD_DATA_POS + 6U;
+        u32RxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 0U) << 24);
+        u32RxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 1U) << 16);
+        u32RxBuffAddr += (RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 2U) << 8);
+        u32RxBuffAddr += RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 3U);
+        if(((u32RxBuffAddr+u8CommLength) < ADDR_MCUFLASH_MAXIMUM) && (u8CommLength < 256))
         {
             uint8_t dataStr[256] = {0};
-            (void)memcpy((void *)dataStr, (void *) u32LogRxBuffAddr, u8CommLength);
+            (void)memcpy((void *)dataStr, (void *) u32RxBuffAddr, u8CommLength);
             RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
             RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
             RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
@@ -288,11 +288,11 @@ void DeviceApp_0xF1FabCommCtrl(void)
     case CommType_LOGREAD:
         /* code */
         uint8_t u8SectorSerialNum,u8PageSerialNum,u8ReadSerialNum;
-        uint32_t u32RxRegOffeset = CMD_DATA_POS + 6U;
-        u8SectorSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 0U);
-        u8PageSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 1U);
-        u8ReadSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 2U);
-        // RegisterApp_DHU_Read(CMD_FAB_CTRL, u32RxRegOffeset + 3U);
+        uint32_t u32LogRxRegOffeset = CMD_DATA_POS + 6U;
+        u8SectorSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 0U);
+        u8PageSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 1U);
+        u8ReadSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 2U);
+        // RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 3U);
 
         RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
         RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
