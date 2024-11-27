@@ -120,8 +120,13 @@ static void BacklightApp_BrightnessAdgust(uint16_t BrightnessTarget,uint16_t Gra
     /*Set dimming value to PWM Driver*/
 	duty = ((duty > BLT_PERIOD) ? BLT_PERIOD : duty);
     (void)PwmDriver_DutySet((uint16_t)(duty & 0xFFFFU));
+    /* Set DTC_PWM_HBYTE & LBYTE*/
+    RegisterApp_DHU_Setup(CMD_DTC,DTC_PWM_HBYTE,((uint8_t)(duty >> 8U)));
+    RegisterApp_DHU_Setup(CMD_DTC,DTC_PWM_LBYTE,((uint8_t)(duty & 0x00FFU)));
+    /* Set BL_ST for APPENDIX A: I2C sequence example - On demand backlight update*/
     if(duty > 0U)
     {
+        /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 BL_ST set as 1.*/
         DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
     }else{
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
@@ -261,7 +266,7 @@ void BacklightApp_DimmingControl(void)
                     /*Check if battery in protection state*/
                     & (!u8BATT_PROTECT_EN)
                     /*Check LLOSS*/
-                    & (((RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS) & DISP0_LLOSS_MASK) != 0x00U) ? 0x01U : 0x00U)
+                    & (((RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS) & DISP0_LLOSS_MASK) != 0x00U) ? 0x00U : 0x01U)
                     & 0x01U ;
     
     /*Dimming target*/
@@ -280,8 +285,6 @@ void BacklightApp_DimmingControl(void)
     }
     
     if(BacklightSwitch == BLT_ENABLE){
-        /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 BL_ST set as 1.*/
-        
         PwmDriver_Start();
         u16GradientValue = 0U;
         BacklightApp_BrightnessAdgust(BrightnessTarget,0U);
@@ -290,8 +293,13 @@ void BacklightApp_DimmingControl(void)
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
         /* Directly Close Backlight (PWM set as 0)*/
         u16Brightness = 0U;
-        //PwmDriver_Stop();
+        /* Set duty 0 to Avoid pin floating bug
+            PwmDriver_Stop();
+        */
         (void)PwmDriver_DutySet((uint16_t)( 0U));
+        /* Set DTC_PWM_HBYTE & LBYTE*/
+        RegisterApp_DHU_Setup(CMD_DTC,DTC_PWM_HBYTE,((uint8_t)(0U)));
+        RegisterApp_DHU_Setup(CMD_DTC,DTC_PWM_LBYTE,((uint8_t)(0U)));
     }else{
         /*ERROR READ FORMAT. NEED CHECK*/
     }

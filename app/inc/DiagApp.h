@@ -7,7 +7,7 @@
 #define DISP_STATUS_BYTE1   0x01U
 
 #define DISP0_LATCHED_MASK  0xEFU
-#define DISP0_DPSTOK_MASK 0x3BU   /* Display Status OK Mask*/
+#define DISP0_DPSTOK_MASK   0x38U   /* Display Status OK Mask*/
 #define DISP0_TCERR_MASK    0x80U   /* [Latched] Touch Connection Error (FPC connection)(No use)*/
 #define DISP0_TSCERR_MASK   0x40U   /* [Latched] Touch Screen Controller Error (No use)*/
 #define DISP0_LLOSS_MASK    0x20U   /* [Latched] Loss of Lock*/
@@ -18,7 +18,7 @@
 #define DISP0_LCDERR_MASK   0x01U   /* [Latched] LCD Error*/
 
 #define DISP1_LATCHED_MASK  0xB8U
-#define DISP1_DPSTOK_MASK   0x80U   /* Display Status OK Mask*/
+#define DISP1_DPSTOK_MASK   0x00U   /* Display Status OK Mask*/
 #define DISP1_DISPERR_MASK  0x80U   /* [Latched] Display Error*/
 #define DISP1_BLST_MASK     0x40U   /* Backlight Status*/
 #define DISP1_LOWERR_MASK   0x20U   /* [Latched] Low Priority Error Status*/

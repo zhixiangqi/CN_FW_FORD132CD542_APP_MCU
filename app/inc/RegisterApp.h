@@ -79,8 +79,8 @@
 #define DTC_BLT_TEMP_ADC            0x19U
 #define DTC_PCB_TEMP_ADC            0x1BU
 #define DTC_SPI_FAULT               0x1DU
-#define DTC_RESERVED1               0x1EU
-#define DTC_RESERVED2               0x1FU
+#define DTC_PWM_HBYTE               0x1EU
+#define DTC_PWM_LBYTE               0x1FU
 #define DTC_APP_POS                 0x20U
 #define DTC_WDT_ALARM               0x21U
 #define DTC_TASK_OVERFLOW           0x22U
