@@ -139,7 +139,7 @@ static uint8_t BacklightApp_Normal_Mode(uint16_t u16MATemp)
 	uint8_t u8Return = BLT_NORMAL_MODE;
     u8BLT_DERATING_EN = FALSE;
     u16BrightnessUpperLimit = BLT_100P;
-    if(u16MATemp < BLT_TEMP85)
+    if(u16MATemp > PTC_PCB_TEMP75)
     {
         (void)u8BLT_DERATING_EN;
         u8BLT_DERATING_EN = TRUE;
@@ -158,7 +158,7 @@ static uint8_t BacklightApp_Burn_Mode(uint16_t u16MATemp)
     uint8_t u8Return = BLT_BURN_MODE;
     u8BLT_DERATING_EN = TRUE;
     u16BrightnessUpperLimit = BLT_75P;
-    if(u16MATemp > BLT_TEMP80)
+    if(u16MATemp < PTC_PCB_TEMP70)
     {
         TC0App_DerateCntStartSet(TRUE);
         if (TC0App_TimerReturn(TIMER_DERATECOUNT) > 30U)
@@ -174,7 +174,7 @@ static uint8_t BacklightApp_Burn_Mode(uint16_t u16MATemp)
         {
             u8Return = BLT_BURN_MODE;
         }
-    }else if(u16MATemp < BLT_TEMP90){
+    }else if(u16MATemp > PTC_PCB_TEMP80){
         u8BLT_DERATING_ALARM_FLAG = TRUE;
         bDimmingUpdateStepFlag = true;
         u8Return = BLT_BOIL_MODE;
@@ -189,7 +189,7 @@ static uint8_t BacklightApp_Boil_Mode(uint16_t u16MATemp)
 	uint8_t u8Return = BLT_BOIL_MODE;
     u8BLT_DERATING_EN = TRUE;
     u16BrightnessUpperLimit = BLT_40P;
-    if(u16MATemp > BLT_TEMP80)
+    if(u16MATemp < PTC_PCB_TEMP70)
     {
         TC0App_DerateCntStartSet(TRUE);
         if (TC0App_TimerReturn(TIMER_DERATECOUNT) > 30U)
@@ -205,7 +205,7 @@ static uint8_t BacklightApp_Boil_Mode(uint16_t u16MATemp)
         {
             u8Return = BLT_BOIL_MODE;
         }
-    }else if(u16MATemp < BLT_TEMP95){
+    }else if(u16MATemp > PTC_PCB_TEMP85){
         u8BLT_DERATING_ALARM_FLAG = TRUE;
         bDimmingUpdateStepFlag = true;
         u8Return = BLT_SCORCH_MODE;
@@ -221,7 +221,7 @@ static uint8_t BacklightApp_Scorch_Mode(uint16_t u16MATemp)
 	uint8_t u8Return = BLT_SCORCH_MODE;
     u8BLT_DERATING_EN = TRUE;
     u16BrightnessUpperLimit = BLT_3P;
-    if(u16MATemp > BLT_TEMP80)
+    if(u16MATemp < PTC_PCB_TEMP70)
     {
         TC0App_DerateCntStartSet(TRUE);
         if (TC0App_TimerReturn(TIMER_DERATECOUNT) > 30U)
@@ -342,7 +342,7 @@ void BacklightApp_DeratingFlow(void)
     uint8_t CurrentStatus = BLT_NORMAL_MODE;
     uint16_t TempVolt = 0U;
     uint16_t u16MATemp = 0U;
-    TempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH1_BLTTEMP);
+    TempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH0_PCBTEMP);
 
     /* Do check the data base(samples) is ready for result output (BLT_SAMPLE_CNT = 16 times)*/
     u16TempVoltSample[u8BLSampleCount] = TempVolt;
@@ -379,8 +379,8 @@ void BacklightApp_DeratingFlow(void)
             CurrentStatus = BacklightApp_Normal_Mode(u16MATemp);
             break;
         }
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_BLT_TEMP_ADC,(uint8_t)(u16MATemp >> 8));
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_BLT_TEMP_ADC+1U,(uint8_t)(u16MATemp));
+        RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC,(uint8_t)(u16MATemp >> 8));
+        RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC+1U,(uint8_t)(u16MATemp));
     }else{
         /*DO NOTHING*/
     }
@@ -398,12 +398,15 @@ void BacklightApp_TempMonitor(void)
     PcbTempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH0_PCBTEMP);
     sprintf((char *)u8TxBuffer,"PCB TEMP %d \r\n",PcbTempVolt);
     UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
-    RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC,(uint8_t)(PcbTempVolt >> 8));
-    RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC+1U,(uint8_t)(PcbTempVolt));
-
+    /*
+        RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC,(uint8_t)(PcbTempVolt >> 8));
+        RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC+1U,(uint8_t)(PcbTempVolt));
+    */
     BltTempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH1_BLTTEMP);
     sprintf((char *)u8TxBuffer,"BLT TEMP %d DERATE %d STATE %d\r\n",BltTempVolt,u8BLT_DERATING_EN,u8BLT_DERATING_STATUS);
     UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+    RegisterApp_DHU_Setup(CMD_DTC,DTC_BLT_TEMP_ADC,(uint8_t)(BltTempVolt >> 8));
+    RegisterApp_DHU_Setup(CMD_DTC,DTC_BLT_TEMP_ADC+1U,(uint8_t)(BltTempVolt));
 }
 
 /* *****************************************************************************

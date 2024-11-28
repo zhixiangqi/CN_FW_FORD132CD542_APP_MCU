@@ -3,15 +3,16 @@
 
 #include "main.h"
 
-/*With 100 section*/
-// #define BLT_SECTION 100U
-// #define BLT_100P    100U
-// #define BLT_60P     60U
-// #define BLT_20P     20U
-// #define BLT_0P      0U
-// #define BLT_PERIOD  19799U
-// #define BLT_UNITSTEP    ((BLT_PERIOD+1U)/BLT_SECTION)
-// #define BLT_GRADUAL_UNIT    0x04U
+/*With 100 section
+#define BLT_SECTION 100U
+#define BLT_100P    100U
+#define BLT_60P     60U
+#define BLT_20P     20U
+#define BLT_0P      0U
+#define BLT_PERIOD  19799U
+#define BLT_UNITSTEP    ((BLT_PERIOD+1U)/BLT_SECTION)
+#define BLT_GRADUAL_UNIT    0x04U
+*/
 
 /*With 3FF section*/
 #define BLT_SECTION 0x03FFU
@@ -35,10 +36,18 @@
 #define BLT_BOIL_MODE       0x02U
 #define BLT_SCORCH_MODE     0x03U
 
-#define BLT_TEMP80  585U
-#define BLT_TEMP85  519U
-#define BLT_TEMP90  460U
-#define BLT_TEMP95  408U
+/* NTC
+#define NTC_BLT_TEMP80  585U
+#define NTC_BLT_TEMP85  519U
+#define NTC_BLT_TEMP90  460U
+#define NTC_BLT_TEMP95  408U
+*/
+
+/* PTC*/
+#define PTC_PCB_TEMP70  2357U
+#define PTC_PCB_TEMP75  2387U
+#define PTC_PCB_TEMP80  2416U
+#define PTC_PCB_TEMP85  2446U
 
 void BacklightApp_BattProtectSet(uint8_t u8Set);
 void BacklightApp_RstRqSwitchSet(uint8_t u8Set);
