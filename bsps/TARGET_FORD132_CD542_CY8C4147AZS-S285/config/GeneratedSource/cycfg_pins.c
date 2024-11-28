@@ -946,6 +946,8 @@ void init_cycfg_pins(void)
     Cy_GPIO_Pin_Init(PCBA_A1_PORT, PCBA_A1_PIN, &PCBA_A1_config);
     Cy_GPIO_Pin_Init(PCBA_A2_PORT, PCBA_A2_PIN, &PCBA_A2_config);
     Cy_GPIO_Pin_Init(PCBA_A3_PORT, PCBA_A3_PIN, &PCBA_A3_config);
+    Cy_GPIO_Pin_Init(RTC_WCO_IN_PORT, RTC_WCO_IN_PIN, &RTC_WCO_IN_config);
+    Cy_GPIO_Pin_Init(RTC_WCO_OUT_PORT, RTC_WCO_OUT_PIN, &RTC_WCO_OUT_config);
     Cy_GPIO_Pin_Init(P1V2_EN_PORT, P1V2_EN_PIN, &P1V2_EN_config);
     Cy_GPIO_Pin_Init(P1V2_PG_PORT, P1V2_PG_PIN, &P1V2_PG_config);
     Cy_GPIO_Pin_Init(BIAS_FAULT_PORT, BIAS_FAULT_PIN, &BIAS_FAULT_config);
