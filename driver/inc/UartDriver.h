@@ -32,13 +32,13 @@
 #define UART_RX_EMPTY   4U
 #define UART_FAIL       5U
 
-void UartDriver_UartSwitch(bool bset);
+void UartDriver_UartSwitch(uint8_t u8set);
 uint8_t UartDriver_Receive(uint8_t RxBuffer[], uint32_t u32RxSize);
-uint32_t UartDriver_GetNumReceived();
-void UartDriver_AbortReceive();
+uint32_t UartDriver_GetNumReceived(void);
+void UartDriver_AbortReceive(void);
 void UartDriver_TxWriteString(uint8_t* u8TxBuffer);
 void UartDriver_TxWriteArray(uint8_t* u8TxBuffer, uint32_t size);
-uint8_t UartDriver_Initial();
+uint8_t UartDriver_Initial(void);
 
 #endif /* _EXAMPLE_FILE_NAME_H */
 /* *****************************************************************************

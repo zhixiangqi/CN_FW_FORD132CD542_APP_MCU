@@ -8,7 +8,8 @@ cy_stc_scb_i2c_master_xfer_config_t masterTransferCfg =
     .bufferSize   = 0U,
     .xferPending  = false
 };
-
+//LDRA_EXCLUDE_START 496 S
+//LDRA_EXCLUDE_START 8 D
 /******************************************************************************
 ;       Function Name			:	uint8_t HAL_I2C_Slave_Register_Event_Callback(CySCB_Type const* pSCB,cy_cb_scb_i2c_handle_events_t 	pCallback)
 ;       Function Description	:	This state for error condition
@@ -30,12 +31,12 @@ uint8_t I2C4MDriver_Register_Event_Callback(cy_cb_scb_i2c_handle_events_t pCallb
 	}
 	return u8Result;
 }
-
+//LDRA_EXCLUDE_START 35 S
 static void I2C4MDriver_Interrupt(void)
 {
     Cy_SCB_I2C_Interrupt(I2C4M_MCU_HW, &I2C4M_MCU_context);
 }
-
+//LDRA_EXCLUDE_END 35 S
 bool I2C4MDriver_Initialize(void)
 {
     bool bresult = true;
@@ -75,10 +76,10 @@ uint8_t I2C4MDriver_Read(uint16_t address, uint8_t* rdData, uint32_t rdLength)
     cy_en_scb_i2c_status_t errorStatus;
     uint32_t masterStatus;
     /* Timeout 1 sec (one unit is us) */
-    uint32_t timeout = 8000UL;
+    uint32_t timeout = 8000U;
 
     /* Setup transfer specific parameters */
-    masterTransferCfg.slaveAddress = (uint8_t)(address & 0x00FF);
+    masterTransferCfg.slaveAddress = (uint8_t)(address & 0x00FFU);
     masterTransferCfg.buffer     = rdData;
     masterTransferCfg.bufferSize = rdLength;
 
@@ -93,8 +94,8 @@ uint8_t I2C4MDriver_Read(uint16_t address, uint8_t* rdData, uint32_t rdLength)
             Cy_SysLib_DelayUs(CY_SCB_WAIT_1_UNIT);
             timeout--;
 
-        } while ((0UL != (masterStatus & CY_SCB_I2C_MASTER_BUSY)) && (timeout > 0));
-        if (timeout <= 0)
+        } while ((0UL != (masterStatus & CY_SCB_I2C_MASTER_BUSY)) && (timeout > 0U));
+        if (timeout <= 0U)
         {
             status = ERROR_TIMEOUT;
             /* Timeout recovery */
@@ -142,7 +143,7 @@ uint8_t I2C4MDriver_Read(uint16_t address, uint8_t* rdData, uint32_t rdLength)
     }
     if(status != CY_SCB_I2C_SUCCESS){
         Cy_SCB_I2C_DeInit(I2C4M_MCU_HW);
-        I2C4MDriver_Initialize();
+        (void)I2C4MDriver_Initialize();
     }
     return (status);
 }
@@ -153,10 +154,10 @@ uint8_t I2C4MDriver_Write(uint16_t address, uint8_t* wrData, uint32_t wrLength)
     cy_en_scb_i2c_status_t  errorStatus;
     uint32_t masterStatus;
     /* Timeout 1 sec (one unit is us) */
-    uint32_t timeout = 8000UL;
+    uint32_t timeout = 8000U;
 
     /* Setup transfer specific parameters */
-    masterTransferCfg.slaveAddress = (uint8_t)(address & 0x00FF);
+    masterTransferCfg.slaveAddress = (uint8_t)(address & 0x00FFU);
     masterTransferCfg.buffer     = wrData;
     masterTransferCfg.bufferSize = wrLength;
 
@@ -171,9 +172,9 @@ uint8_t I2C4MDriver_Write(uint16_t address, uint8_t* wrData, uint32_t wrLength)
             Cy_SysLib_DelayUs(CY_SCB_WAIT_1_UNIT);
             timeout--;
 
-        } while ((0UL != (masterStatus & CY_SCB_I2C_MASTER_BUSY)) && (timeout > 0));
+        } while ((0UL != (masterStatus & CY_SCB_I2C_MASTER_BUSY)) && (timeout > 0U));
 
-        if (timeout <= 0)
+        if (timeout <= 0U)
         {
             status = ERROR_TIMEOUT;
             /* Timeout recovery */
@@ -221,21 +222,20 @@ uint8_t I2C4MDriver_Write(uint16_t address, uint8_t* wrData, uint32_t wrLength)
     }
     if(status != CY_SCB_I2C_SUCCESS){
         Cy_SCB_I2C_DeInit(I2C4M_MCU_HW);
-        I2C4MDriver_Initialize();
+        (void)I2C4MDriver_Initialize();
     }
     return (status);
 }
-
 uint8_t I2C4MDriver_WriteRead(uint16_t address, uint8_t* wrData, uint32_t wrLength, uint8_t* rdData, uint32_t rdLength)
 {
     cy_en_scb_i2c_status_t status;
     /* Timeout 8 msec (one unit is ms) */
-    uint32_t timeoutMs = 8UL;
+    uint32_t timeoutMs = 8U;
     /* Send Start condition, address and receive ACK/NACK response from slave */
 	status = Cy_SCB_I2C_MasterSendStart(I2C4M_MCU_HW, address, CY_SCB_I2C_WRITE_XFER, timeoutMs, &I2C4M_MCU_context);
 	if (CY_SCB_I2C_SUCCESS == status)
 	{
-        for (uint32_t i = 0 ; i < wrLength ; i ++)
+        for (uint32_t i = 0U ; i < wrLength ; i ++)
 		{
 			  status = Cy_SCB_I2C_MasterWriteByte(I2C4M_MCU_HW, wrData[i], timeoutMs, &I2C4M_MCU_context);
 			  if (status != CY_SCB_I2C_SUCCESS)
@@ -254,7 +254,7 @@ uint8_t I2C4MDriver_WriteRead(uint16_t address, uint8_t* wrData, uint32_t wrLeng
                                             timeoutMs,
                                             &I2C4M_MCU_context);
                 /*Read data & send NAK*/
-                uint32_t cnt = 0UL;
+                uint32_t cnt = 0U;
                 cy_en_scb_i2c_command_t cmd = CY_SCB_I2C_ACK;
                 while ((status == CY_SCB_I2C_SUCCESS) && (cnt < rdLength))
                 {
@@ -299,7 +299,9 @@ uint8_t I2C4MDriver_WriteRead(uint16_t address, uint8_t* wrData, uint32_t wrLeng
     }
     if(status != CY_SCB_I2C_SUCCESS){
         Cy_SCB_I2C_DeInit(I2C4M_MCU_HW);
-        I2C4MDriver_Initialize();
+        (void)I2C4MDriver_Initialize();
     }
     return (status);
 }
+//LDRA_EXCLUDE_END 496 S
+//LDRA_EXCLUDE_END 8 D

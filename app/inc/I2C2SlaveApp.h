@@ -7,3 +7,6 @@ bool I2C2SlaveApp_Initial(void);
 void I2CSlaveApp_UpdateCmdChecksumSet(uint8_t subaddr);
 
 #endif
+/* *****************************************************************************
+ End of File
+*/

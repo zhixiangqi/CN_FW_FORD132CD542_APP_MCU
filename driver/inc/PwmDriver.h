@@ -11,3 +11,6 @@ void PwmDriver_Stop(void);
 void PwmDriver_DutySet(uint16_t duty);
 
 #endif
+/* *****************************************************************************
+ End of File
+*/

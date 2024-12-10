@@ -24,34 +24,34 @@
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/I2C4MDriver.h"
 
-static uint8_t u8TxBuffer[60] = {0};
+static uint8_t u8TxDDIBuffer[60] = {0};
 void DDIApp_StandbyMode(uint8_t u8ModeState)
 {
     uint8_t txbuffer[2]={0x00U};
 
-    txbuffer[0]=0x1E;
-    txbuffer[1]=0x20;
-    I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+    txbuffer[0]=0x1EU;
+    txbuffer[1]=0x20U;
+    (void)I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
     
     if (u8ModeState == EXIT_STANDBY_MODE)
     {
-        txbuffer[0]=0x01;
-        txbuffer[1]=0x07;
-        I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+        txbuffer[0]=0x01U;
+        txbuffer[1]=0x07U;
+    (void)I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
     }else if(u8ModeState == ENTER_STANDBY_MODE)
     {
-        txbuffer[0]=0x01;
-        txbuffer[1]=0x06;
-        I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+        txbuffer[0]=0x01U;
+        txbuffer[1]=0x06U;
+    (void)I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
     }else if(u8ModeState == CHOOSE_BIST_MODE)
     {
-        txbuffer[0]=0x02;
-        txbuffer[1]=0x3F;
-        I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+        txbuffer[0]=0x02U;
+        txbuffer[1]=0x3FU;
+    (void)I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
 
-        txbuffer[0]=0x01;
-        txbuffer[1]=0x07;
-        I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
+        txbuffer[0]=0x01U;
+        txbuffer[1]=0x07U;
+    (void)I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
     }else{/*Do nothing*/}
     /*
     txbuffer[0]=0x1E;
@@ -74,7 +74,7 @@ void DDIApp_StandbyMode(uint8_t u8ModeState)
     txbuffer[1]=0xA8;
     I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
 
-    // bist auto run
+    bist auto run
     txbuffer[0]=0x02;
     txbuffer[1]=0x3F;
     I2C4MDriver_Write(NT51926_SLAVE_ADDRESS, txbuffer, sizeof(txbuffer));
@@ -92,10 +92,10 @@ void DDIApp_DiagRead(uint8_t u8Register)
     u8Return = I2C4MDriver_WriteRead(NT51926_SLAVE_ADDRESS, &u8Register, sizeof(rxbuffer), rxbuffer,sizeof(rxbuffer));
     if (u8Return == ERROR_NONE)
     {
-        sprintf((char *)u8TxBuffer,"NT51926 STATE %d\r\n",rxbuffer[0]);
+        sprintf((char *)u8TxDDIBuffer,"NT51926 STATE %d\r\n",rxbuffer[0]);
     }
     else{
-        sprintf((char *)u8TxBuffer,"NT51926 STATE %d\r\n",0xFF);
+        sprintf((char *)u8TxDDIBuffer,"NT51926 STATE %d\r\n",0xFF);
     }
-    UartDriver_TxWriteString(u8TxBuffer);
+    UartDriver_TxWriteString(u8TxDDIBuffer);
 }

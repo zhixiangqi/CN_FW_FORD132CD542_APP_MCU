@@ -38,4 +38,4 @@ void I2C2SDriver_Enable(void);
 #endif /* _EXAMPLE_FILE_NAME_H */
 /* *****************************************************************************
  End of File
- */
+*/

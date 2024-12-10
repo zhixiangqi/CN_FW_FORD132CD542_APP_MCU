@@ -45,9 +45,9 @@
 
 #define CY_ASSERT_FAILED          (0u)
 #define APP_START_ADDR          0x3000U
-
+//LDRA_EXCLUDE_START 496 S
 static uint8_t u8MAIN_STATUS = STATE_BOOT;
-static uint8_t u8TxBuffer[60] = {0};
+static uint8_t u8TxMainBuffer[60] = {0};
 /*  Function: MainApp_Boot_Mode
 **  Callfrom: Main_Flow state machine
 **        Do: Do basic initial like PORT/CLOCK and other mustbe function.
@@ -58,7 +58,11 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     uint8_t u8Return;
     uint32_t result = 0U;
     /* Initialize the device and board peripherals */
+    //LDRA_EXCLUDE_START 439 S
+    //LDRA_EXCLUDE_START 606 S
     uint32_t PC = (uint32_t)(&MainApp_Task);
+    //LDRA_EXCLUDE_END 439 S
+    //LDRA_EXCLUDE_END 606 S
     result = cybsp_init();
     (void)Cy_GPIO_Pin_FastInit(GPIO_PRT2, 4U, CY_GPIO_DM_HIGHZ, 0x00U, HSIOM_SEL_GPIO);
     (void)Cy_GPIO_Pin_FastInit(GPIO_PRT2, 5U, CY_GPIO_DM_HIGHZ, 0x00U, HSIOM_SEL_GPIO);
@@ -78,20 +82,20 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
 
     WdtApp_CleanCounter();
     /* Configure and enable the UART peripheral */
-    UartDriver_Initial();
+    (void)UartDriver_Initial();
     TC0App_Initial();
     if(I2C4MDriver_Initialize() == false)
     {
         UartDriver_TxWriteString((uint8_t *)"I2C M driver init fail\r\n");
     }
     RegisterApp_ALL_Initial();
-    I2C2SlaveApp_Initial();
+    (void)I2C2SlaveApp_Initial();
     StackTaskApp_Global_MissionInitial();
     BacklightApp_Initial();
     DeviceApp_Intial();
     TC0App_DHUTaskClean();
     /*ADC initial*/
-    AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
+    (void)AdcDriver_Initial(ADC_SAR0_TYPE, ADC_SAR0_CONFIG);
     PowerApp_PowerGoodInitial();
     /* Enable global interrupts */
     __enable_irq();
@@ -117,12 +121,14 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     /* Power On Init*/
     PowerApp_Sequence(POWER_ON);
     /* Due to Bus pull up with P3V3 vout, Init after Power on seq; HW would change PCBA (pull up with MCU_3V3)*/
-    I2C4MDriver_Initialize();
+    (void)I2C4MDriver_Initialize();
     TC0App_NormalWorkStartSet(TRUE);
     DiagApp_CheckFlowInitial();
-    sprintf((char *)u8TxBuffer,"BOOT FINISHED, PC:0x%lX, POS:%02X\r\n",PC,MCU_POSITION);
-    RegisterApp_DHU_Setup(CMD_DTC,DTC_APP_POS,MCU_POSITION);
-    UartDriver_TxWriteString(u8TxBuffer);
+    sprintf((char *)u8TxMainBuffer,"BOOT FINISHED, PC:0x%lX, POS:%02X\r\n",PC,MCU_POSITION);
+    //LDRA_EXCLUDE_START 434 S
+    RegisterApp_DHU_Setup(CMD_DTC,DTC_APP_POS,(uint8_t)MCU_POSITION);
+    //LDRA_EXCLUDE_END 434 S
+    UartDriver_TxWriteString(u8TxMainBuffer);
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_INIT_MASK);
     /* Only for LED Driver test*/
     // PowerApp_LP8664_CurrentSet();
@@ -161,8 +167,8 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
     */
     
-    sprintf((char *)u8TxBuffer,"PRENORMAL FINISHED\r\n");
-    UartDriver_TxWriteString(u8TxBuffer);
+    sprintf((char *)u8TxMainBuffer,"PRENORMAL FINISHED\r\n");
+    UartDriver_TxWriteString(u8TxMainBuffer);
     /* Need to put at the end of prenormal task*/
     (void) u8Nothing;
     return STATE_NORMAL;
@@ -181,13 +187,13 @@ static uint8_t MainApp_HandShake_Mode(uint8_t u8Nothing)
     if(RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS) == 0x01U)
     {
         u8Return = STATE_NORMAL;
-        sprintf((char *)u8TxBuffer,"HANDSHAKE FINISHED\r\n");
+        sprintf((char *)u8TxMainBuffer,"HANDSHAKE FINISHED\r\n");
     }else{
         u8Return = STATE_HANDSHAKE;
-        sprintf((char *)u8TxBuffer,"WAIT HANDSHAKE\r\n");
+        sprintf((char *)u8TxMainBuffer,"WAIT HANDSHAKE\r\n");
     }
     /* Do or Check Handshake function*/
-    UartDriver_TxWriteString(u8TxBuffer);
+    UartDriver_TxWriteString(u8TxMainBuffer);
     /* Test Disp En Cmd -- need to be deleted*/
     RegisterApp_DHU_Setup(CMD_DISP_EN,CMD_DATA_POS,0x01U);
     (void) u8Nothing;
@@ -208,7 +214,7 @@ static uint8_t MainApp_Normal_Mode(uint8_t u8Nothing)
     StackTaskApp_MissionAction();
     INTBApp_Flow();
     /*Check Disp Shutdown and SYNC Volatge State*/
-    if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && bSyncVolatgeState)
+    if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && (u8SyncVolatgeState == 0x01U))
     {
         u8DispEnState = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS);
         /* Check Disp En Cmd*/
@@ -253,8 +259,8 @@ static uint8_t MainApp_PreSleep_Mode(uint8_t u8Nothing)
     TC0App_TimerTaskStopper(false);
     /* SWRA-01-05: Timer Lock Hold set as 1000ms, avoid rapid-off/on behavior*/
     TC0App_TimerReset(TIMER_HOLDCOUNT);
-    sprintf((char *)u8TxBuffer,"PRESLEEP FINISHED\r\n");
-    UartDriver_TxWriteString(u8TxBuffer);
+    sprintf((char *)u8TxMainBuffer,"PRESLEEP FINISHED\r\n");
+    UartDriver_TxWriteString(u8TxMainBuffer);
     u8Return = STATE_SLEEP;
     (void) u8Nothing;
     return u8Return;
@@ -275,10 +281,10 @@ static uint8_t MainApp_Sleep_Mode(uint8_t u8Nothing)
     StackTaskApp_MissionAction();
     INTBApp_Flow();
     /* Do Power Off Sequence*/
-    sprintf((char *)u8TxBuffer,"SLEEP FINISHED\r\n");
+    sprintf((char *)u8TxMainBuffer,"SLEEP FINISHED\r\n");
     // UartDriver_TxWriteString(u8TxBuffer);
     /*Check Disp Shutdown and SYNC Volatge State*/
-    if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && bSyncVolatgeState)
+    if(((RegisterApp_DHU_Read(CMD_DISP_SHUTD,1U) & 0x01U) == 0x00U) && (u8SyncVolatgeState == 0x01U))
     {
         /* Check Disp En Cmd*/
         if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
@@ -325,10 +331,10 @@ static uint8_t MainApp_Shutdown_Mode(uint8_t u8Nothing)
     PwmDriver_Stop();
     PowerApp_Sequence(LCD_OFF);
     PowerApp_Sequence(POWER_OFF);
-    TC0App_DelayMS(500U);
+    (void)TC0App_DelayMS(500U);
     UartApp_ReadFlow();
-    sprintf((char *)u8TxBuffer,"ShutDown... wait for power down\r\n");
-    UartDriver_TxWriteString(u8TxBuffer);
+    sprintf((char *)u8TxMainBuffer,"ShutDown... wait for power down\r\n");
+    UartDriver_TxWriteString(u8TxMainBuffer);
     u8Return = STATE_SHUTDOWN;
     (void) u8Nothing;
     return u8Return;
@@ -389,7 +395,7 @@ static uint8_t MainApp_Flow(uint8_t u8State)
     }
     return u8CurrentState;
 }
-
+//LDRA_EXCLUDE_START 139 S
 uint8_t MainApp_Task(void)
 {
     uint8_t u8Return = FALSE;
@@ -413,6 +419,8 @@ uint8_t MainApp_Task(void)
     }
     return u8Return;
 }
+//LDRA_EXCLUDE_END 496 S
+//LDRA_EXCLUDE_END 139 S
 /* *****************************************************************************
  End of File
  */

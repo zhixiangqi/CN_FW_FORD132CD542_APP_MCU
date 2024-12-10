@@ -6,7 +6,7 @@ bool TC0Driver_Initial(void)
     /* Do nothing*/
 }
 #endif
-
+//LDRA_EXCLUDE_START 496 S
 bool TC0Driver_TimerStart( void )
 {
     bool bresult = true;
@@ -21,17 +21,17 @@ bool TC0Driver_TimerStart( void )
     }
 
     Cy_TCPWM_Counter_Enable(TC0_TIMER_HW, TC0_TIMER_NUM);
-
+    //LDRA_EXCLUDE_START 120 S
     /* Check if the desired interrupt is enabled prior to triggering */
     if (0UL != (CY_TCPWM_INT_ON_TC & Cy_TCPWM_GetInterruptMask(TC0_TIMER_HW, TC0_TIMER_NUM)))
     {
        Cy_TCPWM_SetInterrupt(TC0_TIMER_HW, TC0_TIMER_NUM, CY_TCPWM_INT_ON_TC);
     }
-
+    //LDRA_EXCLUDE_END 120 S
     /* Set the timer period in milliseconds. To count N cycles, period should be
      * set to N-1.
      */
-    Cy_TCPWM_Counter_SetPeriod(TC0_TIMER_HW, TC0_TIMER_NUM, TIMER_PERIOD_MSEC-1 );
+    Cy_TCPWM_Counter_SetPeriod(TC0_TIMER_HW, TC0_TIMER_NUM, TIMER_PERIOD_MSEC-1U );
 
     /* Trigger a software start on the counter instance. This is required when
      * no other hardware input signal is connected to the component to act as
@@ -69,3 +69,4 @@ bool TC0Driver_TimerCallbackRegister(cy_israddress userIsr)
 
     return bresult;
 }
+//LDRA_EXCLUDE_END 496 S

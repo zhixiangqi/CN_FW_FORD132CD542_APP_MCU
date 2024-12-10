@@ -154,10 +154,10 @@ void I2CSlaveApp_UpdateCmdChecksumSet(uint8_t subaddr)
     {
         for(uint32_t index = 0U;index<(u32SizeOfCmd-1U);index++)
         {
-            u32ChecksumCounter += RegisterApp_DHU_Read(subaddr,index);
+            u32ChecksumCounter += RegisterApp_DHU_Read(subaddr,(uint16_t)index);
         }
         u32ChecksumCounter += 1U;
-        RegisterApp_DHU_Setup(subaddr,u32SizeOfCmd-1U,u32ChecksumCounter);
+        RegisterApp_DHU_Setup(subaddr,(uint16_t)(u32SizeOfCmd-1U),(uint8_t)u32ChecksumCounter);
     }else{
         /* Do nothing and ignored*/
     }
@@ -222,10 +222,11 @@ static void I2CSlaveApp_TxWriteTransferDone(uint8_t subaddr)
                 break;
 
             default:
+                /* Do nothing*/
                 break;
             }
         }else{
-            /* Do nothing*/
+           /* Do nothing*/
         }
     }else{
         /* Do common cmd id task*/
@@ -292,7 +293,7 @@ static void I2CSlaveApp_TxReadTransferDone(uint8_t subaddr)
         case CMD_DISP_STATUS:
             /* Check the DISP_STATUS has been sent, then Clear INT_ERR*/
             //RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_CLEAR);
-            DiagApp_RtnIsrCheck(false,INTB_INT_ERR_MASK);
+            (void)DiagApp_RtnIsrCheck(false,INTB_INT_ERR_MASK);
             break;
         
         case CMD_CRC_FB:
@@ -305,6 +306,7 @@ static void I2CSlaveApp_TxReadTransferDone(uint8_t subaddr)
             break;
         
         default:
+            /* Do nothing*/
             break;
         }
     }else{
@@ -313,7 +315,8 @@ static void I2CSlaveApp_TxReadTransferDone(uint8_t subaddr)
         /* Error shooting*/
     }
 }
-
+//LDRA_EXCLUDE_START 35 S
+//LDRA_EXCLUDE_START 139 S
 uint8_t flag_i2c2s = 1U;
 static void SlaveCallback(uint32_t event)
 {
@@ -343,7 +346,7 @@ static void SlaveCallback(uint32_t event)
             /* Nothing */
             flag_i2c2s = 0U;
         break;
-
+        //LDRA_EXCLUDE_START 105 D
         /* Receive data complete */
         case CY_SCB_I2C_SLAVE_WR_CMPLT_EVENT:
             uint32_t index = 0U;
@@ -358,7 +361,7 @@ static void SlaveCallback(uint32_t event)
                 if (I2CSlaveApp_SubAddrPassCheck(u8SubAddr) == false)
                 {
                     /* Clean Buffer and Return Echo (IFS-MMI2C-SR-REQ-140565)*/
-                    memset(i2cReadBuffer,0xFFU,SL_RD_BUFFER_SIZE);
+                    (void)memset(i2cReadBuffer,0xFFU,SL_RD_BUFFER_SIZE);
                     i2cReadBuffer[SUB_ADDR_POS] = u8SubAddr;
                 }else{
                     /* Check the command is Write Available (IFS-MMI2C-SR-REQ-197857)*/
@@ -370,7 +373,7 @@ static void SlaveCallback(uint32_t event)
                             /* Update DHU Command if Write available */
                             for(index = 0U;index<I2CSlaveApp_GetCmdSize(u8SubAddr);index++)
                             {
-                                RegisterApp_DHU_Setup(u8SubAddr,index,i2cWriteBuffer[index]);
+                                RegisterApp_DHU_Setup(u8SubAddr,(uint16_t)index,i2cWriteBuffer[index]);
                             }
                             /* Do Cmd task*/
                             I2CSlaveApp_TxWriteTransferDone(u8SubAddr);
@@ -383,20 +386,20 @@ static void SlaveCallback(uint32_t event)
                     /* DHU command data update to Rx buffer (IFS-MMI2C-SR-REQ-197875)*/
                     uint32_t CmdSize = I2CSlaveApp_GetCmdSize(u8SubAddr);
                     CmdSize = (CmdSize > SL_RD_BUFFER_SIZE) ? SL_RD_BUFFER_SIZE : CmdSize;
-                    memset(i2cReadBuffer,0xFFU,SL_RD_BUFFER_SIZE);
+                    (void)memset(i2cReadBuffer,0xFFU,SL_RD_BUFFER_SIZE);
                     for(index = 0U;index<CmdSize;index++)
                     {
-                        i2cReadBuffer[index] = RegisterApp_DHU_Read(u8SubAddr,index);
+                        i2cReadBuffer[index] = RegisterApp_DHU_Read(u8SubAddr,(uint16_t)index);
                     }
                 }
             }else{
                 /* Clean Buffer Return Default High (0xFF)*/
-                memset(i2cReadBuffer,0xFFU,SL_RD_BUFFER_SIZE);
+                (void)memset(i2cReadBuffer,0xFFU,SL_RD_BUFFER_SIZE);
             }
             /* Clean Tx Buffer after event is over*/
             if(length > LENGTH_ZERO)
             {
-                memset(i2cWriteBuffer,0xFFU,length);
+                (void)memset(i2cWriteBuffer,0xFFU,length);
             }
             /* Configure write & read buffer */
             I2C2SDriver_ConfigRxBuff(i2cReadBuffer);
@@ -414,10 +417,13 @@ static void SlaveCallback(uint32_t event)
         break;
 
         default:
+            /* Do nothing*/
         break;
     }
 }
-
+//LDRA_EXCLUDE_END 35 S
+//LDRA_EXCLUDE_END 139 S
+//LDRA_EXCLUDE_END 105 D
 bool I2C2SlaveApp_Initial(void)
 {
     bool bresult = true;

@@ -75,10 +75,14 @@ void TPApp_IntTscStateFlow(uint8_t u8DispEnState)
                             u8TouchCount++;
                             bTscIntKeepLow = FALSE;
                             INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-                            DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
+                            (void)DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
                         }
                     }
                 }
+            }
+            else
+            {
+               /*Nothing*/
             }
         }else{
             /*Prevent false triggering of initialization power-up*/
@@ -106,9 +110,9 @@ void TPApp_TPINTCheck(void){
         {
            if (PortDrvier_PinRead(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW)
            {
-            DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
+            (void)DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
            }else{
-            DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
+            (void)DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
            }
         }
     }else{

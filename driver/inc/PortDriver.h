@@ -32,3 +32,6 @@ void PortDriver_PinClear(GPIO_PRT_Type *base, uint32_t u32Pin);
 void PortDriver_PinToggle(GPIO_PRT_Type *base, uint32_t u32Pin);
 
 #endif
+/* *****************************************************************************
+ End of File
+*/

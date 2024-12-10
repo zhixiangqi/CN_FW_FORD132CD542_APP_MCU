@@ -14,10 +14,10 @@
 #define RTQ6749_NAVDD_FAULT_MASK 0x01U
 
 void PowerApp_Sequence(uint8_t u8Action);
-void PowerApp_PowerGoodInitial();
-void PowerApp_PowerGoodFlow();
-void PowerApp_RTQ6749_FaultCheck();
-void PowerApp_LP8664_FaultCheck();
-void PowerApp_LP8664_CurrentSet();
+void PowerApp_PowerGoodInitial(void);
+void PowerApp_PowerGoodFlow(void);
+void PowerApp_RTQ6749_FaultCheck(void);
+void PowerApp_LP8664_FaultCheck(void);
+void PowerApp_LP8664_CurrentSet(void);
 
 #endif

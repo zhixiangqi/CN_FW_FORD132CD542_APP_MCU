@@ -33,9 +33,9 @@
 
 #define BLT_SAMPLE_CNT  16U
 
-uint8_t u8TxBuffer[60] = {0};
+uint8_t u8TxBackBuffer[60] = {0};
 
-uint16_t u16Brightness = 0;
+uint16_t u16Brightness = 0U;
 uint8_t u8BLSampleReady = FALSE;
 uint8_t u8BLSampleCount = 0U;
 
@@ -73,7 +73,7 @@ void BacklightApp_UpdateDimmingStep(void)
 {
     bDimmingUpdateStepFlag = true;
 }
-
+//LDRA_EXCLUDE_START 488 S
 static void BacklightApp_BrightnessAdgust(uint16_t BrightnessTarget,uint16_t GradientValue)
 {
     uint32_t duty=0U;
@@ -133,7 +133,7 @@ static void BacklightApp_BrightnessAdgust(uint16_t BrightnessTarget,uint16_t Gra
     // sprintf((char *)u8TxBuffer,"DUTY %d\r\n",duty);
     // UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
 }
-
+//LDRA_EXCLUDE_END 488 S
 static uint8_t BacklightApp_Normal_Mode(uint16_t u16MATemp)
 {
 	uint8_t u8Return = BLT_NORMAL_MODE;
@@ -257,18 +257,18 @@ void BacklightApp_DimmingControl(void)
     /* SWRA-01-05: Timer Lock Hold set as 1000ms, avoid rapid-off/on behavior
     ** TIMER_HOLDCOUNT will return 0xFF if hold time > 1000ms
     */
-    BacklightSwitch = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS) 
-                    & (!RegisterApp_DHU_Read(CMD_DISP_SHUTD,CMD_DATA_POS))
-                    & (TC0App_TimerReturn(TIMER_HOLDCOUNT) != 0x00U)
+    BacklightSwitch = (RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS) 
+                    & (~RegisterApp_DHU_Read(CMD_DISP_SHUTD,CMD_DATA_POS)&0xFFU)
+                    & ((TC0App_TimerReturn(TIMER_HOLDCOUNT) != 0x00U)?TRUE:FALSE)
                     /*Check if RST_RQ state*/
-                    & u8RSTRQ_TYPEB_SW
+                    & (u8RSTRQ_TYPEB_SW)
                     /*Check SYNCK Volatge if below 2.2V*/
-                    & bSyncVolatgeState
+                    & u8SyncVolatgeState
                     /*Check if battery in protection state*/
-                    & (!u8BATT_PROTECT_EN)
+                    & (~u8BATT_PROTECT_EN)
                     /*Check LLOSS*/
                     & (((RegisterApp_DHU_Read(CMD_DISP_STATUS,CMD_DATA_POS) & DISP0_LLOSS_MASK) != 0x00U) ? 0x00U : 0x01U)
-                    & 0x01U ;
+                    & 0x01U) ;
     
     /*Dimming target*/
     BrightnessTarget =  ((uint16_t)rdData[CMD_DATA_POS+1U])*256U;
@@ -280,7 +280,7 @@ void BacklightApp_DimmingControl(void)
     if(bDimmingUpdateStepFlag == true)
     {
         /* Delta PWM Mod 0x7F (128 dimming step) and plus 1 (at least 1 step a time)*/
-        u16DimmingStep = ((BrightnessTarget > u16Brightness) ? (BrightnessTarget - u16Brightness)/0x80 : (u16Brightness - BrightnessTarget)/0x80)
+        u16DimmingStep = ((BrightnessTarget > u16Brightness) ? (BrightnessTarget - u16Brightness)/0x80U : (u16Brightness - BrightnessTarget)/0x80U)
                          + 1U;
         bDimmingUpdateStepFlag = false;
     }
@@ -396,15 +396,15 @@ void BacklightApp_TempMonitor(void)
     uint16_t BltTempVolt = 0U;
     uint16_t PcbTempVolt = 0U;
     PcbTempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH0_PCBTEMP);
-    sprintf((char *)u8TxBuffer,"PCB TEMP %d \r\n",PcbTempVolt);
-    UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+    sprintf((char *)u8TxBackBuffer,"PCB TEMP %d \r\n",PcbTempVolt);
+    UartDriver_TxWriteString((uint8_t*)u8TxBackBuffer);
     /*
         RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC,(uint8_t)(PcbTempVolt >> 8));
         RegisterApp_DHU_Setup(CMD_DTC,DTC_PCB_TEMP_ADC+1U,(uint8_t)(PcbTempVolt));
     */
     BltTempVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH1_BLTTEMP);
-    sprintf((char *)u8TxBuffer,"BLT TEMP %d DERATE %d STATE %d\r\n",BltTempVolt,u8BLT_DERATING_EN,u8BLT_DERATING_STATUS);
-    UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+    sprintf((char *)u8TxBackBuffer,"BLT TEMP %d DERATE %d STATE %d\r\n",BltTempVolt,u8BLT_DERATING_EN,u8BLT_DERATING_STATUS);
+    UartDriver_TxWriteString((uint8_t*)u8TxBackBuffer);
     RegisterApp_DHU_Setup(CMD_DTC,DTC_BLT_TEMP_ADC,(uint8_t)(BltTempVolt >> 8));
     RegisterApp_DHU_Setup(CMD_DTC,DTC_BLT_TEMP_ADC+1U,(uint8_t)(BltTempVolt));
 }

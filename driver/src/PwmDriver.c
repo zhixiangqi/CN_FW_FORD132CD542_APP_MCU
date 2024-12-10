@@ -1,5 +1,5 @@
 #include "PwmDriver.h"
-
+//LDRA_EXCLUDE_START 496 S
 void PwmDriver_Initial(void)
 {
     (void) Cy_TCPWM_PWM_Init(TC7_PWM_LED_HW, TC7_PWM_LED_NUM, &TC7_PWM_LED_config);
@@ -7,7 +7,7 @@ void PwmDriver_Initial(void)
     Cy_TCPWM_Enable_Multiple(TC7_PWM_LED_HW, TC7_PWM_LED_MASK);
     Cy_TCPWM_TriggerReloadOrIndex(TC7_PWM_LED_HW, TC7_PWM_LED_MASK);
 }
-
+//LDRA_EXCLUDE_START 120 S
 void PwmDriver_Start(void)
 {   
     if (0UL != (CY_TCPWM_PWM_STATUS_COUNTER_RUNNING & 
@@ -20,6 +20,7 @@ void PwmDriver_Start(void)
         Cy_TCPWM_TriggerReloadOrIndex(TC7_PWM_LED_HW, TC7_PWM_LED_MASK);
     }
 }
+//LDRA_EXCLUDE_END 120 S
 
 void PwmDriver_Stop(void)
 {
@@ -42,6 +43,7 @@ void PwmDriver_DutySet(uint16_t duty)
 
     /* Take time < 3ms when duty set = 0x03FF*/
     /* While dead risk*/
+    //LDRA_EXCLUDE_START 28 D
 #if 1
     while(duty < Cy_TCPWM_PWM_GetCounter(TC7_PWM_LED_HW,TC7_PWM_LED_NUM))
     {
@@ -50,7 +52,7 @@ void PwmDriver_DutySet(uint16_t duty)
         }
     }
 #endif
-
+//LDRA_EXCLUDE_END 28 D
 /*Do not work (from Sean)*/
 #if 0
     Cy_TCPWM_ClearInterrupt(TC7_PWM_LED_HW,TC7_PWM_LED_NUM,CY_TCPWM_INT_ON_CC);
@@ -58,3 +60,4 @@ void PwmDriver_DutySet(uint16_t duty)
 #endif
     Cy_TCPWM_PWM_SetCompare0(TC7_PWM_LED_HW,TC7_PWM_LED_NUM,(uint32_t)(duty));
 }
+//LDRA_EXCLUDE_END 496 S

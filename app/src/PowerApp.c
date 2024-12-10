@@ -34,8 +34,8 @@
 
 #define BIAS_ADDR   0x6BU
 #define LED_ADDR    0x3AU
-
-static uint8_t u8TxBuffer[60] = {0};
+//LDRA_EXCLUDE_START 8 D
+static uint8_t u8TxPowerBuffer[60] = {0};
 
 void PowerApp_Sequence(uint8_t u8Action)
 {
@@ -45,51 +45,55 @@ void PowerApp_Sequence(uint8_t u8Action)
         /* code */
         PortDriver_PinSet(HVLDO_EN_PORT,HVLDO_EN_PIN);
         PortDriver_PinSet(VBATT_EN_PORT,VBATT_EN_PIN);
-        TC0App_DelayMS(10U);
+        (void)TC0App_DelayMS(10U);
         PortDriver_PinSet(P3V3_EN_PORT,P3V3_EN_PIN);
-        TC0App_DelayMS(10U);
+        (void)TC0App_DelayMS(10U);
         PortDriver_PinSet(P1V2_EN_PORT,P1V2_EN_PIN);
-        TC0App_DelayMS(10U);
+        (void)TC0App_DelayMS(10U);
+        PortDriver_PinSet(DISP_RESX_PORT,DISP_RESX_PIN);
+        (void)TC0App_DelayMS(40U);
         PortDriver_PinSet(DES_PDB_PORT,DES_PDB_PIN);
-        TC0App_DelayMS(10U);
+        (void)TC0App_DelayMS(10U);
         PortDriver_PinSet(DES_INTB_PORT,DES_INTB_PIN);
         break;
 
     case POWER_OFF: //total ms
         /* code */
-        TC0App_DelayMS(10U);
+        (void)TC0App_DelayMS(10U);
         PortDriver_PinClear(DES_PDB_PORT,DES_PDB_PIN);
-        TC0App_DelayMS(5U);
+        (void)TC0App_DelayMS(5U);
+        PortDriver_PinClear(DES_INTB_PORT,DES_INTB_PIN);
+        (void)TC0App_DelayMS(5U);
         PortDriver_PinClear(P1V2_EN_PORT,P1V2_EN_PIN);
-        TC0App_DelayMS(5U);
+        (void)TC0App_DelayMS(5U);
         PortDriver_PinClear(P3V3_EN_PORT,P3V3_EN_PIN);
         TC0App_DelayMS(5U);
-        PortDriver_PinClear(DES_INTB_PORT,DES_INTB_PIN);
-        TC0App_DelayMS(5U);
+        // PortDriver_PinClear(DES_INTB_PORT,DES_INTB_PIN);
+        // TC0App_DelayMS(5U);
         PortDriver_PinClear(VBATT_EN_PORT,VBATT_EN_PIN);
-        TC0App_DelayMS(100U);
+        (void)TC0App_DelayMS(100U);
         PortDriver_PinClear(HVLDO_EN_PORT,HVLDO_EN_PIN);
         break;
 
     case LCD_ON:
-        PortDriver_PinSet(DISP_RESX_PORT,DISP_RESX_PIN);
-        TC0App_DelayMS(10U);
+        // PortDriver_PinSet(DISP_RESX_PORT,DISP_RESX_PIN);
+        // (void)TC0App_DelayMS(10U);
         PortDriver_PinSet(BIAS_EN_PORT,BIAS_EN_PIN);
-        TC0App_DelayMS(10U);
+        (void)TC0App_DelayMS(10U);
         PortDriver_PinSet(DISP_STBY_PORT,DISP_STBY_PIN);
-        TC0App_DelayMS(5U);
+        (void)TC0App_DelayMS(5U);
         PortDriver_PinSet(LED_EN_PORT,LED_EN_PIN);
-        TC0App_DelayMS(15U);
+        (void)TC0App_DelayMS(15U);
         PowerApp_LP8664_CurrentSet();
         break;
 
     case LCD_OFF:
         PortDriver_PinClear(LED_EN_PORT,LED_EN_PIN);
-        TC0App_DelayMS(5U);
+        (void)TC0App_DelayMS(5U);
         PortDriver_PinClear(DISP_STBY_PORT,DISP_STBY_PIN);
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
         PortDriver_PinClear(BIAS_EN_PORT,BIAS_EN_PIN);
-        TC0App_DelayMS(5U);
+        (void)TC0App_DelayMS(5U);
         PortDriver_PinClear(DISP_RESX_PORT,DISP_RESX_PIN);
         break;
 
@@ -103,34 +107,34 @@ DiagIO PG_P1V2;
 DiagIO PG_P3V3;
 DiagIO FAULT_RTQ6749;
 DiagIO FAULT_LP8664;
-void PowerApp_PowerGoodInitial()
+void PowerApp_PowerGoodInitial(void)
 {
     PG_P1V2.Status = IO_STATUS_SWIM;
     PG_P1V2.Port = P1V2_PG_PORT;
     PG_P1V2.PortNumber = P1V2_PG_PIN;
-    PG_P1V2.Threshlod = 5;
-    PG_P1V2.ConsecutiveHighCnt =  0;
-    PG_P1V2.ConsecutiveLowCnt = 0;
+    PG_P1V2.Threshlod = 5U;
+    PG_P1V2.ConsecutiveHighCnt =  0U;
+    PG_P1V2.ConsecutiveLowCnt = 0U;
 
     PG_P3V3.Status = IO_STATUS_SWIM;
     PG_P3V3.Port = P3V3_PG_PORT;
     PG_P3V3.PortNumber = P3V3_PG_PIN;
-    PG_P3V3.Threshlod = 5;
-    PG_P3V3.ConsecutiveHighCnt = 0;
-    PG_P3V3.ConsecutiveLowCnt = 0;
+    PG_P3V3.Threshlod = 5U;
+    PG_P3V3.ConsecutiveHighCnt = 0U;
+    PG_P3V3.ConsecutiveLowCnt = 0U;
 
     FAULT_RTQ6749.Status = IO_STATUS_SWIM;
-    FAULT_RTQ6749.Threshlod = 1;
-    FAULT_RTQ6749.ConsecutiveHighCnt = 0;
-    FAULT_RTQ6749.ConsecutiveLowCnt = 0;
+    FAULT_RTQ6749.Threshlod = 1U;
+    FAULT_RTQ6749.ConsecutiveHighCnt = 0U;
+    FAULT_RTQ6749.ConsecutiveLowCnt = 0U;
 
     FAULT_LP8664.Status = IO_STATUS_SWIM;
-    FAULT_LP8664.Threshlod = 1;
-    FAULT_LP8664.ConsecutiveHighCnt = 0;
-    FAULT_LP8664.ConsecutiveLowCnt = 0;
+    FAULT_LP8664.Threshlod = 1U;
+    FAULT_LP8664.ConsecutiveHighCnt = 0U;
+    FAULT_LP8664.ConsecutiveLowCnt = 0U;
 }
 
-void PowerApp_PowerGoodFlow()
+void PowerApp_PowerGoodFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     uint8_t u8Status2 = IO_STATUS_SWIM;
@@ -142,8 +146,8 @@ void PowerApp_PowerGoodFlow()
         RegisterApp_DHU_Setup(CMD_DISP_SHUTD,CMD_DATA_POS,0x01);
     }else{
         /* When voltage at swim state, Do nothing*/
-        sprintf((char *)u8TxBuffer,"P1V2 SWIM >> 0x%02x, %d, %d\r\n",u8Status1,PG_P1V2.ConsecutiveHighCnt,PG_P1V2.ConsecutiveLowCnt);
-        UartDriver_TxWriteString(u8TxBuffer);
+        sprintf((char *)u8TxPowerBuffer,"P1V2 SWIM >> 0x%02x, %d, %d\r\n",u8Status1,PG_P1V2.ConsecutiveHighCnt,PG_P1V2.ConsecutiveLowCnt);
+        UartDriver_TxWriteString(u8TxPowerBuffer);
     }
     u8Status2 = DiagApp_ConsecutiveCheckIO(&PG_P3V3);
     if(IO_STATUS_HIGH == u8Status2){
@@ -153,14 +157,14 @@ void PowerApp_PowerGoodFlow()
         RegisterApp_DHU_Setup(CMD_DISP_SHUTD,CMD_DATA_POS,0x01);
     }else{
         /* When voltage at swim state, Do nothing*/
-        sprintf((char *)u8TxBuffer,"P3V3 SWIM >> 0x%02x, %d, %d\r\n",u8Status2,PG_P3V3.ConsecutiveHighCnt,PG_P3V3.ConsecutiveLowCnt);
-        UartDriver_TxWriteString(u8TxBuffer);
+        sprintf((char *)u8TxPowerBuffer,"P3V3 SWIM >> 0x%02x, %d, %d\r\n",u8Status2,PG_P3V3.ConsecutiveHighCnt,PG_P3V3.ConsecutiveLowCnt);
+        UartDriver_TxWriteString(u8TxPowerBuffer);
     }
     // sprintf((char *)u8TxBuffer,"PG FLOW> P1V2 0x%02x > P3V3 0x%02x\r\n",u8Status1,u8Status2);
     // UartDriver_TxWriteString(u8TxBuffer);
 }
 
-void PowerApp_RTQ6749_FaultCheck()
+void PowerApp_RTQ6749_FaultCheck(void)
 {
     uint8_t CMD_ControlMultiRead[2] = {0xFFU,0x00};
     uint8_t CMD_DataAddr[1] = {0x00};
@@ -173,13 +177,13 @@ void PowerApp_RTQ6749_FaultCheck()
     if(Status != ERROR_NONE)
     {
         DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_BIAS_MASK);
-        sprintf((char *)u8TxBuffer,"I2C M driver transmit fail >> 0x%02x\r\n",Status);
+        sprintf((char *)u8TxPowerBuffer,"I2C M driver transmit fail >> 0x%02x\r\n",Status);
         //UartDriver_TxWriteString(u8TxBuffer);
         u8fault = 0xFFU;
     }else{
         u8fault = RxBuffer[0x1DU];
         RegisterApp_DHU_Setup(CMD_DTC,DTC_BIAS_FAULT_0x1D,u8fault);
-        sprintf((char *)u8TxBuffer,"RTQ6749 Fault Analysis >> 0x%02x\r\n",u8fault);
+        sprintf((char *)u8TxPowerBuffer,"RTQ6749 Fault Analysis >> 0x%02x\r\n",u8fault);
         //UartDriver_TxWriteString(u8TxBuffer);
     }
 
@@ -199,18 +203,21 @@ void PowerApp_RTQ6749_FaultCheck()
         //UartDriver_TxWriteString((uint8_t *)"RTQ6749 fault happen!\r\n");
     }else{
         /* When voltage at swim state, Do nothing*/
-        sprintf((char *)u8TxBuffer,"RTQ6749 SWIM >> 0x%02x, %d, %d\r\n",u8Status,FAULT_RTQ6749.ConsecutiveHighCnt,FAULT_RTQ6749.ConsecutiveLowCnt);
-        UartDriver_TxWriteString(u8TxBuffer);
+        sprintf((char *)u8TxPowerBuffer,"RTQ6749 SWIM >> 0x%02x, %d, %d\r\n",u8Status,FAULT_RTQ6749.ConsecutiveHighCnt,FAULT_RTQ6749.ConsecutiveLowCnt);
+        UartDriver_TxWriteString(u8TxPowerBuffer);
     }
 }
-
-void PowerApp_LP8664_CurrentSet()
+//LDRA_EXCLUDE_START 139 S
+//LDRA_EXCLUDE_START 105 D
+void PowerApp_LP8664_CurrentSet(void)
 {
-    uint8_t u8CurrentSet[3] = {0x02,0xFF,0x0F};
+    uint8_t u8CurrentSet[3] = {0x02U,0xFFU,0x0FU};
     uint8_t u8FlashData[2] = {0};
     uint8_t Status = ERROR_NONE;
+     //LDRA_EXCLUDE_START 440 S
     (void)memcpy((void *)u8FlashData,(void *)(ADDR_MCUFLASH_DIMMING), 2U);
-    if(((u8FlashData[0U]+u8FlashData[1U]*256) > 0x09FFU) && ((u8FlashData[0U]+u8FlashData[1U]*256) <= 0x0FFFU))
+     //LDRA_EXCLUDE_END 440 S
+    if(((u8FlashData[0U]+(u8FlashData[1U]*256U)) > 0x09FFU) && ((u8FlashData[0U]+(u8FlashData[1U]*256U)) <= 0x0FFFU))
     {
         u8CurrentSet[1U] = u8FlashData[0U];
         u8CurrentSet[2U] = u8FlashData[1U] & 0x0FU;
@@ -218,20 +225,21 @@ void PowerApp_LP8664_CurrentSet()
         if(Status != ERROR_NONE)
         {
             DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LED_MASK);
-            sprintf((char *)u8TxBuffer,"LP8664 Current Set Fail >> 0x%02x\r\n",Status);
-            UartDriver_TxWriteString(u8TxBuffer);
+            sprintf((char *)u8TxPowerBuffer,"LP8664 Current Set Fail >> 0x%02x\r\n",Status);
+            UartDriver_TxWriteString(u8TxPowerBuffer);
         }else{
-            sprintf((char *)u8TxBuffer,"LP8664 Current Set >> 0x%02X%02X\r\n",u8FlashData[1],u8FlashData[0]);
-            UartDriver_TxWriteString(u8TxBuffer);
+            sprintf((char *)u8TxPowerBuffer,"LP8664 Current Set >> 0x%02X%02X\r\n",u8FlashData[1],u8FlashData[0]);
+            UartDriver_TxWriteString(u8TxPowerBuffer);
         }
     }else{
         /* Do nothing, IC default set as 0x0FFF*/
-        sprintf((char *)u8TxBuffer,"LP8664 Current default >> 0x%02X%02X\r\n",u8FlashData[1],u8FlashData[0]);
-        UartDriver_TxWriteString(u8TxBuffer);
+        sprintf((char *)u8TxPowerBuffer,"LP8664 Current default >> 0x%02X%02X\r\n",u8FlashData[1],u8FlashData[0]);
+        UartDriver_TxWriteString(u8TxPowerBuffer);
     }
 }
-
-void PowerApp_LP8664_FaultCheck()
+//LDRA_EXCLUDE_END 139 S
+//LDRA_EXCLUDE_END 105 D
+void PowerApp_LP8664_FaultCheck(void)
 {
     uint8_t CMD_DataAddr[1] = {0x00};
     uint8_t RxBuffer[31] = {0U};
@@ -242,8 +250,8 @@ void PowerApp_LP8664_FaultCheck()
     if(Status != ERROR_NONE)
     {
         DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LED_MASK);
-        sprintf((char *)u8TxBuffer,"I2C M driver transmit fail >> 0x%02x\r\n",Status);
-        UartDriver_TxWriteString(u8TxBuffer);
+        sprintf((char *)u8TxPowerBuffer,"I2C M driver transmit fail >> 0x%02x\r\n",Status);
+        UartDriver_TxWriteString(u8TxPowerBuffer);
         u8fault[0] = 0xFFU;
     }else{
         u8fault[1] = RxBuffer[0x0EU];
@@ -259,8 +267,8 @@ void PowerApp_LP8664_FaultCheck()
         u8fault[6] = RxBuffer[0x13U];
         RegisterApp_DHU_Setup(CMD_DTC,DTC_LED_FAULT_0x13,u8fault[6]);
         u8fault[0] = u8fault[1]|u8fault[2]|u8fault[3]|u8fault[4]|u8fault[5]|u8fault[6];
-        sprintf((char *)u8TxBuffer,"LP8664 Fault Analysis >> 0x%02x\r\n",u8fault[0]);
-        UartDriver_TxWriteString(u8TxBuffer);
+        sprintf((char *)u8TxPowerBuffer,"LP8664 Fault Analysis >> 0x%02x\r\n",u8fault[0]);
+        UartDriver_TxWriteString(u8TxPowerBuffer);
     }
 
     if(u8fault[0] == 0x00U)
@@ -276,7 +284,8 @@ void PowerApp_LP8664_FaultCheck()
         //UartDriver_TxWriteString((uint8_t *)"LP8664 fault happen!\r\n");
     }else{
         /* When voltage at swim state, Do nothing*/
-        sprintf((char *)u8TxBuffer,"LP8664 SWIM >> 0x%02x, %d, %d\r\n",u8Status,FAULT_LP8664.ConsecutiveHighCnt,FAULT_LP8664.ConsecutiveLowCnt);
+        sprintf((char *)u8TxPowerBuffer,"LP8664 SWIM >> 0x%02x, %d, %d\r\n",u8Status,FAULT_LP8664.ConsecutiveHighCnt,FAULT_LP8664.ConsecutiveLowCnt);
         //UartDriver_TxWriteString(u8TxBuffer);
     }
 }
+//LDRA_EXCLUDE_END 8 D

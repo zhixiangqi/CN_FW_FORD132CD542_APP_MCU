@@ -13,14 +13,14 @@
 // *****************************************************************************
 
 cy_stc_scb_uart_context_t SCB_UART3_DEBUG_context;
-bool UART_SWITCH = true;
-
-void UartDriver_UartSwitch(bool bset)
+uint8_t UART_SWITCH = TRUE;
+//LDRA_EXCLUDE_START 496 S
+void UartDriver_UartSwitch(uint8_t u8set)
 {
-    UART_SWITCH = bset;
+    UART_SWITCH = u8set;
 }
 
-uint8_t UartDriver_Initial()
+uint8_t UartDriver_Initial(void)
 {
     uint8_t u8result = TRUE;
     cy_en_scb_uart_status_t initstatus;
@@ -43,7 +43,7 @@ uint8_t UartDriver_Receive(uint8_t RxBuffer[], uint32_t u32RxSize)
     uint32_t status;
     uint8_t result = UART_FAIL;
     status = Cy_SCB_UART_GetArray(SCB_UART3_DEBUG_HW,RxBuffer,u32RxSize);
-    if ( status > 0)
+    if ( status > 0U)
     {
         result = UART_SUCCESS;
     }else{
@@ -52,19 +52,19 @@ uint8_t UartDriver_Receive(uint8_t RxBuffer[], uint32_t u32RxSize)
     return result;
 }
 
-uint32_t UartDriver_GetNumReceived()
+uint32_t UartDriver_GetNumReceived(void)
 {
     return Cy_SCB_UART_GetNumInRxFifo(SCB_UART3_DEBUG_HW);
 }
 
-void UartDriver_AbortReceive()
+void UartDriver_AbortReceive(void)
 {
     Cy_SCB_UART_ClearRxFifo(SCB_UART3_DEBUG_HW);
 }
-
+//LDRA_EXCLUDE_START 554 S
 void UartDriver_TxWriteString(uint8_t* u8TxBuffer)
 {
-    if(UART_SWITCH)
+    if(UART_SWITCH == 0x01U)
     {
         Cy_SCB_UART_PutString(SCB_UART3_DEBUG_HW, (const char_t *)u8TxBuffer);
     }else{
@@ -72,12 +72,12 @@ void UartDriver_TxWriteString(uint8_t* u8TxBuffer)
     }
     
 }
-
+//LDRA_EXCLUDE_END 554 S
 void UartDriver_TxWriteArray(uint8_t* u8TxBuffer, uint32_t size)
 {
     Cy_SCB_UART_PutArrayBlocking(SCB_UART3_DEBUG_HW, u8TxBuffer, size);
 }
-
+//LDRA_EXCLUDE_END 496 S
 /* *****************************************************************************
  End of File
  */

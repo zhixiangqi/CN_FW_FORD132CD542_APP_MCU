@@ -32,3 +32,6 @@ uint8_t TC0App_DelayUS(uint16_t delay);
 void TC0App_TimerTaskStopper(bool EnCmd);
 
 #endif
+/* *****************************************************************************
+ End of File
+*/

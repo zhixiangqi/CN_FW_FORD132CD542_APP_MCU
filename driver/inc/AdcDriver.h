@@ -1,6 +1,7 @@
+//LDRA_EXCLUDE_START 219 S
 #ifndef __ADCDRIVER_H__
 #define __ADCDRIVER_H__
-
+//LDRA_EXCLUDE_END 219 S
 #include "main.h"
 
 #define ADC_SAR0_TYPE       SAR0
@@ -16,3 +17,6 @@ void AdcDriver_Disable(SAR_Type* SAR);
 uint16_t AdcDriver_ChannelResultGet(SAR_Type* SAR, uint16_t channel);
 
 #endif
+/* *****************************************************************************
+ End of File
+*/

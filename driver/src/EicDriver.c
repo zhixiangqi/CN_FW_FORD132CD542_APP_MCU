@@ -13,7 +13,7 @@
 
 bool tp_interr_low_flag = false;
 bool tp_interr_high_flag = false;
-
+//LDRA_EXCLUDE_START 496 S
 const cy_stc_sysint_t intTsc_intr_config =
 {
     .intrSrc = U301_TSC_ATTN_IRQ,	/* Interrupt source is U301_TSC_ATTN_PIN interrupt */
@@ -30,10 +30,10 @@ void EicDriver_U301_TSC_ATTN_ISR(void)
     if (Cy_GPIO_Read(U301_TSC_ATTN_PORT, U301_TSC_ATTN_PIN) == PIN_LOW)
     {
         tp_interr_low_flag = TRUE;
-        DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
+        (void)DiagApp_RtnIsrCheck(true,INTB_INT_TSC_MASK);
     }else{
         tp_interr_high_flag = TRUE;
-        DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
+        (void)DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
     }
 }
 
@@ -55,3 +55,4 @@ bool EicDriver_Initial(void)
 
     return bresult;
 }
+//LDRA_EXCLUDE_END 496 S

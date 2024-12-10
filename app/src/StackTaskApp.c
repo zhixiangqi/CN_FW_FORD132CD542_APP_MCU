@@ -48,7 +48,7 @@ static Stack stacktask;
 static uint8_t TaskNumber = 0U;
 static int32_t QueneNumber;
 
-static uint8_t u8TxBuffer[60] = {0};
+static uint8_t u8TxStackBuffer[60] = {0};
 
 uint8_t StackTaskApp_TaskNumberReturn(void)
 {
@@ -86,6 +86,7 @@ static int32_t StackTaskApp_MissionReturnQueneNumber(void)
 **        Do: PUSH mission for stack Task (First in First out)
 **        Go: No Return
  */
+//LDRA_EXCLUDE_START 496 S
 static uint8_t StackTaskApp_Push(Stack* stack, uint8_t u8TaskNumber)
 {
     uint8_t ErrorFlag = 0U;
@@ -255,15 +256,15 @@ void StackTaskApp_MissionAction(void)
         break;
 
         case TASK_UPDATE_ERASE:
-            UpdateApp_EraseFlashMCU();
+            (void)UpdateApp_EraseFlashMCU();
         break;
 
         case TASK_UPDATE_TRANS:
-            UpdateApp_TransferFlashMCU();
+            (void)UpdateApp_TransferFlashMCU();
         break;
 
         case TASK_UPDATE_CRCSM:
-            UpdateApp_ChecksumFlashMCU();
+            (void)UpdateApp_ChecksumFlashMCU();
         break;
 
         case TASK_UPDATE_RESET:
@@ -285,10 +286,11 @@ void StackTaskApp_MissionAction(void)
     }else{
         if (TC0App_TimerReturn(TIMER_CPUCOUNT)>3U)
         {
-            sprintf((char *)u8TxBuffer,"LOADING:%d QLINE> %ld TASK> %d\r\n",TC0App_TimerReturn(TIMER_CPUCOUNT),QueneNumber,TaskNumber);
-            UartDriver_TxWriteString(u8TxBuffer);
+            sprintf((char *)u8TxStackBuffer,"LOADING:%d QLINE> %ld TASK> %d\r\n",TC0App_TimerReturn(TIMER_CPUCOUNT),QueneNumber,TaskNumber);
+            UartDriver_TxWriteString(u8TxStackBuffer);
         }
     }
 
     (void)QueneNumber;
 }
+//LDRA_EXCLUDE_END 496 S

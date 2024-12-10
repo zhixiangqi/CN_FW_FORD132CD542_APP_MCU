@@ -56,7 +56,7 @@ bool UartApp_CompareBuffer(char *StringSource, uint8_t rdBuffer[], uint8_t start
         {
             u8buffer[index] = rdBuffer[index+start_pos];
         }
-        if (strcmp(StringSource,(char *)u8buffer) != 0x01U){
+        if (strcmp(StringSource,(char *)u8buffer) != 1){
             bresult = false;
         }else{
             bresult = true;
@@ -66,8 +66,11 @@ bool UartApp_CompareBuffer(char *StringSource, uint8_t rdBuffer[], uint8_t start
     }
     return bresult;
 }
-
-void UartApp_ReadFlow()
+//LDRA_EXCLUDE_START 139 S
+//LDRA_EXCLUDE_START 493 S
+//LDRA_EXCLUDE_START 554 S
+//LDRA_EXCLUDE_START 105 D
+void UartApp_ReadFlow(void)
 {
     uint8_t rdBuffer[255] = {0};
     uint8_t u8ParseTxBuffer[255] = {0};
@@ -80,7 +83,7 @@ void UartApp_ReadFlow()
     if(result == UART_SUCCESS)
     {
         if(rdBuffer[0] != 0x00U){
-            if(rdBuffer[1]=='{' && rdBuffer[2]=='F' && rdBuffer[3]=='1' && rdBuffer[4]=='2' && rdBuffer[5]=='3' && rdBuffer[6]=='}')
+            if(rdBuffer[1]==(uint8_t)'{' && rdBuffer[2]==(uint8_t)'F' && rdBuffer[3]==(uint8_t)'1' && rdBuffer[4]==(uint8_t)'2' && rdBuffer[5]==(uint8_t)'3' && rdBuffer[6]==(uint8_t)'}')
             {
                 switch (rdBuffer[UART_MARK_POS])
                 {
@@ -106,9 +109,9 @@ void UartApp_ReadFlow()
                 case 0x02U:
                     /* Write Register data code */
                     u8CmdLength = rdBuffer[0] - UART_CMD_W_DATA_POS;
-                    for(uint8_t index = 0U; index < u8CmdLength;index++)
+                    for(uint8_t wrdcindex = 0U; wrdcindex < u8CmdLength;wrdcindex++)
                     {
-                        RegisterApp_DHU_Setup(rdBuffer[UART_CMD_ADDR_POS],index+1,rdBuffer[index+UART_CMD_W_DATA_POS]);
+                        RegisterApp_DHU_Setup(rdBuffer[UART_CMD_ADDR_POS],wrdcindex+1U,rdBuffer[wrdcindex+UART_CMD_W_DATA_POS]);
                     }
                     uint8_t u8TxBuffer[30] = {0};
                     sprintf((char *)u8TxBuffer,"Register CMD 0x%02X Set\r\n",rdBuffer[UART_CMD_ADDR_POS]);
@@ -116,24 +119,24 @@ void UartApp_ReadFlow()
                     break;
 
                 case 0x03U:
-                    I2C4MDriver_Initialize();
+                    (void)I2C4MDriver_Initialize();
                     break;
 
                 case 0x57U:
                     /* Write cmd code */
                     u8CmdLength = rdBuffer[0] - UART_CMD_W_DATA_POS;
-                    for(uint8_t index = 0U; index < u8CmdLength;index++)
+                    for(uint8_t wccindex = 0U; wccindex < u8CmdLength;wccindex++)
                     {
-                        u8ParseTxBuffer[index] = rdBuffer[index+UART_CMD_W_DATA_POS];
+                        u8ParseTxBuffer[wccindex] = rdBuffer[wccindex+UART_CMD_W_DATA_POS];
                     }
                     u8i2cstatus = I2C4MDriver_Write(rdBuffer[UART_CMD_ADDR_POS],&u8ParseTxBuffer[0],u8CmdLength);
                     if(u8i2cstatus == CY_SCB_I2C_SUCCESS)
                     {
 
                     }else{
-                        uint8_t u8TxBuffer[30] = {0};
-                        sprintf((char *)u8TxBuffer,"I2C FAIL> 0x%02x\r\n",u8i2cstatus);
-                        UartDriver_TxWriteString(u8TxBuffer);
+                        uint8_t u8TxwccBuffer[30] = {0};
+                        sprintf((char *)u8TxwccBuffer,"I2C FAIL> 0x%02x\r\n",u8i2cstatus);
+                        UartDriver_TxWriteString(u8TxwccBuffer);
                     }
                     break;
 
@@ -155,9 +158,9 @@ void UartApp_ReadFlow()
                             /* No read need*/
                         }
                     }else{
-                        uint8_t u8TxBuffer[30] = {0};
-                        sprintf((char *)u8TxBuffer,"I2C FAIL> 0x%02x\r\n",u8i2cstatus);
-                        UartDriver_TxWriteString(u8TxBuffer);
+                        uint8_t u8TxrccBuffer[30] = {0};
+                        sprintf((char *)u8TxrccBuffer,"I2C FAIL> 0x%02x\r\n",u8i2cstatus);
+                        UartDriver_TxWriteString(u8TxrccBuffer);
                     }
                     break;
 
@@ -167,12 +170,14 @@ void UartApp_ReadFlow()
                     {
                         if(rdBuffer[0x0C] != 0x00U)
                         {
-                            u32TxBuffAddr += (rdBuffer[0x08U] << 24);
-                            u32TxBuffAddr += (rdBuffer[0x09U] << 16);
-                            u32TxBuffAddr += (rdBuffer[0x0AU] << 8);
+                            u32TxBuffAddr += ((uint32_t)rdBuffer[0x08U] << 24);
+                            u32TxBuffAddr += ((uint32_t)rdBuffer[0x09U] << 16);
+                            u32TxBuffAddr += ((uint32_t)rdBuffer[0x0AU] << 8);
                             u32TxBuffAddr += rdBuffer[0x0BU];
                             uint8_t dataStr[256] = {0};
+                            //LDRA_EXCLUDE_START 440 S
                             (void)memcpy((void *)dataStr, (void *)u32TxBuffAddr, sizeof(dataStr));
+                            //LDRA_EXCLUDE_END 440 S
                             UartDriver_TxWriteString((uint8_t *)"\r\n[DEBUG]:");
                             /* Return Number# */
                             u8temp[0] = rdBuffer[0x0C];
@@ -190,18 +195,18 @@ void UartApp_ReadFlow()
                     /* Control GPIO*/
                     if(rdBuffer[UART_CTRL_PORT_POS] < 7U && rdBuffer[UART_CTRL_PIN_POS] < 8U)
                     {
-                        if (rdBuffer[UART_CTRL_SET_POS] == 0x01)
+                        if (rdBuffer[UART_CTRL_SET_POS] == 0x01U)
                         {
                             PortDriver_PinSet(((GPIO_PRT_Type*) &GPIO->PRT[rdBuffer[UART_CTRL_PORT_POS]]),(uint32_t)rdBuffer[UART_CTRL_PIN_POS]);
-                        }else if(rdBuffer[UART_CTRL_SET_POS] == 0x02){
+                        }else if(rdBuffer[UART_CTRL_SET_POS] == 0x02U){
                             PortDriver_PinClear(((GPIO_PRT_Type*) &GPIO->PRT[rdBuffer[UART_CTRL_PORT_POS]]),(uint32_t)rdBuffer[UART_CTRL_PIN_POS]);
-                        }else if(rdBuffer[UART_CTRL_SET_POS] == 0x03){
+                        }else if(rdBuffer[UART_CTRL_SET_POS] == 0x03U){
                             PortDriver_PinToggle(((GPIO_PRT_Type*) &GPIO->PRT[rdBuffer[UART_CTRL_PORT_POS]]),(uint32_t)rdBuffer[UART_CTRL_PIN_POS]);
-                        }else if(rdBuffer[UART_CTRL_SET_POS] == 0x04){
+                        }else if(rdBuffer[UART_CTRL_SET_POS] == 0x04U){
                             u8temp[0] = (uint8_t)PortDrvier_PinRead(((GPIO_PRT_Type*) &GPIO->PRT[rdBuffer[UART_CTRL_PORT_POS]]),(uint32_t)rdBuffer[UART_CTRL_PIN_POS]);
                             UartDriver_TxWriteString((uint8_t *)"\r\n[DEBUG]:");
                             /* Return Number# */
-                            u8temp[0] = 1;
+                            u8temp[0] = 1U;
                             UartDriver_TxWriteArray(u8temp,1U);
                             /* Return Value */
                             u8temp[0] = (uint8_t)PortDrvier_PinRead(((GPIO_PRT_Type*) &GPIO->PRT[rdBuffer[UART_CTRL_PORT_POS]]),(uint32_t)rdBuffer[UART_CTRL_PIN_POS]);
@@ -220,9 +225,9 @@ void UartApp_ReadFlow()
                     if(rdBuffer[0] > UART_CMD_WR_DATA_POS)
                     {
                         u8CmdLength = rdBuffer[0] - UART_CMD_WR_DATA_POS;
-                        for(uint8_t index = 0U; index < u8CmdLength;index++)
+                        for(uint8_t wrcindex = 0U; wrcindex < u8CmdLength;wrcindex++)
                         {
-                            u8ParseTxBuffer[index] = rdBuffer[index+UART_CMD_WR_DATA_POS];
+                            u8ParseTxBuffer[wrcindex] = rdBuffer[wrcindex+UART_CMD_WR_DATA_POS];
                         }
                         u8i2cstatus = I2C4MDriver_WriteRead(rdBuffer[UART_CMD_ADDR_POS],&u8ParseTxBuffer[0],u8CmdLength,u8ParseRxBuffer,rdBuffer[UART_CMD_WR_LEN_POS]);
                         if(u8i2cstatus == CY_SCB_I2C_SUCCESS)
@@ -241,9 +246,9 @@ void UartApp_ReadFlow()
                                 UartDriver_TxWriteString((uint8_t *)"Write Only\r\n");
                             }
                         }else{
-                            uint8_t u8TxBuffer[30] = {0};
-                            sprintf((char *)u8TxBuffer,"I2C FAIL> 0x%02x\r\n",u8i2cstatus);
-                            UartDriver_TxWriteString(u8TxBuffer);
+                            uint8_t u8TxwrcBuffer[30] = {0};
+                            sprintf((char *)u8TxwrcBuffer,"I2C FAIL> 0x%02x\r\n",u8i2cstatus);
+                            UartDriver_TxWriteString(u8TxwrcBuffer);
                         }
                     }else{
                         /* No read need*/
@@ -252,39 +257,40 @@ void UartApp_ReadFlow()
 
                 case 0x33U:
                     /* Read Nor Flash Cmd and Write */
-                    u8CmdLength = rdBuffer[UART_CMD_ADDR_POS+1];
+                    u8CmdLength = rdBuffer[UART_CMD_ADDR_POS+1U];
                     u8ParseTxBuffer[0]=rdBuffer[UART_CMD_ADDR_POS];
-                    for(uint8_t index = 0U; index < u8CmdLength;index++)
+                    for(uint8_t Rcwindex = 0U; Rcwindex < u8CmdLength;Rcwindex++)
                     {
-                        u8ParseTxBuffer[index+1] = rdBuffer[index+UART_CMD_ADDR_POS+2];
+                        u8ParseTxBuffer[Rcwindex+1U] = rdBuffer[Rcwindex+UART_CMD_ADDR_POS+2U];
                     }
-                    SPIMDriver_Transfer(u8ParseTxBuffer,u8ParseRxBuffer,u8CmdLength);
+                    (void)SPIMDriver_Transfer(u8ParseTxBuffer,u8ParseRxBuffer,u8CmdLength);
                     break;
 
                 case 0x34U:
                     /* Read Nor Flash Cmd and Write */
-                    if (rdBuffer[UART_CMD_ADDR_POS]==0xAB)
+                    if (rdBuffer[UART_CMD_ADDR_POS]==0xABU)
                     {
-                        GD25Q_SPIFLASH_ReadDeviceID();
+                        (void)GD25Q_SPIFLASH_ReadDeviceID();
                     }
-                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x90)
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x90U)
                     {
-                        GD25Q_SPIFLASH_ReadManufactureID();
-                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x9F)
+                        (void)GD25Q_SPIFLASH_ReadManufactureID();
+                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x9FU)
                     {
-                        GD25Q_SPIFLASH_ReadIdentificationID();
-                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x05)
+                        (void)GD25Q_SPIFLASH_ReadIdentificationID();
+                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x05U)
                     {
-                        GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg1);
+                        (void)GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg1);
                     }
-                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x35)
+                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x35U)
                     {
-                        GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg2);
-                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0xC7)
+                        (void)GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg2);
+                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0xC7U)
                     {
                         GD25Q_SPIFLASH_EraseChip();
-                    }else{
-
+                    }else
+                    {
+                       //Do nothing
                     }
                     break;
 
@@ -300,3 +306,7 @@ void UartApp_ReadFlow()
     /* Clean all data buffer*/
     UartDriver_AbortReceive();
 }
+//LDRA_EXCLUDE_END 139 S
+//LDRA_EXCLUDE_END 493 S
+//LDRA_EXCLUDE_END 554 S
+//LDRA_EXCLUDE_END 105 D

@@ -34,11 +34,11 @@
 
 static uint8_t u8DiagDispByte0 = 0x00U;
 static uint8_t u8DiagDispByte1 = 0x01U;
-static uint8_t u8TxBuffer[80] = {0};
+static uint8_t u8TxDiagBuffer[80] = {0};
 static uint8_t u8DiagRstReqStatus = 0x00U;
 static uint8_t u8DiagIsrStatus = 0x00U;
 static uint8_t u8DiagI2cFaultStatus = 0x00U;
-
+//LDRA_EXCLUDE_START 8 D
 void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue)
 {
     uint8_t u8OldByte0 = u8DiagDispByte0;
@@ -60,7 +60,7 @@ void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue)
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
     {
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-        DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
+        (void)DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
     }
     (void)u8OldByte0;
     (void)u8OldByte1;
@@ -85,9 +85,9 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
     uint8_t u8DispEnState = RegisterApp_DHU_Read(CMD_DISP_EN,CMD_DATA_POS);
     /* Check DISP_ST is correct*/
     if((u8DispEnState & DISPEN_DISP_MASK)  == DISPEN_DISP_MASK){
-        if(((u8DiagDispByte0 & DISP0_DPSTOK_MASK) != 0x00) || ((u8DiagDispByte1 & DISP1_DPSTOK_MASK) != 0x00)){
+        if(((u8DiagDispByte0 & DISP0_DPSTOK_MASK) != 0x00U) || ((u8DiagDispByte1 & DISP1_DPSTOK_MASK) != 0x00U)){
             /* Set DISP_ST as 0*/
-            u8DiagDispByte1 &= ~DISP1_DISPST_MASK;
+            u8DiagDispByte1 &= ~(uint8_t)DISP1_DISPST_MASK;
         }else{
             /* Set DISP_ST as 1*/
             u8DiagDispByte1 |= DISP1_DISPST_MASK;
@@ -100,9 +100,9 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
     /* Check TSC_ST is correct*/
     if((u8DispEnState & DISPEN_DISP_MASK)  == DISPEN_DISP_MASK){
         if((u8DispEnState & DISPEN_TSC_MASK)  == DISPEN_TSC_MASK){
-            if(((u8DiagDispByte0 & DISP0_TSCTOK_MASK) != 0x00) || ((u8DiagDispByte1 & DISP1_DPSTOK_MASK) != 0x00)){
+            if(((u8DiagDispByte0 & DISP0_TSCTOK_MASK) != 0x00U) || ((u8DiagDispByte1 & DISP1_DPSTOK_MASK) != 0x00U)){
                 /* Set TSC_ST as 0*/
-                u8DiagDispByte1 &= ~DISP1_TSCST_MASK;
+                u8DiagDispByte1 &= ~(uint8_t)DISP1_TSCST_MASK;
             }else{
                 /* Set TSC_ST as 1*/
                 u8DiagDispByte1 |= DISP1_TSCST_MASK;
@@ -120,7 +120,7 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
     {
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-        DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
+    (void)DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
         /* Only for Nor Flash Test*/
         // Write DTC information into Nor Flash
         FlashApp_WriteNorFlash();
@@ -133,11 +133,11 @@ uint8_t DiagApp_ConsecutiveCheckIO(DiagIO* ds1)
 {
     DiagIO ds = *ds1;
     if (IO_HIGH == PortDrvier_PinRead(ds.Port,ds.PortNumber)){
-        ds.ConsecutiveHighCnt += 1;
-        ds.ConsecutiveLowCnt = 0;
+        ds.ConsecutiveHighCnt += 1U;
+        ds.ConsecutiveLowCnt = 0U;
     }else{
-        ds.ConsecutiveHighCnt = 0;
-        ds.ConsecutiveLowCnt += 1;
+        ds.ConsecutiveHighCnt = 0U;
+        ds.ConsecutiveLowCnt += 1U;
     }
 
     if (ds.ConsecutiveHighCnt >= ds.Threshlod){
@@ -151,18 +151,19 @@ uint8_t DiagApp_ConsecutiveCheckIO(DiagIO* ds1)
         ds.Status = IO_STATUS_SWIM;
     }
     *ds1 = ds;
-    return ds.Status;
+    uint8_t ResultIOStatus=ds.Status;
+    return ResultIOStatus;
 }
 
 uint8_t DiagApp_ConsecutiveCheckRegister(DiagIO* ds1,bool isgood)
 {
     DiagIO ds = *ds1;
     if (true == isgood){
-        ds.ConsecutiveHighCnt += 1;
-        ds.ConsecutiveLowCnt = 0;
+        ds.ConsecutiveHighCnt += 1U;
+        ds.ConsecutiveLowCnt = 0U;
     }else{
-        ds.ConsecutiveHighCnt = 0;
-        ds.ConsecutiveLowCnt += 1;
+        ds.ConsecutiveHighCnt = 0U;
+        ds.ConsecutiveLowCnt += 1U;
     }
 
     if (ds.ConsecutiveHighCnt >= ds.Threshlod){
@@ -176,7 +177,8 @@ uint8_t DiagApp_ConsecutiveCheckRegister(DiagIO* ds1,bool isgood)
         ds.Status = IO_STATUS_SWIM;
     }
     *ds1 = ds;
-    return ds.Status;
+    uint8_t ResultStatus = ds.Status;
+    return ResultStatus;
 }
 
 bool DiagApp_RtnRstRequestCheck(bool set ,uint8_t u8DiagRstReqMask)
@@ -232,61 +234,61 @@ DiagIO FAULT_BIAS;
 DiagIO STATUS_LOCK;
 DiagIO STATUS_LFPC;
 DiagIO STATUS_RFPC;
-void DiagApp_CheckFlowInitial()
+void DiagApp_CheckFlowInitial(void)
 {
     FAULT_LED.Status = IO_STATUS_SWIM;
     FAULT_LED.Port = LED_FAULT_PORT;
     FAULT_LED.PortNumber = LED_FAULT_PIN;
-    FAULT_LED.Threshlod = 4;
-    FAULT_LED.ConsecutiveHighCnt =  0;
-    FAULT_LED.ConsecutiveLowCnt = 0;
+    FAULT_LED.Threshlod = 4U;
+    FAULT_LED.ConsecutiveHighCnt =  0U;
+    FAULT_LED.ConsecutiveLowCnt = 0U;
     FAULT_LED.Report = true;
 
     FAULT_LCD.Status = IO_STATUS_SWIM;
     FAULT_LCD.Port = DISP_FAULT_PORT;
     FAULT_LCD.PortNumber = DISP_FAULT_PIN;
-    FAULT_LCD.Threshlod = 4;
-    FAULT_LCD.ConsecutiveHighCnt =  0;
-    FAULT_LCD.ConsecutiveLowCnt = 0;
+    FAULT_LCD.Threshlod = 4U;
+    FAULT_LCD.ConsecutiveHighCnt =  0U;
+    FAULT_LCD.ConsecutiveLowCnt = 0U;
     FAULT_LCD.Report = true;
 
     FAULT_BIAS.Status = IO_STATUS_SWIM;
     FAULT_BIAS.Port = BIAS_FAULT_PORT;
     FAULT_BIAS.PortNumber = BIAS_FAULT_PIN;
-    FAULT_BIAS.Threshlod = 5;
-    FAULT_BIAS.ConsecutiveHighCnt =  0;
-    FAULT_BIAS.ConsecutiveLowCnt = 0;
+    FAULT_BIAS.Threshlod = 5U;
+    FAULT_BIAS.ConsecutiveHighCnt =  0U;
+    FAULT_BIAS.ConsecutiveLowCnt = 0U;
     FAULT_BIAS.Report = true;
 
     STATUS_LFPC.Status = IO_STATUS_SWIM;
     STATUS_LFPC.Port = FPC_DET_TX_LOUT_PORT;
     STATUS_LFPC.PortNumber = FPC_DET_TX_LOUT_PIN;
-    STATUS_LFPC.Threshlod = 5;
-    STATUS_LFPC.ConsecutiveHighCnt = 0;
-    STATUS_LFPC.ConsecutiveLowCnt = 0;
+    STATUS_LFPC.Threshlod = 5U;
+    STATUS_LFPC.ConsecutiveHighCnt = 0U;
+    STATUS_LFPC.ConsecutiveLowCnt = 0U;
 
     STATUS_RFPC.Status = IO_STATUS_SWIM;
     STATUS_RFPC.Port = FPC_DET_RX_ROUT_PORT;
     STATUS_RFPC.PortNumber = FPC_DET_RX_ROUT_PIN;
-    STATUS_RFPC.Threshlod = 5;
-    STATUS_RFPC.ConsecutiveHighCnt = 0;
-    STATUS_RFPC.ConsecutiveLowCnt = 0;
+    STATUS_RFPC.Threshlod = 5U;
+    STATUS_RFPC.ConsecutiveHighCnt = 0U;
+    STATUS_RFPC.ConsecutiveLowCnt = 0U;
 
     STATUS_LOCK.Status = IO_STATUS_SWIM;
     STATUS_LOCK.Port = DES_LOCK_PORT;
     STATUS_LOCK.PortNumber = DES_LOCK_PIN;
-    STATUS_LOCK.Threshlod = 4;
-    STATUS_LOCK.ConsecutiveHighCnt = 0;
-    STATUS_LOCK.ConsecutiveLowCnt = 0;
+    STATUS_LOCK.Threshlod = 4U;
+    STATUS_LOCK.ConsecutiveHighCnt = 0U;
+    STATUS_LOCK.ConsecutiveLowCnt = 0U;
 }
-
+//LDRA_EXCLUDE_START 139 S
 void DiagApp_LcdFaultCheckFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_LCD);
     if(IO_STATUS_HIGH == u8Status1){
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
-        DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
+    (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
         FAULT_LCD.Report = true;
     }else if(IO_STATUS_LOW == u8Status1){
         if(FAULT_LCD.Report == true)
@@ -300,7 +302,7 @@ void DiagApp_LcdFaultCheckFlow(void)
         /* When voltage at swim state, Do nothing*/
         FAULT_LCD.Report = true;
     }
-    sprintf((char *)u8TxBuffer,"FAULT CHECK FLOW> LCD 0x%02x\r\n",u8Status1);
+    sprintf((char *)u8TxDiagBuffer,"FAULT CHECK FLOW> LCD 0x%02x\r\n",u8Status1);
     //UartDriver_TxWriteString(u8TxBuffer);
 }
 
@@ -310,7 +312,7 @@ void DiagApp_LedFaultCheckFlow(void)
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_LED);
     if(IO_STATUS_HIGH == u8Status1){
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
-        DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
+        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
         FAULT_LED.Report = true;
     }else if(IO_STATUS_LOW == u8Status1){
         if(FAULT_LED.Report == true)
@@ -319,12 +321,12 @@ void DiagApp_LedFaultCheckFlow(void)
             FAULT_LED.Report = false;
         }
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
-        DiagApp_RtnRstRequestCheck(true,DIAG_RST_LED_MASK);
+        (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LED_MASK);
     }else{
         /* When voltage at swim state, Do nothing*/
         FAULT_LED.Report = true;
     }
-    sprintf((char *)u8TxBuffer,"FAULT CHECK FLOW> LED 0x%02x\r\n",u8Status1);
+    sprintf((char *)u8TxDiagBuffer,"FAULT CHECK FLOW> LED 0x%02x\r\n",u8Status1);
     //UartDriver_TxWriteString(u8TxBuffer);
 }
 
@@ -335,7 +337,7 @@ void DiagApp_BiasFaultCheckFlow(void)
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_BIAS);
     if(IO_STATUS_HIGH == u8Status1){
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
-        DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);
+        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);
         FAULT_BIAS.Report = true;
     }else if(IO_STATUS_LOW == u8Status1){
         /* Get error info & latch disp status bit*/
@@ -345,12 +347,12 @@ void DiagApp_BiasFaultCheckFlow(void)
             FAULT_BIAS.Report = false;
         }
         DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
-        DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
+        (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
     }else{
         FAULT_BIAS.Report = true;
         /* When voltage at swim state, Do nothing*/
     }
-    sprintf((char *)u8TxBuffer,"FAULT CHECK FLOW> LED 0x%02x LCD 0x%02x\r\n",u8Status1,u8Status2);
+    sprintf((char *)u8TxDiagBuffer,"FAULT CHECK FLOW> LED 0x%02x LCD 0x%02x\r\n",u8Status1,u8Status2);
     //UartDriver_TxWriteString(u8TxBuffer);
 }
 
@@ -371,7 +373,7 @@ void DiagApp_FpcCheckFlow(void)
     }else{
         /* When voltage at swim state, Do nothing*/
     }
-    sprintf((char *)u8TxBuffer,"FPC CHECK FLOW> STATUS_RFPC 0x%02x,0x%02x STATUS_RFPC 0x%02x,0x%02x\r\n",u8StatusR,STATUS_RFPC.ConsecutiveLowCnt,u8StatusL,STATUS_LFPC.ConsecutiveLowCnt);
+    sprintf((char *)u8TxDiagBuffer,"FPC CHECK FLOW> STATUS_RFPC 0x%02x,0x%02x STATUS_RFPC 0x%02x,0x%02x\r\n",u8StatusR,STATUS_RFPC.ConsecutiveLowCnt,u8StatusL,STATUS_LFPC.ConsecutiveLowCnt);
     RegisterApp_DHU_Setup(CMD_DTC,DTC_DET_FPCR,u8StatusR);
     RegisterApp_DHU_Setup(CMD_DTC,DTC_DET_FPCL,u8StatusL);
     //UartDriver_TxWriteString(u8TxBuffer);
@@ -388,6 +390,8 @@ void DiagApp_LockCheckFlow(void)
     }else{
         /* When voltage at swim state, Do nothing*/
     }
-    sprintf((char *)u8TxBuffer,"LOCK CHECK FLOW> STATUS_LOCK 0x%02x\r\n",u8Status1);
+    sprintf((char *)u8TxDiagBuffer,"LOCK CHECK FLOW> STATUS_LOCK 0x%02x\r\n",u8Status1);
     //UartDriver_TxWriteString(u8TxBuffer);
 }
+//LDRA_EXCLUDE_END 139 S
+//LDRA_EXCLUDE_END 8 D

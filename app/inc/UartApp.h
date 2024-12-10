@@ -3,7 +3,10 @@
 
 #include "main.h"
 
-void UartApp_ReadFlow();
+void UartApp_ReadFlow(void);
 bool UartApp_CompareBuffer(char *StringSource, uint8_t rdBuffer[], uint8_t start_pos, uint8_t stop_pos);
 
 #endif
+/* *****************************************************************************
+ End of File
+*/

@@ -6,7 +6,7 @@
 #define ILO_START_UP_TIME          (2U)
 /* WDT interrupt period in milliseconds.
 Max limit is 1698 ms. */
-#define WDT_INTERRUPT_INTERVAL_MS  (1500)
+#define WDT_INTERRUPT_INTERVAL_MS  (1500U)
 /* Define desired delay in microseconds */
 #define DESIRED_WDT_INTERVAL       (WDT_INTERRUPT_INTERVAL_MS  * 1000U)
 /* WDT interrupt priority */
@@ -48,7 +48,7 @@ cy_stc_syspm_callback_t sysClkCallback =
     .nextItm        = NULL,
     .order          = 0
 };
-
+//LDRA_EXCLUDE_START 496 S
 bool WdtDriver_Initial(void)
 {
     bool bresult = true;
@@ -130,8 +130,8 @@ void WdtDriver_Disable(void)
 {
     Cy_WDT_Disable();
     Cy_SysClk_IloDisable();
-    ilo_compensated_counts = 0;
-    temp_ilo_counts = 0;
+    ilo_compensated_counts = 0U;
+    temp_ilo_counts = 0U;
 }
 
 void WdtDriver_RegisterDSCallback(void)
@@ -139,3 +139,4 @@ void WdtDriver_RegisterDSCallback(void)
     /* Register Deep Sleep callback */
     Cy_SysPm_RegisterCallback(&sysClkCallback);
 }
+//LDRA_EXCLUDE_END 496 S

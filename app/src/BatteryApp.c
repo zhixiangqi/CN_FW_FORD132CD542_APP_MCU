@@ -40,8 +40,8 @@ uint16_t gu16BattVoltSample[BATT_SAMPLE_CNT] = {0U};
 #define SYNC_VOLT_SAMPLE_CNT  3U
 uint16_t u16SyncVoltSample[SYNC_VOLT_SAMPLE_CNT] = {0U};
 uint8_t u8SYNCSampleCount = 0U;
-bool u8SYNCSampleReady = FALSE;
-bool bSyncVolatgeState = TRUE;
+uint8_t u8SYNCSampleReady = FALSE;
+uint8_t u8SyncVolatgeState = TRUE;
 
 /*DTC 240321*/
 #define BT_VOLT0   755U
@@ -73,14 +73,14 @@ bool bSyncVolatgeState = TRUE;
 #define BT_STAGE5   0x05U
 #define BT_STAGE6   0x06U
 
-static uint8_t u8TxBuffer[60] = {0};
+static uint8_t u8TxBatteryBuffer[60] = {0};
 
 void BatteryApp_PowerMonitor(void)
 {
     uint16_t BatteryVolt = 0U;
     BatteryVolt = AdcDriver_ChannelResultGet(ADC_SAR0_TYPE,ADC_SAR0_CH2_BATVOLT);
-    sprintf((char *)u8TxBuffer,"BAT SENSE %d SAFE KEY %d STATE %d\r\n",BatteryVolt,guBatterySafeKey,guBatteryStatus);
-    UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+    sprintf((char *)u8TxBatteryBuffer,"BAT SENSE %d SAFE KEY %d STATE %d\r\n",BatteryVolt,guBatterySafeKey,guBatteryStatus);
+    UartDriver_TxWriteString((uint8_t*)u8TxBatteryBuffer);
 }
 
 static uint8_t BatteryApp_Normal_Mode(uint8_t STAGE)
@@ -189,8 +189,8 @@ static uint8_t BatteryApp_OverPower_Mode(uint8_t STAGE)
         /*TURN OFF(BACKLIGHT PWM)*/
         BacklightApp_BattProtectSet(TRUE);
         /*POWER OFF(SHUT-DOWN)*/
-        sprintf((char *)u8TxBuffer,"[BATT]OVER-POWWER:SAFE KEY %d STATE %d\r\n",guBatterySafeKey,guBatteryStatus);
-        UartDriver_TxWriteString((uint8_t*)u8TxBuffer);
+        sprintf((char *)u8TxBatteryBuffer,"[BATT]OVER-POWWER:SAFE KEY %d STATE %d\r\n",guBatterySafeKey,guBatteryStatus);
+        UartDriver_TxWriteString((uint8_t*)u8TxBatteryBuffer);
         RegisterApp_DHU_Setup(CMD_DISP_SHUTD,CMD_DATA_POS,0x01);
         u8Return = BT_OVERPOWER;
         break;
@@ -305,10 +305,10 @@ void BatteryApp_SYNCVolatgeCheck(void)
         }
         if (u16SyncVolDebounce > 413U && u16SyncVolDebounce < 3745U)
         {
-            bSyncVolatgeState = TRUE;
+            u8SyncVolatgeState = TRUE;
         }else
         {
-            bSyncVolatgeState = FALSE;
+            u8SyncVolatgeState = FALSE;
         }
     }
 }

@@ -13,6 +13,7 @@
 
 
 bool EicDriver_Initial(void);
+void EicDriver_U301_TSC_ATTN_ISR(void);
 
 extern bool tp_interr_low_flag;
 extern bool tp_interr_high_flag;

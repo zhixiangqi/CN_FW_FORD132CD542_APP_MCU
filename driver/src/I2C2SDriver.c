@@ -53,7 +53,8 @@
 
 
 
-
+//LDRA_EXCLUDE_START 496 S
+//LDRA_EXCLUDE_START 8 D
 cy_stc_scb_i2c_context_t SCB_I2C2S_IRQ_context;
 
 /* CYBSP_I2C_SCB_IRQ */
@@ -61,13 +62,13 @@ const cy_stc_sysint_t SCB_I2C2S_IRQ_config = {
         .intrSrc = (IRQn_Type) SCB_I2C2S_IRQ,
         .intrPriority = 2u
 };
-
+//LDRA_EXCLUDE_START 35 S
 static void I2C2SDriver_InterruptHandler(void)
 {
     /* ISR implementation for I2C */
     Cy_SCB_I2C_SlaveInterrupt(SCB_I2C2S_HW, &SCB_I2C2S_IRQ_context);
 }
-
+//LDRA_EXCLUDE_END 35 S
 uint32_t I2C2SDriver_GetTxWriteTransferCount(void)
 {
     return Cy_SCB_I2C_SlaveGetWriteTransferCount(SCB_I2C2S_HW,&SCB_I2C2S_IRQ_context);
@@ -146,7 +147,8 @@ bool I2C2SDriver_Initial(void)
 
     return bresult;
 }
-
+//LDRA_EXCLUDE_END 496 S
+//LDRA_EXCLUDE_END 8 D
 /* *****************************************************************************
  End of File
  */

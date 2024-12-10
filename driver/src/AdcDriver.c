@@ -55,7 +55,7 @@
 // Section: PORT Implementation
 // *****************************************************************************
 // *****************************************************************************
-
+//LDRA_EXCLUDE_START 496 S
 bool AdcDriver_Initial(SAR_Type* SAR, cy_stc_sar_config_t SAR_Config)
 {
     bool bresult = true;
@@ -119,15 +119,16 @@ bool AdcDriver_ConversionStatusGet(void)
 
 uint16_t AdcDriver_ChannelResultGet(SAR_Type* SAR, uint16_t channel)
 {
-    uint32_t u32debounce = 0UL;
+    uint32_t u32debounce = 0U;
     AdcDriver_Enable(SAR);
     AdcDriver_ConversionStart(SAR);
     while((true != AdcDriver_ConversionSequenceIsFinished(SAR)) && (u32debounce < 11154U))
     {
-        u32debounce += 1UL;
+        u32debounce += 1U;
     }
     return AdcDriver_ConversionResultGet(SAR, channel);
 }
+//LDRA_EXCLUDE_END 496 S
 /* *****************************************************************************
  End of File
  */

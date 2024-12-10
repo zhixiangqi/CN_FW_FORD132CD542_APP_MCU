@@ -57,14 +57,18 @@
 // *****************************************************************************
 
 static uint8_t u8FlashCache[SIZE_ROW];
-
+//LDRA_EXCLUDE_START 140 D
+//LDRA_EXCLUDE_START 496 S
+//LDRA_EXCLUDE_START 115 D
 bool NVMDriver_Read( uint32_t *data, uint32_t length, const uint32_t address )
 {
+    //LDRA_EXCLUDE_START 440 S
     uint32_t *paddress = (uint32_t*)address;
     (void)memcpy(data, paddress, length);
+    //LDRA_EXCLUDE_END 440 S
     return true;
 }
-
+//LDRA_EXCLUDE_START 554 S
 cy_en_flashdrv_status_t NVMDriver_PageWrite( uint8_t *u8data, const uint32_t u32address)
 {
     cy_en_flashdrv_status_t tResult;
@@ -74,12 +78,15 @@ cy_en_flashdrv_status_t NVMDriver_PageWrite( uint8_t *u8data, const uint32_t u32
     tResult = Cy_Flash_WriteRow(u32address, (uint32_t *)u8FlashCache);
     return tResult;
 }
-
+//LDRA_EXCLUDE_END 140 D
+//LDRA_EXCLUDE_END 554 S
+//LDRA_EXCLUDE_START 621 S
+//LDRA_EXCLUDE_END 115 D
 bool NVMDriver_RowErase(uint32_t address)
 {
     uint32_t data[CY_FLASH_SIZEOF_ROW / sizeof(uint32_t)];
     bool bresult = true;
-    memset(data, 0xFF, CY_FLASH_SIZEOF_ROW);
+    (void)memset(data, 0xFF, CY_FLASH_SIZEOF_ROW);
     if( Cy_Flash_WriteRow(address,data) == CY_FLASH_DRV_SUCCESS)
     {
         bresult = true;
@@ -88,7 +95,7 @@ bool NVMDriver_RowErase(uint32_t address)
     }
     return bresult;
 }
-
+//LDRA_EXCLUDE_END 621 S
 #if 0
 bool NVMDriver_IsBusy(void)
 {
@@ -103,6 +110,7 @@ bool NVMDriver_IsBusy(void)
     return bresult;
 }
 #endif
+//LDRA_EXCLUDE_END 496 S
 /* *****************************************************************************
  End of File
  */

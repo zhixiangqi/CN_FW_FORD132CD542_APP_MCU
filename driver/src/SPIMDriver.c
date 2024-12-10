@@ -30,6 +30,8 @@ cy_stc_scb_spi_context_t SPI0M_MCU_context;
  * Invokes the Cy_SCB_SPI_Interrupt() PDL driver function.
  *
  ******************************************************************************/
+//LDRA_EXCLUDE_START 496 S
+//LDRA_EXCLUDE_START 8 D
 void SPIMDriver_Interrupt(void)
 {
     Cy_SCB_SPI_Interrupt(SCB_SPI0M_HW, &SPI0M_MCU_context);
@@ -99,7 +101,7 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
     cy_en_scb_spi_status_t errorStatus;
     uint32_t masterStatus;
     /* Timeout 1 sec (one unit is us) */
-    uint32_t timeout = 8000UL;
+    uint32_t timeout = 8000U;
 
     /* Master: start a transfer. Slave: prepare for a transfer. */
     errorStatus = Cy_SCB_SPI_Transfer(SPI0M_MCU_HW, txBuffer, rxBuffer, bufferSize, &SPI0M_MCU_context);
@@ -112,7 +114,7 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
             Cy_SysLib_DelayUs(CY_SCB_WAIT_1_UNIT);
             timeout--;
         } while (0UL != (CY_SCB_SPI_TRANSFER_ACTIVE & masterStatus));
-        if (timeout <= 0)
+        if (timeout <= 0U)
         {
             status = ERROR_SPI_TIMEOUT;
             /* Timeout recovery */
@@ -150,7 +152,9 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
     }
     if(status != CY_SCB_SPI_SUCCESS){
         Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
-        SPIMDriver_Initialize();
+        (void)SPIMDriver_Initialize();
     }
     return (status);
 }
+//LDRA_EXCLUDE_END 496 S
+//LDRA_EXCLUDE_END 8 D

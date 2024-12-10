@@ -32,17 +32,17 @@
 #define CLOCK_48M_DELAY_MS 5617U
 #define CLOCK_48M_DELAY_US 8U
 
-static long int timercount_ms = 0;
-static long int timercount_sec = 0;
-static long int cpu_timer_ms=0;
-static long int derating_timer_sec =0;
-static long int batteryprotect_timer_sec =0;
-static long int intb_set_timer_ms=0;
-static long int intb_hold_timer_ms=0;
-static long int intb_attn_timer_ms=0;
-static long int wdt_timer_ms=0;
-static long int hold_timer_ms=1001;
-static long int flashlog_timer_ms=0;
+static unsigned long int timercount_ms = 0U;
+static unsigned long int timercount_sec = 0U;
+static unsigned long int cpu_timer_ms=0U;
+static unsigned long int derating_timer_sec =0U;
+static unsigned long int batteryprotect_timer_sec =0U;
+static unsigned long int intb_set_timer_ms=0U;
+static unsigned long int intb_hold_timer_ms=0U;
+static unsigned long int intb_attn_timer_ms=0U;
+static unsigned long int wdt_timer_ms=0U;
+static unsigned long int hold_timer_ms=1001U;
+static unsigned long int flashlog_timer_ms=0U;
 uint8_t FLAG_DERATINGCNT_START = FALSE;
 uint8_t FLAG_BATTERYPROT_START = FALSE;
 uint8_t FLAG_STARTTOWORK_START = FALSE;
@@ -51,7 +51,7 @@ uint8_t FLAG_INTBHOLDCNT_START = FALSE;
 uint8_t FLAG_INTBATTNCNT_START = FALSE;
 volatile bool DHUTaskFlag[DHUCmdBufferSize] = {0};
 volatile static bool StopperEN = false;
-
+//LDRA_EXCLUDE_START 496 S
 static void TC0APP_TC0_Task_1000msec(void)
 {
     StackTaskApp_MissionPush(TASK_MONITOR);
@@ -111,83 +111,84 @@ void TC0App_TimerTaskStopper(bool EnCmd)
 {
     StopperEN = EnCmd;
 }
-
+//LDRA_EXCLUDE_START 35 S
 static void TC0App_Callback_InterruptHandler(void)
 {
     TC0Driver_IntFlagClean();
     if (StopperEN == false)
     {
-        timercount_ms = timercount_ms+1;
+        timercount_ms = timercount_ms+1U;
     }else{
         /* Do nothing*/
     }
-    hold_timer_ms = hold_timer_ms+1;
-    cpu_timer_ms = cpu_timer_ms+1;
-    flashlog_timer_ms = flashlog_timer_ms+1;
+    hold_timer_ms = hold_timer_ms+1U;
+    cpu_timer_ms = cpu_timer_ms+1U;
+    flashlog_timer_ms = flashlog_timer_ms+1U;
     if(FLAG_INTBSETTCNT_START == TRUE)
     {
-        intb_set_timer_ms = intb_set_timer_ms+1;
+        intb_set_timer_ms = intb_set_timer_ms+1U;
     }
     if(FLAG_INTBHOLDCNT_START == TRUE)
     {
-        intb_hold_timer_ms = intb_hold_timer_ms+1;
+        intb_hold_timer_ms = intb_hold_timer_ms+1U;
     }
     if(FLAG_INTBATTNCNT_START == TRUE)
     {
-        intb_attn_timer_ms = intb_attn_timer_ms+1;
+        intb_attn_timer_ms = intb_attn_timer_ms+1U;
     }
 
     if(FLAG_STARTTOWORK_START == TRUE)
     {
         TC0APP_TC0_Task_1msec();
 
-        if ((timercount_ms % 3) ==0)
+        if ((timercount_ms % 3U) ==0U)
         {
             TC0APP_TC0_Task_3msec();
         }else{/*Do Nothing*/}
 
-        if ((timercount_ms % 6) ==0)
+        if ((timercount_ms % 6U) ==0U)
         {
             TC0APP_TC0_Task_6msec();
         }else{/*Do Nothing*/}
 
-        if ((timercount_ms % 10) ==0)
+        if ((timercount_ms % 10U) ==0U)
         {
             TC0APP_TC0_Task_10msec();
         }else{/*Do Nothing*/}
 
-        if ((timercount_ms % 15) ==0)
+        if ((timercount_ms % 15U) ==0U)
         {
             TC0APP_TC0_Task_15msec();
         }else{/*Do Nothing*/}
 
-        if ((timercount_ms % 50) ==0)
+        if ((timercount_ms % 50U) ==0U)
         {
             TC0APP_TC0_Task_50msec();
         }else{/*Do Nothing*/}
 
-        if ((timercount_ms % 100) ==0)
+        if ((timercount_ms % 100U) ==0U)
         {
             TC0APP_TC0_Task_100msec();
         }else{/*Do Nothing*/}
         
-        if ((timercount_ms % 250) ==0)
+        if ((timercount_ms % 250U) ==0U)
         {
             TC0APP_TC0_Task_250msec();
         }else{/*Do Nothing*/}
     }
 
     /* WDT Timer Function*/
-    wdt_timer_ms = wdt_timer_ms+1;
+    //LDRA_EXCLUDE_START 496 S
+    wdt_timer_ms = wdt_timer_ms+1U;
     if(wdt_timer_ms == WDT_INT_TRIGER_MS){
         WdtApp_InterruptCallback();
     }
-
+    //LDRA_EXCLUDE_END 496 S 
     /* Timer with 1sec action*/
-    if((timercount_ms % 1000) == 0)
+    if((timercount_ms % 1000U) == 0U)
     {
         TC0APP_TC0_Task_1000msec();
-        timercount_sec = timercount_sec+1;
+        timercount_sec = timercount_sec+1U;
         if(FLAG_DERATINGCNT_START == TRUE)
         {
             derating_timer_sec = derating_timer_sec +1U;
@@ -197,8 +198,8 @@ static void TC0App_Callback_InterruptHandler(void)
             batteryprotect_timer_sec = batteryprotect_timer_sec +1U;
         }else{/*Do Nothing*/}
     }else{/*Do Nothing*/}
-}
-
+}   
+//LDRA_EXCLUDE_END 35 S
 void TC0App_DHUTaskClean(void)
 {
     for(uint32_t DHUCmdID=0U;DHUCmdID<DHUCmdBufferSize;DHUCmdID++)
@@ -268,12 +269,12 @@ uint8_t TC0App_TimerReturn(uint8_t Request)
 
     case TIMER_INT_SET_COUNT:
         /* code */
-        u8Return = intb_set_timer_ms;
+        u8Return = (uint8_t)intb_set_timer_ms;
         break;
 
     case TIMER_INT_HOLD_COUNT:
         /* code */
-        u8Return = intb_hold_timer_ms;
+        u8Return = (uint8_t)intb_hold_timer_ms;
         break;
 
     case TIMER_HANDSHAKECOUNT:
@@ -283,20 +284,20 @@ uint8_t TC0App_TimerReturn(uint8_t Request)
 
     case TIMER_DERATECOUNT:
         /* code */
-        u8Return = derating_timer_sec;
+        u8Return = (uint8_t)derating_timer_sec;
         break;
 
     case TIMER_BATTERYCOUNT:
         /* code */
-        u8Return = batteryprotect_timer_sec;
+        u8Return = (uint8_t)batteryprotect_timer_sec;
         break;
 
     case TIMER_WDTCOUNT:
-        u8Return = wdt_timer_ms;
+        u8Return = (uint8_t)wdt_timer_ms;
         break;
 
     case TIMER_HOLDCOUNT:
-        if(hold_timer_ms > 1000)
+        if(hold_timer_ms > 1000U)
         {
             u8Return = 0xFFU;
         }else{
@@ -306,12 +307,12 @@ uint8_t TC0App_TimerReturn(uint8_t Request)
 
     case TIMER_INT_ATTN_COUNT:
         /* code */
-        u8Return = intb_attn_timer_ms;
+        u8Return = (uint8_t)intb_attn_timer_ms;
         break;
 
     case TIMER_FLASH_LOG_COUNT:
         /* code */
-        u8Return = flashlog_timer_ms;
+        u8Return =  (uint8_t)flashlog_timer_ms;
         break;
     
     default:
@@ -384,9 +385,9 @@ uint8_t TC0App_DelayMS(uint16_t delay)
 {
     uint16_t count;
     uint16_t count2;
-    for(count2= 0 ; count2< delay ; count2++)
+    for(count2 = 0U; count2 < delay; count2++)
     {
-        for(count = 0 ; count < CLOCK_48M_DELAY_MS ; count ++)
+        for(count = 0U ; count < CLOCK_48M_DELAY_MS ; count++)
         {
             // __asm("nop");
             __NOP();
@@ -399,9 +400,9 @@ uint8_t TC0App_DelayUS(uint16_t delay)
 {
     uint16_t count;
     uint16_t count2;
-    for(count2= 0 ; count2< delay ; count2++)
+    for(count2 = 0U ; count2 < delay ; count2++)
     {
-        for(count = 0 ; count < CLOCK_48M_DELAY_US ; count ++)
+        for(count = 0U ; count < CLOCK_48M_DELAY_US ; count++)
         {
             // __asm("nop");
             __NOP();
@@ -409,3 +410,4 @@ uint8_t TC0App_DelayUS(uint16_t delay)
     }
     return NOTHING;
 }
+//LDRA_EXCLUDE_END 496 S

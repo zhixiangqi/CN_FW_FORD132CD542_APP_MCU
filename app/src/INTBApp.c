@@ -49,7 +49,7 @@ static uint8_t INTBApp_Idle_Mode(void)
     }else if(FLAG_PULL_REQ == INTB_REQ_SET && (u8quene_error_num != 0UL)){
         u8return = INTB_STATE_SET;
         /* Avoid Interrupt impact*/
-        if(u8quene_error_num > 0)
+        if(u8quene_error_num > 0U)
         {
             u8quene_error_num --;
         }else{/* Do nothing*/}
@@ -112,7 +112,7 @@ void INTBApp_PullReqSetOrClear(uint8_t u8SetValue)
     FLAG_PULL_REQ = u8SetValue;
     if(FLAG_PULL_REQ == INTB_REQ_SET)
     {
-        u8quene_error_num = (u8quene_error_num == 0xFFU) ? u8quene_error_num : u8quene_error_num+1 ;
+        u8quene_error_num = (u8quene_error_num == 0xFFU) ? u8quene_error_num : u8quene_error_num+1U ;
     }else{
         u8quene_error_num = 0U;
     }

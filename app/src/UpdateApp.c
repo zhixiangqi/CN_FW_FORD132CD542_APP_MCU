@@ -35,7 +35,7 @@ uint8_t APP_POS = MCU_POSITION;
 uint8_t APP_UPDATE_PROGRESS = FALSE;
 uint32_t u16ChecksumMCU = 0U;
 const uint8_t PRJ_IMAGE[4U] __attribute__((__used__, section(PRJ_INFO_SECTION))) = {0xFF,0xFF,0x13,0x20};
-static uint8_t u8TxBuffer[100] = {0};
+static uint8_t u8TxUpdateBuffer[100] = {0};
 const uint32_t crc32_tab[256] = {
 	0x00000000U, 0x77073096U, 0xee0e612cU, 0x990951baU, 0x076dc419U, 0x706af48fU,
 	0xe963a535U, 0x9e6495a3U, 0x0edb8832U, 0x79dcb8a4U, 0xe0d5e91eU, 0x97d2d988U,
@@ -81,7 +81,8 @@ const uint32_t crc32_tab[256] = {
 	0x54de5729U, 0x23d967bfU, 0xb3667a2eU, 0xc4614ab8U, 0x5d681b02U, 0x2a6f2b94U,
 	0xb40bbe37U, 0xc30c8ea1U, 0x5a05df1bU, 0x2d02ef8dU
 };
-
+//LDRA_EXCLUDE_START 496 S
+//LDRA_EXCLUDE_START 8 D
 bool UpdateApp_EraseFlashMCU(void)
 {
     uint32_t address;
@@ -103,9 +104,9 @@ bool UpdateApp_EraseFlashMCU(void)
         WdtApp_CleanCounter();
     }
     __enable_irq();
-    sprintf((char *)u8TxBuffer,"[UPDATE]ERASE:MCU ERASE OK\r\n");
+    sprintf((char *)u8TxUpdateBuffer,"[UPDATE]ERASE:MCU ERASE OK\r\n");
     u16ChecksumMCU = 0U;
-    UartDriver_TxWriteString(u8TxBuffer);
+    UartDriver_TxWriteString(u8TxUpdateBuffer);
     RegisterApp_DHU_Setup(CMD_ERASE_FB,CMD_UPDATE_DATA_POS,CMD_FB_MCU_OK);
     I2CSlaveApp_UpdateCmdChecksumSet(CMD_ERASE_FB);
     return breturn;
@@ -115,7 +116,7 @@ static void UpdateApp_FlashMCU(uint8_t u8DataBuffer[],uint32_t u32DataSerialNumb
 {
     uint32_t address = 0U;
     __disable_irq();
-    if(u32DataSerialNumber > 0)
+    if(u32DataSerialNumber > 0U)
     {
         address = (uint32_t)ADDR_APPA_START + ((uint32_t)(SIZE_PACKUNIT_128B) * (u32DataSerialNumber-1U));
     }else{/* Do nothing*/}
@@ -123,7 +124,7 @@ static void UpdateApp_FlashMCU(uint8_t u8DataBuffer[],uint32_t u32DataSerialNumb
     if((APP_POS == 0x0AU) && (u32DataSerialNumber > POS_SN_AB_SEPERATE))
     {
         FlashApp_WriteRowFlash(&u8DataBuffer[0],address,SIZE_PACKUNIT_128B);
-    }else if((APP_POS == 0x0B) && (u32DataSerialNumber < (POS_SN_AB_SEPERATE + 1U)))
+    }else if((APP_POS == 0x0BU) && (u32DataSerialNumber < (POS_SN_AB_SEPERATE + 1U)))
     {
         FlashApp_WriteRowFlash(&u8DataBuffer[0],address,SIZE_PACKUNIT_128B);
     }else{
@@ -153,8 +154,8 @@ bool UpdateApp_TransferFlashMCU(void)
     }else{
         breturn = false;
     }
-    sprintf((char *)u8TxBuffer,"[UPDATE]TRANS:SN=%ld,DATASUM=0x%04X\r\n",u32DataSerialNumber,(uint16_t)u16ChecksumMCU);
-    UartDriver_TxWriteString(u8TxBuffer);
+    sprintf((char *)u8TxUpdateBuffer,"[UPDATE]TRANS:SN=%ld,DATASUM=0x%04X\r\n",u32DataSerialNumber,(uint16_t)u16ChecksumMCU);
+    UartDriver_TxWriteString(u8TxUpdateBuffer);
     if(breturn == true)
     {
         RegisterApp_DHU_Setup(CMD_TRANSFER_FB,CMD_UPDATE_DATA_POS,(uint8_t)(u32DataSerialNumber >> 8U));
@@ -195,7 +196,7 @@ static uint32_t UpdateApp_ByteReverse(uint32_t u32data)
     rtndata = rtndata | ((u32data & 0xFFU) << 24U);
     return rtndata;
 }
-
+//LDRA_EXCLUDE_START 50 X
 static uint8_t UpdateApp_CheckSumMCU(void)
 {
     
@@ -247,13 +248,14 @@ static uint8_t UpdateApp_CheckSumMCU(void)
 
     __enable_irq();
 
-    sprintf((char *)u8TxBuffer,"[UPDATE]CRCSM:MCU CRC DONE. CRC:%lX u8MCUresult:%d size:%ld APP:%X APP Flag:%d RDdata:%08lX\r\n",UpdateApp_ByteReverse(u32ComputeCrc32),u8result,u32Index,APP_POS,0x0000000A,u32RDdata[0]);
-    UartDriver_TxWriteString(u8TxBuffer);
+    sprintf((char *)u8TxUpdateBuffer,"[UPDATE]CRCSM:MCU CRC DONE. CRC:%lX u8MCUresult:%d size:%ld APP:%X APP Flag:%d RDdata:%08lX\r\n",UpdateApp_ByteReverse(u32ComputeCrc32),u8result,u32Index,APP_POS,0x0000000A,u32RDdata[0]);
+    UartDriver_TxWriteString(u8TxUpdateBuffer);
     (void)u32data;
-    (void)u8TxBuffer;
+    (void)u8TxUpdateBuffer;
     return u8result;
 }
-
+//LDRA_EXCLUDE_START 554 S
+//LDRA_EXCLUDE_START 50 X
 static uint8_t UpdateApp_ProjectNameCheck(void)
 {
     uint8_t u8result = TRUE;
@@ -268,44 +270,44 @@ static uint8_t UpdateApp_ProjectNameCheck(void)
             u8result = FALSE;
         }
     }
-    sprintf((char *)u8TxBuffer,"[UPDATE]CRCSM:Proj Name Check:%02X%02X%02X%02X u8result:%d\r\n",u8dataofprojname[0],u8dataofprojname[1],u8dataofprojname[2],u8dataofprojname[3],u8result);
-    UartDriver_TxWriteString(u8TxBuffer);
+    sprintf((char *)u8TxUpdateBuffer,"[UPDATE]CRCSM:Proj Name Check:%02X%02X%02X%02X u8result:%d\r\n",u8dataofprojname[0],u8dataofprojname[1],u8dataofprojname[2],u8dataofprojname[3],u8result);
+    UartDriver_TxWriteString(u8TxUpdateBuffer);
     return u8result;
 }
-
-bool UpdateApp_ChecksumFlashMCU(void)
+//LDRA_EXCLUDE_END 554 S
+uint8_t UpdateApp_ChecksumFlashMCU(void)
 {
-    bool breturn = true;
+    uint8_t u8return = TRUE;
     uint16_t u16ChecksumDHU = 0U;
     /* Data Collection*/
-    u16ChecksumDHU = ((uint32_t)RegisterApp_DHU_Read(CMD_CRC_REQ,2U)*256U)
-                        + (uint32_t)RegisterApp_DHU_Read(CMD_CRC_REQ,3U);
+    u16ChecksumDHU =(uint16_t)(((uint32_t)RegisterApp_DHU_Read(CMD_CRC_REQ,2U)*256U)
+                        + (uint32_t)RegisterApp_DHU_Read(CMD_CRC_REQ,3U));
 
     /* Do Data Communication Checksum*/
     if(u16ChecksumDHU == (uint16_t)u16ChecksumMCU)
     {
-        breturn &= true;
+        u8return &= TRUE;
     }else{
-        breturn &= false;
+        u8return &= FALSE;
     }
-    sprintf((char *)u8TxBuffer,"[UPDATE]CRCSM:DATA CRC DONE. Return:%d CRC:%04X RDdata:%04X\r\n",breturn,u16ChecksumDHU,(uint16_t)u16ChecksumMCU);
-    UartDriver_TxWriteString(u8TxBuffer);
+    sprintf((char *)u8TxUpdateBuffer,"[UPDATE]CRCSM:DATA CRC DONE. Return:%d CRC:%04X RDdata:%04X\r\n",u8return,u16ChecksumDHU,(uint16_t)u16ChecksumMCU);
+    UartDriver_TxWriteString(u8TxUpdateBuffer);
     /* Do MCU data self check*/
     if(UpdateApp_CheckSumMCU() == TRUE)
     {
-        breturn &= true;
+        u8return &= TRUE;
     }else{
-        breturn &= false;
+        u8return &= FALSE;
     }
     /* Do OTA Fool-proof Check*/
     if(UpdateApp_ProjectNameCheck() == TRUE)
     {
-        breturn &= true;
+        u8return &= TRUE;
     }else{
-        breturn &= false;
+        u8return &= FALSE;
     }
     /* Configure the checksum result to CMD_CRC_FB*/
-    if(breturn == true)
+    if(u8return == TRUE)
     {
         APP_UPDATE_PROGRESS = TRUE;
         RegisterApp_DHU_Setup(CMD_CRC_FB,CMD_UPDATE_DATA_POS,CMD_FB_CHECKSUM_PASS);
@@ -318,9 +320,9 @@ bool UpdateApp_ChecksumFlashMCU(void)
         I2CSlaveApp_UpdateCmdChecksumSet(CMD_UPDATESTATUS_FB);
     }
 
-    return breturn;
+    return u8return;
 }
-
+//LDRA_EXCLUDE_START 105 D
 void UpdateApp_McuReset(void)
 {
     uint8_t APP_POSITION = 0x00U;
@@ -334,11 +336,14 @@ void UpdateApp_McuReset(void)
         /* Only for flash w/r test*/
         uint8_t Flag[4] = {APP_POSITION, 0x00, 0x00, 0x00};
         FlashApp_WriteRowFlash(&Flag[0],0x0001F000,4U);
-        sprintf((char *)u8TxBuffer,"[UPDATE]RESET:FLASH DONE. APP_POS Flag set as %02X\r\n",APP_POSITION);
-        UartDriver_TxWriteString(u8TxBuffer);
+        sprintf((char *)u8TxUpdateBuffer,"[UPDATE]RESET:FLASH DONE. APP_POS Flag set as %02X\r\n",APP_POSITION);
+        UartDriver_TxWriteString(u8TxUpdateBuffer);
         __NOP();
         PowerApp_Sequence(LCD_OFF);
         PowerApp_Sequence(POWER_OFF);
         __NVIC_SystemReset();
     }
 }
+//LDRA_EXCLUDE_END 496 S
+//LDRA_EXCLUDE_END 105 D
+//LDRA_EXCLUDE_END 8 D
