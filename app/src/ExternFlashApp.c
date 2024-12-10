@@ -13,16 +13,20 @@ uint8_t u8externFlashSenBuf[64] = {0U};
 uint8_t u8externFlashRecBuf[64] = {0U};
 
 uint8_t u8WriteComplete = 0U;
-uint8_t u8SectorSN;
-uint8_t u8PageSN;
-uint8_t u8WriteSN;
-uint8_t u8ReadSN;
-void ExternFlashApp_Check(void)
+uint8_t u8SectorSN = 0U;
+uint8_t u8PageSN = 0U;
+uint8_t u8WriteSN = 0U;
+uint8_t u8ReadSN = 0U;
+
+uint16_t u16WrittenFlag_1 =0U;
+uint16_t u16WrittenFlag_64 =0U;
+void ExternFlashApp_Verify(void)
 {
     // uint8_t u8TxBuffer[60] = {0U};
-    /*Check Chip if Erase*/
-    uint8_t u8EraseFlag = 0U;
-    u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(0U, 0U, 0U));
+    /*Verify Chip if Erase*/
+    u8SectorSN =0U,u8WriteComplete =0U,
+    u8SectorSN =0U,u8PageSN =0U,u8WriteSN =0U,u8ReadSN =0U;
+    uint8_t u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8ReadSN));
     if (u8EraseFlag != CHIP_ERASE_FALG)
     {
         GD25Q_SPIFLASH_EraseChip();//Erase Chip
@@ -30,6 +34,16 @@ void ExternFlashApp_Check(void)
     }else{
         /*code*/
     }
+
+    /*Verify data integrity */
+    u8SectorSN = 1U;
+    while ((u16WrittenFlag_1 != 0xFFFFU) && (u8ReadSN <= 128U))
+    {
+      u16WrittenFlag_1 = GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,0,0*0x40U));
+    //   u16WrittenFlag_64 = GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,0,63*0x40U));
+      u8SectorSN++;
+    }
+    u8WriteSN =u8ReadSN;
 }
 void ExternFlashApp_Write(void)
 {
@@ -78,7 +92,9 @@ void ExternFlashApp_Write(void)
     u8externFlashSenBuf[62] = 0xFFU;
     /*NA, 1 byte*/
     u8externFlashSenBuf[63] = 0xFFU;
-    GD25Q_SPIFLASH_WriteBuffer(u8externFlashSenBuf,GD25Q_SPIFLASH_Use_Address(u8SectorSN, u8PageSN, u8WriteSN*0x40U), 64U);
+    GD25Q_SPIFLASH_WriteBuffer(u8externFlashSenBuf,GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8WriteSN*0x40U),64U);
+
+    /*Prevent abnormal power outage until the entire logic is completed*/
     u8WriteComplete = 1U;
 }
 /* *****************************************************************************

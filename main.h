@@ -13,10 +13,12 @@
  ******************************************************************************/
 
 #include "cy_pdl.h"
+//LDRA_EXCLUDE_START 130 S
 #include <stdio.h>
-
+//LDRA_EXCLUDE_END 130 S
+//LDRA_EXCLUDE_START 243 S
 #include "cybsp.h"
-
+//LDRA_EXCLUDE_END 243 S
 #define TRUE                1U
 #define FALSE               0U
 #define NOTHING             0U
