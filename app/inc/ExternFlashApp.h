@@ -11,5 +11,7 @@
 #include "main.h"
 
 #define CHIP_ERASE_FALG  	0xC7U
-
+#define WrittenVaild        0xBBAA
+#define WrittenInvaild      0xFFAA
+#define Writable            0xFFFF
 #endif /* APP_INC_EXTERNFLASHAPP_H_ */

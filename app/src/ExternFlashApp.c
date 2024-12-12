@@ -37,10 +37,10 @@ void ExternFlashApp_Verify(void)
 
     /*Verify data integrity */
     u8SectorSN = 1U;
-    while ((u16WrittenFlag_1 != 0xFFFFU) && (u8ReadSN <= 128U))
+    while ((u16WrittenFlag_1 != WrittenInvaild) && (u16WrittenFlag_64 != WrittenVaild) && (u8ReadSN <= 128U))
     {
       u16WrittenFlag_1 = GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,0,0*0x40U));
-    //   u16WrittenFlag_64 = GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,0,63*0x40U));
+      u16WrittenFlag_64 = GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,0,63*0x40U));
       u8SectorSN++;
     }
     u8WriteSN =u8ReadSN;
@@ -92,8 +92,8 @@ void ExternFlashApp_Write(void)
     u8externFlashSenBuf[62] = 0xFFU;
     /*NA, 1 byte*/
     u8externFlashSenBuf[63] = 0xFFU;
+    /*Write One DTC Information*/
     GD25Q_SPIFLASH_WriteBuffer(u8externFlashSenBuf,GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8WriteSN*0x40U),64U);
-
     /*Prevent abnormal power outage until the entire logic is completed*/
     u8WriteComplete = 1U;
 }

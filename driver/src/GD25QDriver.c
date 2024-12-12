@@ -112,21 +112,21 @@ u32 GD25Q_SPIFLASH_ReadManufactureID(void)
 {
 	u32 manufactureID = 0U;
 	
-  sendBuffer[0] = GD25Q_ManufactDeviceID;
-  sendBuffer[1] = 0x00U;
-  sendBuffer[2] = 0x00U;
-  sendBuffer[3] = 0x00U;
-  sendBuffer[4] = GD25Q_Dummy_Byte;
-  sendBuffer[5] = GD25Q_Dummy_Byte;
-  if (SPIMDriver_Transfer(sendBuffer, recvBuffer, 6) == CY_SCB_SPI_SUCCESS)
-  {
-    manufactureID |= (uint32_t)recvBuffer[4] << 8;
-    manufactureID |= recvBuffer[5];
-  }else{
-    manufactureID |= GD25Q_Dummy_Byte << 8;
-    manufactureID |= GD25Q_Dummy_Byte;
-  }
-	
+	sendBuffer[0] = GD25Q_ManufactDeviceID;
+	sendBuffer[1] = 0x00U;
+	sendBuffer[2] = 0x00U;
+	sendBuffer[3] = 0x00U;
+	sendBuffer[4] = GD25Q_Dummy_Byte;
+	sendBuffer[5] = GD25Q_Dummy_Byte;
+	if (SPIMDriver_Transfer(sendBuffer, recvBuffer, 6) == CY_SCB_SPI_SUCCESS)
+	{
+		manufactureID |= (uint32_t)recvBuffer[4] << 8;
+		manufactureID |= recvBuffer[5];
+	}else{
+		manufactureID |= GD25Q_Dummy_Byte << 8;
+		manufactureID |= GD25Q_Dummy_Byte;
+	}
+		
 	return manufactureID;
 }
  
@@ -140,16 +140,16 @@ u32 GD25Q_SPIFLASH_ReadIdentificationID(void)
 {
 	u32 identificationID = 0U;
 	
-  sendBuffer[0] = GD25Q_JedecDeviceID;
-  sendBuffer[1] = GD25Q_Dummy_Byte;
-  sendBuffer[2] = GD25Q_Dummy_Byte;
-  sendBuffer[3] = GD25Q_Dummy_Byte;
-  if (SPIMDriver_Transfer(sendBuffer, recvBuffer, 4) == CY_SCB_SPI_SUCCESS)
-  {
-    identificationID = ((uint32_t)recvBuffer[1] << 16) | ((uint32_t)recvBuffer[2] << 8) | recvBuffer[3];
-  }else{
-    identificationID = (GD25Q_Dummy_Byte << 16) | (GD25Q_Dummy_Byte << 8) | GD25Q_Dummy_Byte;
-  }
+	sendBuffer[0] = GD25Q_JedecDeviceID;
+	sendBuffer[1] = GD25Q_Dummy_Byte;
+	sendBuffer[2] = GD25Q_Dummy_Byte;
+	sendBuffer[3] = GD25Q_Dummy_Byte;
+	if (SPIMDriver_Transfer(sendBuffer, recvBuffer, 4) == CY_SCB_SPI_SUCCESS)
+	{
+		identificationID = ((uint32_t)recvBuffer[1] << 16) | ((uint32_t)recvBuffer[2] << 8) | recvBuffer[3];
+	}else{
+		identificationID = (GD25Q_Dummy_Byte << 16) | (GD25Q_Dummy_Byte << 8) | GD25Q_Dummy_Byte;
+	}
 	
 	return identificationID;
 }
