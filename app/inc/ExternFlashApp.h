@@ -11,7 +11,12 @@
 #include "main.h"
 
 #define CHIP_ERASE_FALG  	0xC7U
-#define WrittenVaild        0xBBAA
-#define WrittenInvaild      0xFFAA
-#define Writable            0xFFFF
+#define WrittenVaild        0xBBAAU
+#define WrittenInvaild      0xFFAAU
+#define Writable            0xFFFFU
+
+extern uint32_t u32CurLogSN;
+
+void ExternFlashApp_Verify(void);
+void ExternFlashApp_Write(void);
 #endif /* APP_INC_EXTERNFLASHAPP_H_ */

@@ -34,6 +34,7 @@
 #include "app/inc/DDIApp.h" 
 #include "app/inc/BatteryApp.h"
 #include "app/inc/UartApp.h"
+#include "app/inc/ExternFlashApp.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -107,8 +108,9 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     }else{
         // Initial the Nor Flash
         GD25Q_SPIFLASH_Init();
-        // Check Nor Flash
-        FlashApp_CheckNorFlash();
+        // // Check Nor Flash
+        // FlashApp_CheckNorFlash();
+        ExternFlashApp_Verify();
     }
     /*EIC initial*/
     if(EicDriver_Initial() == false)

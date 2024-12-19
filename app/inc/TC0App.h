@@ -26,6 +26,7 @@ void TC0App_IntbSetCountStartSet(uint8_t SetValue);
 void TC0App_IntbHoldCountStartSet(uint8_t SetValue);
 void TC0App_IntbAttnCountStartSet(uint8_t SetValue);
 uint8_t TC0App_TimerReturn(uint8_t Request);
+uint32_t TC0App_LogTimerReturn(uint8_t Request);
 void TC0App_TimerReset(uint8_t Request);
 uint8_t TC0App_DelayMS(uint16_t delay);
 uint8_t TC0App_DelayUS(uint16_t delay);

@@ -29,6 +29,7 @@
 #include "app/inc/DisplayChipApp.h"
 #include "app/inc/BacklightApp.h"
 #include "app/inc/FlashApp.h"
+#include "app/inc/ExternFlashApp.h"
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/UartDriver.h"
 
@@ -122,8 +123,9 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
     (void)DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
         /* Only for Nor Flash Test*/
-        // Write DTC information into Nor Flash
-        FlashApp_WriteNorFlash();
+        // // Write DTC information into Nor Flash
+        // FlashApp_WriteNorFlash();
+        ExternFlashApp_Write();
     }
     (void)u8OldByte0;
     (void)u8OldByte1;

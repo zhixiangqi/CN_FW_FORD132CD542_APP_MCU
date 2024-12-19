@@ -25,6 +25,7 @@
 #include "app/inc/DeviceApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/FlashApp.h"
+#include "app/inc/ExternFlashApp.h"
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/I2C4MDriver.h"
 #include "driver/inc/NVMDriver.h"
@@ -289,52 +290,27 @@ void DeviceApp_0xF1FabCommCtrl(void)
         }
         break;
 
-    case CommType_LOGWRITE:
+    case CommType_LOGCURENT:
         /* code */
-
+        uint8_t dataStr[1] = {0};
+        dataStr[0] = u32CurLogSN;
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x03U, u8CommAddr);
+        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x04U, (u8CommLength));
+        for (uint32_t i = 0U; i < 1U; i++)
+        {
+            RegisterApp_DHU_Setup(0xF2U, (0x05U + i), dataStr[i]);
+        }
         break;
 
     case CommType_LOGREAD:
         /* code */
-        // uint8_t u8SectorSerialNum,u8PageSerialNum,u8ReadSerialNum;
-        // uint32_t u32LogRxRegOffeset = CMD_DATA_POS + 6U;
-        // u8SectorSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 0U);
-        // u8PageSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 1U);
-        // u8ReadSerialNum = RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 2U);
-        // // RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogRxRegOffeset + 3U);
-
-        // RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
-        // RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
-        // RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
-        // RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x03U, u8CommAddr);
-        // RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x04U, (u8CommLength));
-        // uint8_t dataStr[256] = {0};
-        // /*Read specified log address data*/
-        // GD25Q_SPIFLASH_ReadBuffer(dataStr, GD25Q80_SECTOR_ADDRESS(u8SectorSerialNum)+ GD25Q80_PAGE_ADDRESS(4+u8PageSerialNum)+POS_NUM(u8ReadSerialNum)*0x40U, u8CommLength);
-        // for (uint32_t i = 0U; i < u8CommLength; i++)
-        // {
-        //     RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, (0x05U + i), dataStr[i]);
-        // }
-        // if (n % 48 == 0)
-        // {
-        //     Sector++;
-        // }
-        // if ( n % 4 == 0)
-        // {
-        //     Page++;
-        // }
-        // if (n <= 4)
-        // {
-        //     GD25Q_SPIFLASH_Use_Address(Sector,4+Page,Pos*0x40);
-        // }
-        // else if (/* condition */)
-        // {
-        //     /* code */
-        // }
-        // else
-        // {
-        //     /* code */
-        // }   
+        uint32_t u32LogOffeset = CMD_DATA_POS + 6U;
+        uint16_t u16VcuReadSN =0U;
+        u16VcuReadSN = (uint16_t)((RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogOffeset + 0U) << 8) | RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogOffeset + 1U));
+        
         break;
 
     default:

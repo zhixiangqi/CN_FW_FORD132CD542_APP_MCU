@@ -309,11 +309,6 @@ uint8_t TC0App_TimerReturn(uint8_t Request)
         /* code */
         u8Return = (uint8_t)intb_attn_timer_ms;
         break;
-
-    case TIMER_FLASH_LOG_COUNT:
-        /* code */
-        u8Return =  (uint8_t)flashlog_timer_ms;
-        break;
     
     default:
         u8Return = 0xFFU;
@@ -323,6 +318,21 @@ uint8_t TC0App_TimerReturn(uint8_t Request)
     return u8Return;
 }
 
+uint32_t TC0App_LogTimerReturn(uint8_t Request)
+{
+    uint32_t u32Return = 0U;
+    switch (Request)
+    {
+    case TIMER_FLASH_LOG_COUNT:
+        u32Return = (uint32_t)flashlog_timer_ms;
+        break;
+    
+    default:
+        break;
+    }
+
+    return u32Return;
+}
 void TC0App_TimerReset(uint8_t Request)
 {
     switch (Request)
