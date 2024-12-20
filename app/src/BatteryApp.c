@@ -140,8 +140,8 @@ static uint8_t BatteryApp_LowHigh_Mode(uint8_t STAGE)
         break;
 
     default:
-        /*TURN OFF(BACKLIGHT PWM)*/
-        BacklightApp_BattProtectSet(TRUE);
+        /*TURN ON(BACKLIGHT PWM)*/
+        BacklightApp_BattProtectSet(FALSE);
         /*20 SECOND SAFE KEY CHECK*/
         if (guBatterySafeKey == FALSE){
             /*COUNTER RESET*/
