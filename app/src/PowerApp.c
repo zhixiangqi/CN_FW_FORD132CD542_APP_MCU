@@ -34,7 +34,13 @@
 
 #define BIAS_ADDR   0x6BU
 #define LED_ADDR    0x3AU
-//LDRA_EXCLUDE_START 8 D
+#define SUPPLY_HIGH_STATUS 0xFFU
+#define SUPPLY_LOW_STATUS  0xFFU
+#define BOOST_HIGH_STATUS  0xA0U
+#define BOOST_LOW_STATUS   0x28U
+#define LED_HIGH_STATUS    0xFFU
+#define LED_LOW_STATUS     0xFFU
+//LDRA_EXCLUDE_START 434 S
 static uint8_t u8TxPowerBuffer[60] = {0};
 
 void PowerApp_Sequence(uint8_t u8Action)
@@ -251,16 +257,22 @@ void PowerApp_LP8664_FaultCheck(void)
         u8fault[0] = 0xFFU;
     }else{
         u8fault[1] = RxBuffer[0x0EU];
+        u8fault[1] &= SUPPLY_LOW_STATUS;
         RegisterApp_DHU_Setup(CMD_DTC,DTC_LED_FAULT_0x0E,u8fault[1]);
         u8fault[2] = RxBuffer[0x0FU];
+        u8fault[2] &= SUPPLY_HIGH_STATUS;
         RegisterApp_DHU_Setup(CMD_DTC,DTC_LED_FAULT_0x0F,u8fault[2]);
         u8fault[3] = RxBuffer[0x10U];
+        u8fault[3] &= BOOST_LOW_STATUS;
         RegisterApp_DHU_Setup(CMD_DTC,DTC_LED_FAULT_0x10,u8fault[3]);
         u8fault[4] = RxBuffer[0x11U];
+        u8fault[4] &= BOOST_HIGH_STATUS;
         RegisterApp_DHU_Setup(CMD_DTC,DTC_LED_FAULT_0x11,u8fault[4]);
         u8fault[5] = RxBuffer[0x12U];
+        u8fault[5] &= LED_HIGH_STATUS;
         RegisterApp_DHU_Setup(CMD_DTC,DTC_LED_FAULT_0x12,u8fault[5]);
         u8fault[6] = RxBuffer[0x13U];
+        u8fault[6] &= LED_LOW_STATUS;
         RegisterApp_DHU_Setup(CMD_DTC,DTC_LED_FAULT_0x13,u8fault[6]);
         u8fault[0] = u8fault[1]|u8fault[2]|u8fault[3]|u8fault[4]|u8fault[5]|u8fault[6];
         sprintf((char *)u8TxPowerBuffer,"LP8664 Fault Analysis >> 0x%02x\r\n",u8fault[0]);
@@ -275,8 +287,11 @@ void PowerApp_LP8664_FaultCheck(void)
     }
 
     if(IO_STATUS_HIGH == u8Status){
-        //UartDriver_TxWriteString((uint8_t *)"LP8664 is Good!\r\n");
+        DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
+        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
     }else if(IO_STATUS_LOW == u8Status){
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
+        (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LED_MASK);
         //UartDriver_TxWriteString((uint8_t *)"LP8664 fault happen!\r\n");
     }else{
         /* When voltage at swim state, Do nothing*/

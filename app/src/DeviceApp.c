@@ -307,10 +307,28 @@ void DeviceApp_0xF1FabCommCtrl(void)
 
     case CommType_LOGREAD:
         /* code */
+        uint8_t u8VcuReadBuff[256U] = {0U};
+        uint8_t u8VcuSectorSN =0U,u8VcuPageSN =0U,u8VcuReadSN =0U;
         uint32_t u32LogOffeset = CMD_DATA_POS + 6U;
         uint16_t u16VcuReadSN =0U;
         u16VcuReadSN = (uint16_t)((RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogOffeset + 0U) << 8) | RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogOffeset + 1U));
-        
+        /*Calculate sector position*/
+        if (u16VcuReadSN % 48U == 0U)
+        {
+            u8VcuSectorSN = (u16VcuReadSN / 48U)-1U;
+        }else{
+            u8VcuSectorSN = u16VcuReadSN / 48U;
+        }
+        /*Calculate page position*/
+        u8VcuPageSN = u16VcuReadSN / 4U;
+        while (u8VcuPageSN > 12U)
+        {
+            u8VcuPageSN -= 12U;
+        }
+        u8VcuPageSN += 4U;
+        /*Calculate read Serial number the page*/
+        u8VcuReadSN = u16VcuReadSN % 4U;
+        GD25Q_SPIFLASH_ReadBuffer(u8VcuReadBuff, GD25Q_SPIFLASH_Use_Address(u8VcuSectorSN,u8VcuPageSN,u8VcuReadSN), 64U);
         break;
 
     default:

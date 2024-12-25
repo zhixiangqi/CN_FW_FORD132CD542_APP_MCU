@@ -673,21 +673,4 @@ u32 GD25Q_SPIFLASH_Use_Address(u8 nSector, u8 nPage , u8 nPos)
 
 	return u32UseAddress;
 }
-
-// void GD25Q_SPIFLASH_AddrConvert(u16 u16CurntWrit)
-// {
-// 	u8 u8SectorSN,u8PageSN,u8WriteSN;
-// 	if(u16CurntWrit % 0x40U == 0U)
-// 	{
-// 		u8SectorSN = u16CurntWrit / 0x40U;
-// 		u8PageSN = 0U;
-// 		u8WriteSN = 0U;
-// 	}else{
-// 	  u8SectorSN = u16CurntWrit / 0x40U;
-// 	  if((u16CurntWrit % 0x40U)/4U)
-// 	  {
-
-// 	  }
-// 	}
-// }
 /********************************************** END OF FLEE **********************************************/

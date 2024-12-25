@@ -290,7 +290,7 @@ void DiagApp_LcdFaultCheckFlow(void)
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_LCD);
     if(IO_STATUS_HIGH == u8Status1){
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
-    (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
+        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
         FAULT_LCD.Report = true;
     }else if(IO_STATUS_LOW == u8Status1){
         if(FAULT_LCD.Report == true)
@@ -315,18 +315,11 @@ void DiagApp_LedFaultCheckFlow(void)
     if(IO_STATUS_HIGH == u8Status1){
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
-        FAULT_LED.Report = true;
     }else if(IO_STATUS_LOW == u8Status1){
-        if(FAULT_LED.Report == true)
-        {
-            PowerApp_LP8664_FaultCheck();
-            FAULT_LED.Report = false;
-        }
-        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
-        (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LED_MASK);
+        PowerApp_LP8664_FaultCheck();
+        FAULT_LED.Report = false;
     }else{
         /* When voltage at swim state, Do nothing*/
-        FAULT_LED.Report = true;
     }
     sprintf((char *)u8TxDiagBuffer,"FAULT CHECK FLOW> LED 0x%02x\r\n",u8Status1);
     //UartDriver_TxWriteString(u8TxBuffer);
@@ -349,7 +342,7 @@ void DiagApp_BiasFaultCheckFlow(void)
             FAULT_BIAS.Report = false;
         }
         DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
-        (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
+       (void) DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
     }else{
         FAULT_BIAS.Report = true;
         /* When voltage at swim state, Do nothing*/
