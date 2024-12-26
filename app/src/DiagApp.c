@@ -121,10 +121,8 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
     {
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
-    (void)DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
+        (void)DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
         /* Only for Nor Flash Test*/
-        // // Write DTC information into Nor Flash
-        // FlashApp_WriteNorFlash();
         ExternFlashApp_Write();
     }
     (void)u8OldByte0;
@@ -342,7 +340,7 @@ void DiagApp_BiasFaultCheckFlow(void)
             FAULT_BIAS.Report = false;
         }
         DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
-       (void) DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
+        (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
     }else{
         FAULT_BIAS.Report = true;
         /* When voltage at swim state, Do nothing*/

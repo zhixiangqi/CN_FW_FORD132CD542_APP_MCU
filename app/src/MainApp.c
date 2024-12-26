@@ -108,8 +108,6 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     }else{
         // Initial the Nor Flash
         GD25Q_SPIFLASH_Init();
-        // // Check Nor Flash
-        // FlashApp_CheckNorFlash();
         ExternFlashApp_Verify();
     }
     /*EIC initial*/
@@ -168,7 +166,6 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     /* [Fix]Set at BacklightApp_Dimming Control.
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
     */
-    
     sprintf((char *)u8TxMainBuffer,"PRENORMAL FINISHED\r\n");
     UartDriver_TxWriteString(u8TxMainBuffer);
     /* Need to put at the end of prenormal task*/

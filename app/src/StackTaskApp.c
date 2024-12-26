@@ -36,6 +36,7 @@
 #include "app/inc/DisplayChipApp.h"
 #include "app/inc/DeviceApp.h"
 #include "app/inc/TPApp.h"
+#include "app/inc/DDIApp.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -203,6 +204,14 @@ void StackTaskApp_MissionAction(void)
         case TASK_MONITOR:
             BacklightApp_TempMonitor();
             BatteryApp_PowerMonitor();
+            // if((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x01U) == 0x01U)
+            // {
+            //     PowerApp_RTQ6749_I2CFaultCheck();
+            //     PowerApp_LP8664_I2CFaultCheck();
+            //     PowerApp_DDI_I2CFaultCheck();
+            // }else{
+            //     /* Do Nothing*/
+            // }
         break;
 
         case TASK_BLTFLOW:

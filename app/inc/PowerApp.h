@@ -19,5 +19,8 @@ void PowerApp_PowerGoodFlow(void);
 void PowerApp_RTQ6749_FaultCheck(void);
 void PowerApp_LP8664_FaultCheck(void);
 void PowerApp_LP8664_CurrentSet(void);
+void PowerApp_RTQ6749_I2CFaultCheck(void);
+void PowerApp_LP8664_I2CFaultCheck(void);
+void PowerApp_DDI_I2CFaultCheck(void);
 
 #endif

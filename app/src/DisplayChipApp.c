@@ -136,7 +136,6 @@ void DisplayChipApp_VerCheck(void)
         DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
         UartDriver_TxWriteString(u8TxDisplayBuffer);
     }else{
-        /* Do nothing*/
         DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_LCD_MASK);
     }
 }
