@@ -57,6 +57,8 @@ typedef struct{
     bool Report;
 }DiagIO;
 
+extern uint8_t u8DiagDeveFautSt;
+
 void DiagApp_CheckFlowInitial(void);
 void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue);
 void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue);

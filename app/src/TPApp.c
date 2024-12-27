@@ -93,6 +93,7 @@ void TPApp_IntTscStateFlow(uint8_t u8DispEnState)
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
         /* SWRA-05-02: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 0.*/
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+        (void)DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
         bTscAttnSafeKey = FALSE;
         bTscAttnState   = FALSE;
         bTscIntKeepLow  = FALSE;
@@ -114,8 +115,14 @@ void TPApp_TPINTCheck(void){
            }else{
             (void)DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
            }
+        }else{
+            /* SWRA-05-02: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 0.*/
+            DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+            (void)DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
         }
     }else{
-        /*Do Nothing*/
+        /* SWRA-05-02: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 0.*/
+        DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+        (void)DiagApp_RtnIsrCheck(false,INTB_INT_TSC_MASK);
     }
 }

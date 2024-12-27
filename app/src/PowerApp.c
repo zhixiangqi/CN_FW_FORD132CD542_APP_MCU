@@ -41,6 +41,8 @@
 #define BOOST_LOW_STATUS   0x28U
 #define LED_HIGH_STATUS    0xFFU
 #define LED_LOW_STATUS     0xFFU
+
+uint8_t u8DeveiceI2cFaultSt = 0U;
 //LDRA_EXCLUDE_START 434 S
 static uint8_t u8TxPowerBuffer[60] = {0};
 
@@ -312,28 +314,28 @@ void PowerApp_RTQ6749_I2CFaultCheck(void)
 {
     /*RTQ6749 Fault Check*/
     uint8_t CMD_ControlMultiRead[2] = {0xFFU,0x00};
-    uint8_t RxBuffer[31] = {0U};
-    uint8_t CMD_DataAddr[1] = {0U};
     uint8_t Status = ERROR_NONE;
     uint8_t u8Status = IO_STATUS_SWIM;
     Status = I2C4MDriver_Write(BIAS_ADDR,CMD_ControlMultiRead,2U);
-    Status |= I2C4MDriver_WriteRead(BIAS_ADDR,CMD_DataAddr,1U,RxBuffer,30U);
     if(Status != ERROR_NONE)
     {
         DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_BIAS_MASK);
-        sprintf((char *)u8TxPowerBuffer,"I2C M driver transmit fail >> 0x%02x\r\n",Status);
-        UartDriver_TxWriteString(u8TxPowerBuffer);
+        UartDriver_TxWriteString((uint8_t *)"RTQ6749 I2C M driver transmit fail\r\n");
         u8Status = DiagApp_ConsecutiveCheckRegister(&FAULT_I2CMASTER, false);
     }else{
         DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_BIAS_MASK);
+        u8Status = DiagApp_ConsecutiveCheckRegister(&FAULT_I2CMASTER, true);
+        // UartDriver_TxWriteString((uint8_t *)"RTQ6749 I2C M driver transmit success\r\n");
     }
 
-    if(IO_STATUS_HIGH == u8Status){
+    if((IO_STATUS_HIGH == u8Status) && (u8DiagDeveFautSt = IO_STATUS_HIGH)){
+        u8DeveiceI2cFaultSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);
     }else if(IO_STATUS_LOW == u8Status){
-       DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
-       (void) DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
+        u8DeveiceI2cFaultSt = IO_STATUS_LOW;
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
+        (void) DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
     }else{
         /* When voltage at swim state, Do nothing*/
         sprintf((char *)u8TxPowerBuffer,"RTQ6749 SWIM >> 0x%02x, %d, %d\r\n",u8Status,FAULT_I2CMASTER.ConsecutiveHighCnt,FAULT_I2CMASTER.ConsecutiveLowCnt);
@@ -344,25 +346,28 @@ void PowerApp_RTQ6749_I2CFaultCheck(void)
 void PowerApp_LP8664_I2CFaultCheck(void)
 {
     /*LP8664 Fault Check*/
-    uint8_t RxBuffer[31] = {0U};
+    uint8_t RxBuffer[1] = {0U};
     uint8_t CMD_DataAddr[1] = {0U};
     uint8_t Status = ERROR_NONE;
     uint8_t u8Status = IO_STATUS_SWIM;
-    Status = I2C4MDriver_WriteRead(LED_ADDR,CMD_DataAddr,1U,RxBuffer,30U);
+    Status = I2C4MDriver_WriteRead(LED_ADDR,CMD_DataAddr,1U,RxBuffer,1U);
     if(Status != ERROR_NONE)
     {
         DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LED_MASK);
-        sprintf((char *)u8TxPowerBuffer,"I2C M driver transmit fail >> 0x%02x\r\n",Status);
-        UartDriver_TxWriteString(u8TxPowerBuffer);
+        UartDriver_TxWriteString((uint8_t *)"LP8864 I2C M driver transmit fail\r\n");
         u8Status = DiagApp_ConsecutiveCheckRegister(&FAULT_I2CMASTER, false);
     }else{
         DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_LED_MASK);
+        u8Status = DiagApp_ConsecutiveCheckRegister(&FAULT_I2CMASTER, true);
+        // UartDriver_TxWriteString((uint8_t *)"LP8864 I2C M driver transmit success\r\n");
     }
 
-    if(IO_STATUS_HIGH == u8Status){
+    if((IO_STATUS_HIGH == u8Status) && (u8DiagDeveFautSt = IO_STATUS_HIGH)){
+        u8DeveiceI2cFaultSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
     }else if(IO_STATUS_LOW == u8Status){
+        u8DeveiceI2cFaultSt = IO_STATUS_LOW;
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LED_MASK);
     }else{
@@ -377,24 +382,24 @@ void PowerApp_DDI_I2CFaultCheck(void)
   /*DisplayChipApp Version Check*/
   uint8_t Status = ERROR_NONE;
   uint8_t u8Status = IO_STATUS_SWIM;
-  uint8_t u8ChipVersion[1] = {0};
   uint8_t u8PageCmd[2] = {0x1EU,0x28U};
-  uint8_t u8ReadRegister[1] = {0x1BU};
   Status = I2C4MDriver_Write(DDI_ADDR,u8PageCmd,sizeof(u8PageCmd));
-  Status |= I2C4MDriver_WriteRead(DDI_ADDR,u8ReadRegister,sizeof(u8ReadRegister),&u8ChipVersion[0],1U);
   if(Status != ERROR_NONE){
-      DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
-      sprintf((char *)u8TxPowerBuffer,"I2C M driver transmit fail >> 0x%02x\r\n",Status);
-      UartDriver_TxWriteString(u8TxPowerBuffer);
-      u8Status = DiagApp_ConsecutiveCheckRegister(&FAULT_I2CMASTER, false);
+    DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
+    UartDriver_TxWriteString((uint8_t *)"DDI I2C M driver transmit fail\r\n");
+    u8Status = DiagApp_ConsecutiveCheckRegister(&FAULT_I2CMASTER, false);
   }else{
-      DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_LCD_MASK);
+    DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_LCD_MASK);
+    u8Status = DiagApp_ConsecutiveCheckRegister(&FAULT_I2CMASTER, true);
+    // UartDriver_TxWriteString((uint8_t *)"DDI I2C M driver transmit success\r\n");
   }
 
-  if(IO_STATUS_HIGH == u8Status){
+  if((IO_STATUS_HIGH == u8Status) && (u8DiagDeveFautSt = IO_STATUS_HIGH)){
+        u8DeveiceI2cFaultSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
     }else if(IO_STATUS_LOW == u8Status){
+        u8DeveiceI2cFaultSt = IO_STATUS_LOW;
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LCD_MASK);
     }else{

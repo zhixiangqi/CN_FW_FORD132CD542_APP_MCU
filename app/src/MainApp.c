@@ -31,10 +31,10 @@
 #include "app/inc/FlashApp.h"
 #include "app/inc/DiagApp.h"
 #include "app/inc/TPApp.h"
-#include "app/inc/DDIApp.h" 
 #include "app/inc/BatteryApp.h"
 #include "app/inc/UartApp.h"
 #include "app/inc/ExternFlashApp.h"
+#include "app/inc/DisplayChipApp.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/I2C4MDriver.h"
@@ -159,7 +159,7 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     }
     PowerApp_Sequence(LCD_ON);
     /*Exit SourceIc StandyMode*/
-    DDIApp_StandbyMode(EXIT_STANDBY_MODE);
+    DisplayChipApp_WorkMode(EXIT_STANDBY_MODE);
     TC0App_TimerTaskStopper(false);
     /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST set as 1.*/
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPST_MASK);
@@ -246,7 +246,7 @@ static uint8_t MainApp_PreSleep_Mode(uint8_t u8Nothing)
     uint8_t u8Return;
     WdtApp_CleanCounter();
     /*Enter SourceIc StandyMode*/
-    DDIApp_StandbyMode(ENTER_STANDBY_MODE);
+    DisplayChipApp_WorkMode(ENTER_STANDBY_MODE);
     /* SWRA-01-05: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST & BL_ST set as 0.*/
     DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPST_MASK);
     DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
@@ -324,7 +324,7 @@ static uint8_t MainApp_Shutdown_Mode(uint8_t u8Nothing)
     DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
     TC0App_NormalWorkStartSet(FALSE);
     /*Enter SourceIc StandyMode*/
-    DDIApp_StandbyMode(ENTER_STANDBY_MODE);
+    DisplayChipApp_WorkMode(ENTER_STANDBY_MODE);
     /* Do Power Off Sequence*/
     INTBApp_Flow();
     PwmDriver_Stop();

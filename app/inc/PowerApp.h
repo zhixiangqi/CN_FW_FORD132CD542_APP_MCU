@@ -13,6 +13,8 @@
 #define RTQ6749_VGH_FAULT_MASK 0x02U
 #define RTQ6749_NAVDD_FAULT_MASK 0x01U
 
+extern uint8_t u8DeveiceI2cFaultSt;
+
 void PowerApp_Sequence(uint8_t u8Action);
 void PowerApp_PowerGoodInitial(void);
 void PowerApp_PowerGoodFlow(void);

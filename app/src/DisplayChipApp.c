@@ -28,8 +28,70 @@
 #include "driver/inc/I2C4MDriver.h"
 #include "driver/inc/UartDriver.h"
 
-#define CHIP_ADDR   0x6FU
 static uint8_t u8TxDisplayBuffer[80] = {0};
+static uint8_t u8Vaule = 0U;
+
+void DisplayChipApp_WorkMode(uint8_t u8ModeState)
+{
+  uint8_t txbuffer[2]={0x00U};
+
+  txbuffer[0]=0x1E;
+  txbuffer[1]=0x21;
+  (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+  txbuffer[0]=0x09;
+  txbuffer[1]=0xA5;
+  (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+  txbuffer[0]=0x1EU;
+  txbuffer[1]=0x20U;
+  (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+  
+  if (u8ModeState == EXIT_STANDBY_MODE)
+  {
+    txbuffer[0]=0x01U;
+    txbuffer[1]=0x07U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+  }else if(u8ModeState == ENTER_STANDBY_MODE)
+  {
+    txbuffer[0]=0x01U;
+    txbuffer[1]=0x06U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+  }else if(u8ModeState == CHOOSE_BIST_MODE)
+  {
+    txbuffer[0]=0x02U;
+    txbuffer[1]=0x3FU;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x01U;
+    txbuffer[1]=0x07U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+  }else if (u8ModeState == CHOOSE_CHROMA_MODE)
+  {
+    txbuffer[0]=0x07U;
+    txbuffer[1]=0xA8U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x01U;
+    txbuffer[1]=0x07U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x02U;
+    txbuffer[1]=0x21U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x03U;
+    if (u8Vaule<=0xFFU)
+    {
+        u8Vaule += 1U;
+    }else{
+        u8Vaule = 0U;
+    }
+    txbuffer[1] = u8Vaule;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+  }
+  else{/*Do nothing*/}
+}
 
 void DisplayChipApp_FaultCheck(void)
 {
