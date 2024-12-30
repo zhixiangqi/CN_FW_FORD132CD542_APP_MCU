@@ -264,11 +264,25 @@ void StackTaskApp_MissionAction(void)
         break;
 
         case TASK_UPDATE_ERASE:
-            (void)UpdateApp_EraseFlashMCU();
+            if (u8UpdateVolatgeState)
+            {
+               (void)UpdateApp_EraseFlashMCU();
+            }else{
+                DiagApp_FlashFaultCheck(true,DIAG_FLASH_VOLTFAIL_MASK);
+                RegisterApp_DHU_Setup(CMD_UPDATESTATUS_FB,CMD_UPDATE_DATA_POS,CMD_FB_UPDATE_VOLTFAIL);
+                I2CSlaveApp_UpdateCmdChecksumSet(CMD_UPDATESTATUS_FB);
+            }
         break;
 
         case TASK_UPDATE_TRANS:
-            (void)UpdateApp_TransferFlashMCU();
+            if (u8UpdateVolatgeState)
+            {
+                (void)UpdateApp_TransferFlashMCU();
+            }else{
+                DiagApp_FlashFaultCheck(true,DIAG_FLASH_VOLTFAIL_MASK);
+                RegisterApp_DHU_Setup(CMD_UPDATESTATUS_FB,CMD_UPDATE_DATA_POS,CMD_FB_UPDATE_VOLTFAIL);
+                I2CSlaveApp_UpdateCmdChecksumSet(CMD_UPDATESTATUS_FB);
+            }
         break;
 
         case TASK_UPDATE_CRCSM:

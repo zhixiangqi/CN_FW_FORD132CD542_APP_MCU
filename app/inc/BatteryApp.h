@@ -7,7 +7,11 @@
 #define BT_LOWHIGH      0x01U
 #define BT_OVERPOWER    0x02U
 
+#define BT_VOLT10V      1510U
+#define BT_VOLT15V      2265U
+
 extern uint8_t u8SyncVolatgeState;
+extern uint8_t u8UpdateVolatgeState;
 
 void BatteryApp_SYNCVolatgeCheck(void);
 void BatteryApp_PowerMonitor(void);

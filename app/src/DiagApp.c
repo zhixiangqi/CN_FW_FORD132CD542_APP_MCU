@@ -39,6 +39,7 @@ static uint8_t u8TxDiagBuffer[80] = {0};
 static uint8_t u8DiagRstReqStatus = 0x00U;
 static uint8_t u8DiagIsrStatus = 0x00U;
 static uint8_t u8DiagI2cFaultStatus = 0x00U;
+static uint8_t u8DiagFlashFaultStatus = 0x00U;
 
 uint8_t u8DiagDeveFautSt = 0U;
 uint8_t u8LatchMaskClearSt = 0U;
@@ -252,6 +253,17 @@ void DiagApp_I2CMasterFaultCheck(bool set ,uint8_t u8DiagI2cFaultMask)
         u8DiagI2cFaultStatus &= ~u8DiagI2cFaultMask;
     }
     RegisterApp_DHU_Setup(CMD_DTC,DTC_I2CM_FAULT,u8DiagI2cFaultStatus);
+}
+
+void DiagApp_FlashFaultCheck(bool set ,uint8_t u8DiagFlashFaultMask)
+{
+    if(set)
+    {
+        u8DiagFlashFaultStatus |= u8DiagFlashFaultMask;
+    }else{
+        u8DiagFlashFaultStatus &= ~u8DiagFlashFaultMask;
+    }
+    RegisterApp_DHU_Setup(CMD_DTC,DTC_FLASH_FAULT,u8DiagFlashFaultStatus);
 }
 
 DiagIO FAULT_LED;

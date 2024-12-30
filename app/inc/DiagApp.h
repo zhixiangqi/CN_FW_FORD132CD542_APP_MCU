@@ -34,10 +34,14 @@
 #define DIAG_RST_LED_MASK   0x02U
 #define DIAG_RST_LCD_MASK   0x04U
 
-#define DIAG_I2CM_FAULT_MASK    0x07U   /* Mask for filtering RST RQ */
+#define DIAG_I2CM_FAULT_MASK    0x07U   /* Mask for filtering I2C Master Fault */
 #define DIAG_I2CM_BIAS_MASK     0x01U
 #define DIAG_I2CM_LED_MASK      0x02U
 #define DIAG_I2CM_LCD_MASK      0x04U
+
+#define DIAG_FLASH_FAULT_MASK        0x03U   /* Mask for filtering Flash Fault*/
+#define DIAG_FLASH_SPIINT_MASK       0x01U
+#define DIAG_FLASH_VOLTFAIL_MASK     0x02U
 
 #define IO_HIGH     1U
 #define IO_LOW      0U
@@ -66,6 +70,7 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue);
 uint8_t DiagApp_ConsecutiveCheckIO(DiagIO* ds1);
 uint8_t DiagApp_ConsecutiveCheckRegister(DiagIO* ds1,bool isgood);
 void DiagApp_I2CMasterFaultCheck(bool set ,uint8_t u8DiagI2cFaultMask);
+void DiagApp_FlashFaultCheck(bool set ,uint8_t u8DiagFlashFaultMask);
 bool DiagApp_RtnIsrCheck(bool set ,uint8_t u8DiagIsrMask);
 bool DiagApp_RtnRstRequestCheck(bool set ,uint8_t u8DiagRstReqMask);
 void DiagApp_LcdFaultCheckFlow(void);

@@ -42,6 +42,7 @@ uint16_t u16SyncVoltSample[SYNC_VOLT_SAMPLE_CNT] = {0U};
 uint8_t u8SYNCSampleCount = 0U;
 uint8_t u8SYNCSampleReady = FALSE;
 uint8_t u8SyncVolatgeState = TRUE;
+uint8_t u8UpdateVolatgeState = TRUE;
 
 /*DTC 240321*/
 #define BT_VOLT0   755U
@@ -251,6 +252,12 @@ void BatteryApp_Flow(void)
     if(gu8BattSampleReady == TRUE)
     {
         u16MABatt = BatteryApp_MAcount(gu16BattVoltSample);
+        if ((u16MABatt >= BT_VOLT10V) && (u16MABatt <= BT_VOLT15V))
+        {
+            u8UpdateVolatgeState = TRUE;
+        }else{
+            u8UpdateVolatgeState = FALSE;
+        }
         VoltStage = BatteryApp_StageCheck(u16MABatt);
         switch (guBatteryStatus)
         {

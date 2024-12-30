@@ -51,6 +51,7 @@
 #define CMD_FB_UPDATE_SUCCESS       0x00U
 #define CMD_FB_UPDATE_FAIL          0x01U
 #define CMD_FB_UPDATE_PROGRESSING   0x02U
+#define CMD_FB_UPDATE_VOLTFAIL      0x03U
 
 /*Display Enable */
 #define DISPEN_DISP_MASK         0x01U
@@ -81,7 +82,7 @@
 #define DTC_BATT_VOLT_ADC           0x17U
 #define DTC_BLT_TEMP_ADC            0x19U
 #define DTC_PCB_TEMP_ADC            0x1BU
-#define DTC_SPI_FAULT               0x1DU
+#define DTC_FLASH_FAULT             0x1DU
 #define DTC_PWM_HBYTE               0x1EU
 #define DTC_PWM_LBYTE               0x1FU
 #define DTC_APP_POS                 0x20U
