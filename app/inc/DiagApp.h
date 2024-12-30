@@ -58,6 +58,7 @@ typedef struct{
 }DiagIO;
 
 extern uint8_t u8DiagDeveFautSt;
+extern uint8_t u8LatchMaskClearSt;
 
 void DiagApp_CheckFlowInitial(void);
 void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue);

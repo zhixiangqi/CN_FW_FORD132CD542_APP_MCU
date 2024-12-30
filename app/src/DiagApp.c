@@ -41,6 +41,7 @@ static uint8_t u8DiagIsrStatus = 0x00U;
 static uint8_t u8DiagI2cFaultStatus = 0x00U;
 
 uint8_t u8DiagDeveFautSt = 0U;
+uint8_t u8LatchMaskClearSt = 0U;
 //LDRA_EXCLUDE_START 8 D
 void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue)
 {
@@ -48,19 +49,37 @@ void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue)
     uint8_t u8OldByte1 = u8DiagDispByte1;
     if(ByteNumber == 0x00U)
     {
-        u8DiagDispByte0 &= ~MaskValue;
-        RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS,u8DiagDispByte0);
+        if ((MaskValue & DISP0_LATCHED_MASK) == MaskValue)
+        {
+            if (u8LatchMaskClearSt == 0U)
+            {
+                u8DiagDispByte0 &= ~MaskValue;
+                RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS,u8DiagDispByte0); 
+            }
+        }else{
+            u8DiagDispByte0 &= ~MaskValue;
+            RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS,u8DiagDispByte0); 
+        }
     }else if(ByteNumber == 0x01U)
     {
-        u8DiagDispByte1 &= ~MaskValue;
-        RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS+1U,u8DiagDispByte1);
+        if ((MaskValue & DISP1_LATCHED_MASK) == MaskValue)
+        {
+            if (u8LatchMaskClearSt == 0U)
+            {
+                u8DiagDispByte1 &= ~MaskValue;
+                RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS+1U,u8DiagDispByte1); 
+            }
+        }else{
+            u8DiagDispByte1 &= ~MaskValue;
+            RegisterApp_DHU_Setup(CMD_DISP_STATUS,CMD_DATA_POS+1U,u8DiagDispByte1);
+        }
     }else{
         /*DO NOTHING*/
     }
 
     /* Check if the data is New event (Pull Request Necessary)*/
-    if (((u8OldByte0 & DISP0_LATCHED_MASK) != (u8DiagDispByte0 & DISP0_LATCHED_MASK)) || 
-        ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
+    if ((u8OldByte0 != u8DiagDispByte0) || 
+        (u8OldByte1 != u8DiagDispByte1 ))
     {
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
         (void)DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
@@ -119,9 +138,14 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
     }
 
     /* Check if the data is New event (Pull Request Necessary)*/
-    if (((u8OldByte0 & DISP0_LATCHED_MASK) != (u8DiagDispByte0 & DISP0_LATCHED_MASK)) || 
-        ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
+    if ((u8OldByte0 != u8DiagDispByte0) || 
+        (u8OldByte1 != u8DiagDispByte1 ))
     {
+        if (((u8OldByte0 & DISP0_LATCHED_MASK) != (u8DiagDispByte0 & DISP0_LATCHED_MASK)) || 
+            ((u8OldByte1 & DISP1_LATCHED_MASK) != (u8DiagDispByte1 & DISP1_LATCHED_MASK)))
+        {
+            u8LatchMaskClearSt = 1U;
+        }
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
         (void)DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
         /* Only for Nor Flash Test*/
@@ -288,7 +312,7 @@ void DiagApp_LcdFaultCheckFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_LCD);
-    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == u8DeveiceI2cFaultSt)){
+    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == u8PoweI2cFaultSt)){
         u8DiagDeveFautSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
@@ -314,7 +338,7 @@ void DiagApp_LedFaultCheckFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_LED);
-    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == u8DeveiceI2cFaultSt)){
+    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == u8PoweI2cFaultSt)){
         u8DiagDeveFautSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
@@ -334,7 +358,7 @@ void DiagApp_BiasFaultCheckFlow(void)
     uint8_t u8Status1 = IO_STATUS_SWIM;
     uint8_t u8Status2 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_BIAS);
-    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == u8DeveiceI2cFaultSt)){
+    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == u8PoweI2cFaultSt)){
         u8DiagDeveFautSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);

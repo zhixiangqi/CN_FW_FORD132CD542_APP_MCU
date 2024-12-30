@@ -42,7 +42,7 @@
 #define LED_HIGH_STATUS    0xFFU
 #define LED_LOW_STATUS     0xFFU
 
-uint8_t u8DeveiceI2cFaultSt = 0U;
+uint8_t u8PoweI2cFaultSt = 0U;
 //LDRA_EXCLUDE_START 434 S
 static uint8_t u8TxPowerBuffer[60] = {0};
 
@@ -329,11 +329,11 @@ void PowerApp_RTQ6749_I2CFaultCheck(void)
     }
 
     if((IO_STATUS_HIGH == u8Status) && (u8DiagDeveFautSt = IO_STATUS_HIGH)){
-        u8DeveiceI2cFaultSt = IO_STATUS_HIGH;
+        u8PoweI2cFaultSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);
     }else if(IO_STATUS_LOW == u8Status){
-        u8DeveiceI2cFaultSt = IO_STATUS_LOW;
+        u8PoweI2cFaultSt = IO_STATUS_LOW;
         DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
         (void) DiagApp_RtnRstRequestCheck(true,DIAG_RST_BIAS_MASK);
     }else{
@@ -363,11 +363,11 @@ void PowerApp_LP8664_I2CFaultCheck(void)
     }
 
     if((IO_STATUS_HIGH == u8Status) && (u8DiagDeveFautSt = IO_STATUS_HIGH)){
-        u8DeveiceI2cFaultSt = IO_STATUS_HIGH;
+        u8PoweI2cFaultSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
     }else if(IO_STATUS_LOW == u8Status){
-        u8DeveiceI2cFaultSt = IO_STATUS_LOW;
+        u8PoweI2cFaultSt = IO_STATUS_LOW;
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LED_MASK);
     }else{
@@ -395,11 +395,11 @@ void PowerApp_DDI_I2CFaultCheck(void)
   }
 
   if((IO_STATUS_HIGH == u8Status) && (u8DiagDeveFautSt = IO_STATUS_HIGH)){
-        u8DeveiceI2cFaultSt = IO_STATUS_HIGH;
+        u8PoweI2cFaultSt = IO_STATUS_HIGH;
         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
     }else if(IO_STATUS_LOW == u8Status){
-        u8DeveiceI2cFaultSt = IO_STATUS_LOW;
+        u8PoweI2cFaultSt = IO_STATUS_LOW;
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
         (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LCD_MASK);
     }else{
