@@ -294,7 +294,6 @@ static void I2CSlaveApp_TxReadTransferDone(uint8_t subaddr)
             /* Check the DISP_STATUS has been sent, then Clear INT_ERR*/
             //RegisterApp_DHU_Setup(CMD_ISR_STATUS,CMD_DATA_POS,INTB_INT_ERR_CLEAR);
             u8LatchMaskClearSt = 0U;
-            UartDriver_TxWriteString((uint8_t *)"CMD 0x00 Clear\r\n");
             (void)DiagApp_RtnIsrCheck(false,INTB_INT_ERR_MASK);
             break;
         

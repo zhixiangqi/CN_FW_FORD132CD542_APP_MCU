@@ -36,6 +36,7 @@
 #include "app/inc/DisplayChipApp.h"
 #include "app/inc/DeviceApp.h"
 #include "app/inc/TPApp.h"
+#include "app/inc/I2C2SlaveApp.h"
 #include "driver/inc/AdcDriver.h"
 #include "driver/inc/UartDriver.h"
 #include "driver/inc/I2C4MDriver.h"

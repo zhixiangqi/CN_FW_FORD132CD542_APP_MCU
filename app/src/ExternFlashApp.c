@@ -14,16 +14,16 @@ uint32_t u32CurLogSN =0U;
 uint8_t u8externFlashSenBuf[64] = {0U};
 uint8_t u8externFlashRecBuf[64] = {0U};
 
-uint8_t u8WriteComplete = 0U;
-uint8_t u8WriteCycleFlag = 0xFFU;
-uint8_t u8SectorSN = 0U;
-uint8_t u8PageSN = 0U;
-uint8_t u8WriteSN = 0U;
-uint8_t u8ReadSN = 0U;
-uint8_t u8RegSt1,u8RegSt2;
-uint16_t u16WrittenFlag =0U;
-uint16_t u16WrittenFlag_1 =0U;
-uint16_t u16WrittenFlag_64 =0U;
+static uint8_t u8WriteComplete = 0U;
+static uint8_t u8WriteCycleFlag = 0xFFU;
+static uint8_t u8SectorSN = 0U;
+static uint8_t u8PageSN = 0U;
+static uint8_t u8WriteSN = 0U;
+static uint8_t u8ReadSN = 0U;
+static uint8_t u8RegSt1,u8RegSt2;
+static uint16_t u16WrittenFlag =0U;
+static uint16_t u16WrittenFlag_1 =0U;
+static uint16_t u16WrittenFlag_64 =0U;
 void ExternFlashApp_Verify(void)
 {
     // uint8_t u8TxBuffer[60] = {0U};
@@ -139,7 +139,6 @@ void ExternFlashApp_Write(void)
             if (u8PageSN == 15U)
             {
                 u8PageSN =0U;
-                
                 u8SectorSN++;
                 if (u8SectorSN == 127U && u8WriteCycleFlag == 0xFFU)
                 {
