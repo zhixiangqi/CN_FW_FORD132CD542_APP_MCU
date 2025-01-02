@@ -11,11 +11,13 @@
 #include "main.h"
 
 #define CHIP_ERASE_FALG  	0xC7U
-#define WrittenVaild        0xBBAAU
-#define WrittenInvaild      0xFFAAU
+#define WrittenVaild        0xAABBU
+#define WrittenInvaild      0xAAFFU
 #define Writable            0xFFFFU
 
-extern uint32_t u32CurLogSN;
+#define FixedSectorAddr     200U
+
+extern uint16_t u16CurLogSN;
 
 void ExternFlashApp_Verify(void);
 void ExternFlashApp_Write(void);

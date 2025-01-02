@@ -10,7 +10,7 @@
 #include "driver/inc/GD25QDriver.h"
 #include "driver/inc/UartDriver.h"
 
-uint32_t u32CurLogSN =0U;
+uint16_t u16CurLogSN =0U;
 uint8_t u8externFlashSenBuf[64] = {0U};
 uint8_t u8externFlashRecBuf[64] = {0U};
 
@@ -24,23 +24,24 @@ static uint8_t u8RegSt1,u8RegSt2;
 static uint16_t u16WrittenFlag =0U;
 static uint16_t u16WrittenFlag_1 =0U;
 static uint16_t u16WrittenFlag_64 =0U;
+
+uint8_t u8ExternFlashBuffer[60] = {0U};
 void ExternFlashApp_Verify(void)
 {
-    // uint8_t u8TxBuffer[60] = {0U};
     /*Verify Chip if Erase*/
     u8SectorSN =0U,u8WriteComplete =0U,
     u8SectorSN =0U,u8PageSN =0U,u8WriteSN =0U,u8ReadSN =0U;
-    uint8_t u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(200U,0U,0U));
+    uint8_t u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(FixedSectorAddr,0U,0U));
     if (u8EraseFlag != CHIP_ERASE_FALG)
     {
         GD25Q_SPIFLASH_EraseChip();//Erase Chip
         UartDriver_TxWriteString((uint8_t *)"GD25QDriver Erase Chip Success\r\n");
-        GD25Q_SPIFLASH_SetByte(GD25Q_SPIFLASH_Use_Address(200U,0U,0U),CHIP_ERASE_FALG);
+        GD25Q_SPIFLASH_SetByte(GD25Q_SPIFLASH_Use_Address(FixedSectorAddr,0U,0U),CHIP_ERASE_FALG);
     }
     else
     {
         /*Verify Write Cycle Flag*/
-        u8WriteCycleFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(200U,0U,1U));
+        u8WriteCycleFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(FixedSectorAddr,0U,1U));
         /*Check Block protection state*/
         u8RegSt1 = GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg1);
         u8RegSt2 = GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg2);
@@ -61,6 +62,8 @@ void ExternFlashApp_Verify(void)
                 break;
             }
             u8SectorSN++;
+            sprintf((char *)u8ExternFlashBuffer,"Sector Number:%d\r\n",u8SectorSN);
+            UartDriver_TxWriteString(u8ExternFlashBuffer);
         }
         /*Further search and write address*/
         while (u8PageSN <= 15U)
@@ -68,7 +71,7 @@ void ExternFlashApp_Verify(void)
             u16WrittenFlag = GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8ReadSN*0x40U));
             if (u16WrittenFlag == Writable)
             {
-            break;
+                break;
             }
             u8ReadSN++;
             if (u8ReadSN % 4 == 0U)
@@ -76,9 +79,13 @@ void ExternFlashApp_Verify(void)
                 u8ReadSN =0U;
                 u8PageSN++;
             }
+            sprintf((char *)u8ExternFlashBuffer,"Page Number:%d\r\n",u8PageSN);
+            UartDriver_TxWriteString(u8ExternFlashBuffer);
         }
         u8WriteSN = u8ReadSN;
-        u32CurLogSN = u8SectorSN*0x40U+u8PageSN*4U+u8ReadSN;
+        sprintf((char *)u8ExternFlashBuffer,"Write Number:%d\r\n",u8WriteSN);
+        UartDriver_TxWriteString(u8ExternFlashBuffer);
+        u16CurLogSN = u8SectorSN*0x40U+u8PageSN*4U+u8ReadSN;
     }
 }
 void ExternFlashApp_Write(void)
@@ -136,15 +143,15 @@ void ExternFlashApp_Write(void)
         {
             u8WriteSN =0U;
             u8PageSN++;
-            if (u8PageSN == 15U)
+            if (u8PageSN == 16U)
             {
                 u8PageSN =0U;
                 u8SectorSN++;
-                if (u8SectorSN == 127U && u8WriteCycleFlag == 0xFFU)
+                if (u8SectorSN == 128U && u8WriteCycleFlag == 0xFFU)
                 {
-                    u8SectorSN =1U;
+                    u8SectorSN =0U;
                     GD25Q_SPIFLASH_EraseSector(GD25Q_SPIFLASH_Use_Address(u8SectorSN,0U,0U));
-                    GD25Q_SPIFLASH_SetByte(GD25Q_SPIFLASH_Use_Address(0U,0U,1U),128U);
+                    GD25Q_SPIFLASH_SetByte(GD25Q_SPIFLASH_Use_Address(FixedSectorAddr,0U,1U),128U);
                 }else if(u8WriteCycleFlag == 128U)
                 {
                     GD25Q_SPIFLASH_EraseSector(GD25Q_SPIFLASH_Use_Address(u8SectorSN,0U,0U));
@@ -157,6 +164,13 @@ void ExternFlashApp_Write(void)
     }else{
         /*nothing*/
     }
+    sprintf((char *)u8ExternFlashBuffer,"Sector Number:%d\r\n",u8SectorSN);
+    UartDriver_TxWriteString(u8ExternFlashBuffer);
+    sprintf((char *)u8ExternFlashBuffer,"Page Number:%d\r\n",u8PageSN);
+    UartDriver_TxWriteString(u8ExternFlashBuffer);
+    sprintf((char *)u8ExternFlashBuffer,"Write Number:%d\r\n",u8WriteSN);
+    UartDriver_TxWriteString(u8ExternFlashBuffer);
+    u16CurLogSN = u8SectorSN*0x40U+u8PageSN*4U+u8WriteSN;
 }
 /* *****************************************************************************
  End of File

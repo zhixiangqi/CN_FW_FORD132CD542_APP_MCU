@@ -292,14 +292,20 @@ void DeviceApp_0xF1FabCommCtrl(void)
 
     case CommType_LOGCURENT:
         /* code */
-        uint8_t dataStr[1] = {0};
-        dataStr[0] = u32CurLogSN;
+        uint8_t dataStr[2] = {0U};
+        dataStr[0] = (u16CurLogSN >> 8U) & 0xFFU;
+        dataStr[1] = (u16CurLogSN & 0xFFU);
+        uint8_t u8LogBuffer[256] = {0U};
+        sprintf((char *)u8LogBuffer,"LOG Serial Number High:%d\r\n",dataStr[0]);
+        UartDriver_TxWriteString(u8LogBuffer);
+        sprintf((char *)u8LogBuffer,"LOG Serial Number Low:%d\r\n",dataStr[1]);
+        UartDriver_TxWriteString(u8LogBuffer);
         RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
         RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
         RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
         RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x03U, u8CommAddr);
         RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x04U, (u8CommLength));
-        for (uint32_t i = 0U; i < 1U; i++)
+        for (uint32_t i = 0U; i < 2U; i++)
         {
             RegisterApp_DHU_Setup(0xF2U, (0x05U + i), dataStr[i]);
         }
