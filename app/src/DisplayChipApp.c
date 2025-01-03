@@ -66,6 +66,31 @@ void DisplayChipApp_WorkMode(uint8_t u8ModeState)
     txbuffer[0]=0x01U;
     txbuffer[1]=0x07U;
     (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+    /*
+    txbuffer[0]=0x1DU;
+    txbuffer[1]=0x03U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x07U;
+    txbuffer[1]=0xA8U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x02U;
+    txbuffer[1]=0x2BU;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x01U;
+    txbuffer[1]=0x07U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x1EU;
+    txbuffer[1]=0x21U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+
+    txbuffer[0]=0x0AU;
+    txbuffer[1]=0x0U;
+    (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
+    */
   }else if (u8ModeState == CHOOSE_CHROMA_MODE)
   {
     txbuffer[0]=0x07U;

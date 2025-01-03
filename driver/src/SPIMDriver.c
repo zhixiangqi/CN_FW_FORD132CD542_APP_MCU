@@ -9,7 +9,7 @@
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
-
+#include "app/inc/DiagApp.h"
 #include "driver/inc/SPIMDriver.h"
 #include "driver/inc/PortDriver.h"
 #include "driver/inc/UartDriver.h"
@@ -149,6 +149,8 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
                 break;
             }
         }
+    }else{
+        DiagApp_FlashFaultCheck(true ,DIAG_FLASH_SPIINT_MASK);
     }
     if(status != CY_SCB_SPI_SUCCESS){
         Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
