@@ -7,6 +7,7 @@
 #include "app/inc/ExternFlashApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/TC0App.h"
+#include "app/inc/WdtApp.h"
 #include "driver/inc/GD25QDriver.h"
 #include "driver/inc/UartDriver.h"
 
@@ -62,6 +63,7 @@ void ExternFlashApp_Verify(void)
                 break;
             }
             u8SectorSN++;
+            WdtApp_CleanCounter();
             sprintf((char *)u8ExternFlashBuffer,"Sector Number:%d\r\n",u8SectorSN);
             UartDriver_TxWriteString(u8ExternFlashBuffer);
         }
@@ -79,6 +81,7 @@ void ExternFlashApp_Verify(void)
                 u8ReadSN =0U;
                 u8PageSN++;
             }
+            WdtApp_CleanCounter();
             sprintf((char *)u8ExternFlashBuffer,"Page Number:%d\r\n",u8PageSN);
             UartDriver_TxWriteString(u8ExternFlashBuffer);
         }
@@ -138,6 +141,8 @@ void ExternFlashApp_Write(void)
         u8externFlashSenBuf[0] = 0xBBU;
         GD25Q_SPIFLASH_SetByte(GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8WriteSN*0x40U),u8externFlashSenBuf[0]);
         GD25Q_SPIFLASH_ReadBuffer(u8externFlashRecBuf,GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8WriteSN*0x40U),64U);
+        /*Verify Write Cycle Flag*/
+        u8WriteCycleFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(FixedSectorAddr,0U,1U));
         u8WriteSN++;
         if (u8WriteSN % 4 == 0U)
         {

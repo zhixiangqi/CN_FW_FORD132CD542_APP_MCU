@@ -11,8 +11,8 @@
 #include "main.h"
 
 #define CHIP_ERASE_FALG  	0xC7U
-#define WrittenVaild        0xAABBU
-#define WrittenInvaild      0xAAFFU
+#define WrittenVaild        0xBBAAU
+#define WrittenInvaild      0xFFAAU
 #define Writable            0xFFFFU
 
 #define FixedSectorAddr     200U

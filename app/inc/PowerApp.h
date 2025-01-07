@@ -13,6 +13,13 @@
 #define RTQ6749_VGH_FAULT_MASK 0x02U
 #define RTQ6749_NAVDD_FAULT_MASK 0x01U
 
+
+typedef struct PowerStates{
+    uint8_t PowerLedFautSt;
+    uint8_t PowerLcdFautSt;
+    uint8_t PowerBaisFautSt;
+}PowerState;
+extern PowerState PowerSt;
 extern uint8_t u8PoweI2cFaultSt;
 
 void PowerApp_Sequence(uint8_t u8Action);

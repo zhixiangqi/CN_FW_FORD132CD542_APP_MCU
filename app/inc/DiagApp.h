@@ -61,7 +61,12 @@ typedef struct{
     bool Report;
 }DiagIO;
 
-extern uint8_t u8DiagDeveFautSt;
+typedef struct DiagStates{
+    uint8_t DiagLedFautSt;
+    uint8_t DiagLcdFautSt;
+    uint8_t DiagBaisFautSt;
+}DiagState;
+extern DiagState DiagSt;
 extern uint8_t u8LatchMaskClearSt;
 
 void DiagApp_CheckFlowInitial(void);
