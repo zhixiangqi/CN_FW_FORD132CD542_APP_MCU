@@ -6,7 +6,6 @@
  */
 #include "driver/inc/GD25QDriver.h"
 #include "driver/inc/SPIMDriver.h"
-#include "app/inc/WdtApp.h"
 
 u8 sendBuffer[GD25Q80_PAGE_BYTE_SIZE]={0x00};
 u8 recvBuffer[GD25Q80_PAGE_BYTE_SIZE]={0x00};
@@ -499,7 +498,6 @@ void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 			{
               pagereMain = NumByteToWrite;
 			}
-			WdtApp_CleanCounter();
 		}
 	}
 	//LDRA_EXCLUDE_END 28 D

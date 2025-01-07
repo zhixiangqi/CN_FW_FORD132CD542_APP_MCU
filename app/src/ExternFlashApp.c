@@ -7,7 +7,6 @@
 #include "app/inc/ExternFlashApp.h"
 #include "app/inc/RegisterApp.h"
 #include "app/inc/TC0App.h"
-#include "app/inc/WdtApp.h"
 #include "driver/inc/GD25QDriver.h"
 #include "driver/inc/UartDriver.h"
 
@@ -58,12 +57,11 @@ void ExternFlashApp_Verify(void)
         {
             u16WrittenFlag_1 = GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,0U,0*0x40U));
             u16WrittenFlag_64 = GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,15U,0*0x40U));
-            if (u16WrittenFlag_1 == WrittenVaild && u16WrittenFlag_64 == Writable)//Please indicate that the address is within this sector
+            if (u16WrittenFlag_1 != Writable && u16WrittenFlag_64 == Writable)//Please indicate that the address is within this sector
             {
                 break;
             }
             u8SectorSN++;
-            WdtApp_CleanCounter();
             sprintf((char *)u8ExternFlashBuffer,"Sector Number:%d\r\n",u8SectorSN);
             UartDriver_TxWriteString(u8ExternFlashBuffer);
         }
@@ -81,7 +79,6 @@ void ExternFlashApp_Verify(void)
                 u8ReadSN =0U;
                 u8PageSN++;
             }
-            WdtApp_CleanCounter();
             sprintf((char *)u8ExternFlashBuffer,"Page Number:%d\r\n",u8PageSN);
             UartDriver_TxWriteString(u8ExternFlashBuffer);
         }
