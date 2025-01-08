@@ -29,8 +29,11 @@ uint8_t u8ExternFlashBuffer[60] = {0U};
 void ExternFlashApp_Verify(void)
 {
     /*Verify Chip if Erase*/
-    u8SectorSN =0U,u8WriteComplete =0U,
-    u8SectorSN =0U,u8PageSN =0U,u8WriteSN =0U,u8ReadSN =0U;
+    u8WriteComplete =0U;
+    u8SectorSN =0U;
+    u8PageSN =0U;
+    u8WriteSN =0U;
+    u8ReadSN =0U;
     uint8_t u8EraseFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(FixedSectorAddr,0U,0U));
     if (u8EraseFlag != CHIP_ERASE_FALG)
     {
