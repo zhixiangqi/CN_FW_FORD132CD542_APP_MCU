@@ -101,7 +101,7 @@ void GD25Q_SPIFLASH_WriteDisable(void);													//GD25Q SPIFLASH 写禁止
 u8 GD25Q_SPIFLASH_ReadStatusRegister(u8 statusRegister);								//GD25Q SPIFLASH 读状态寄存器
 void GD25Q_SPIFLASH_WriteStatusRegister(u8 srLow, u8 srHigh);							//GD25Q SPIFLASH 写状态寄存器
  
-void GD25Q_SPIFLASH_WaitForBusy(void);													//GD25Q SPIFLASH 等待设备空闲
+bool GD25Q_SPIFLASH_WaitForBusy(void);													//GD25Q SPIFLASH 等待设备空闲
 void GD25Q_SPIFLASH_PowerDown(void);													//GD25Q SPIFLASH 进入掉电模式
 void GD25Q_SPIFLASH_WakeUp(void);														//GD25Q SPIFLASH 唤醒
  

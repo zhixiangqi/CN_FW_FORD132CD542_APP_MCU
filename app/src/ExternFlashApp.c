@@ -130,6 +130,8 @@ void ExternFlashApp_Write(void)
     u8externFlashSenBuf[63] = 0xFFU;
     /*Write One DTC Information*/
     GD25Q_SPIFLASH_WriteBuffer(&u8externFlashSenBuf[1],GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8WriteSN*0x40U+1U),63U);
+    // UartDriver_TxWriteString((uint8_t *)"Log All Write!\r\n");
+    // WdtApp_CleanCounter();
     /*Prevent abnormal power outage until the entire logic is completed*/
     u8WriteComplete = 1U;
     /*TAIL, 1 byte*/
@@ -141,6 +143,7 @@ void ExternFlashApp_Write(void)
         // GD25Q_SPIFLASH_ReadBuffer(u8externFlashRecBuf,GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8WriteSN*0x40U),64U);
         /*Verify Write Cycle Flag*/
         u8WriteCycleFlag = GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(FixedSectorAddr,0U,1U));
+        // UartDriver_TxWriteString((uint8_t *)"Log Read!\r\n");
         u8WriteSN++;
         if (u8WriteSN % 4 == 0U)
         {

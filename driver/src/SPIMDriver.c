@@ -100,7 +100,7 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
     uint8_t status = ERROR_SPI_FAIL;
     cy_en_scb_spi_status_t errorStatus;
     uint32_t masterStatus;
-    /* Timeout 1 sec (one unit is us) */
+    /* Timeout 8 msec (one unit is us) */
     uint32_t timeout = 8000U;
 
     /* Master: start a transfer. Slave: prepare for a transfer. */

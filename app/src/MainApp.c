@@ -80,7 +80,6 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     else{
         u8Return = STATE_SLEEP;
     }
-
     WdtApp_CleanCounter();
     /* Configure and enable the UART peripheral */
     (void)UartDriver_Initial();
@@ -102,6 +101,7 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     __enable_irq();
     /* Only for Nor Flash Test*/
     // Initialize the SPI Master
+    WdtApp_CleanCounter();
     if(SPIMDriver_Initialize() == false)
     {
         UartDriver_TxWriteString((uint8_t *)"SPI M driver init fail\r\n");

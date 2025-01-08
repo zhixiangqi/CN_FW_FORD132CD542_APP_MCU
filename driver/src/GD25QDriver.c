@@ -4,8 +4,10 @@
  *  Created on: 2024年9月23日
  *      Author: Administrator
  */
+#include "app/inc/DiagApp.h"
 #include "driver/inc/GD25QDriver.h"
 #include "driver/inc/SPIMDriver.h"
+#include "driver/inc/UartDriver.h"
 
 u8 sendBuffer[GD25Q80_PAGE_BYTE_SIZE]={0x00};
 u8 recvBuffer[GD25Q80_PAGE_BYTE_SIZE]={0x00};
@@ -216,20 +218,30 @@ void GD25Q_SPIFLASH_WriteStatusRegister(u8 srLow, u8 srHigh)
 }
  
 /**********************************************************************************************************
- @Function			void GD25Q_SPIFLASH_WaitForBusy(void)
+ @Function			bool GD25Q_SPIFLASH_WaitForBusy(void)
  @Description			GD25Q_SPIFLASH_WaitForBusy		: GD25Q SPIFLASH 等待设备空闲
- @Input				void
- @Return				void
+ @Input				bool
+ @Return				bool
 **********************************************************************************************************/
-void GD25Q_SPIFLASH_WaitForBusy(void)
+bool GD25Q_SPIFLASH_WaitForBusy(void)
 {
 	u8 flashStatus = 0U;
-	
+	u8 timeout = 100U;
+	bool rtn = false;
 	/* Loop as long as the memory is busy with a write cycle */
 	do {
 		flashStatus = GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg1);
+		timeout--;
 	}
-	while ((flashStatus & 0x01U) == 0x01U);
+	while (((flashStatus & 0x01U) == 0x01U) && (timeout > 0U));
+	if (timeout > 0U)
+	{
+		rtn = true;
+	}else{
+		rtn = false;
+	}
+	
+	return rtn;
 }
  
 /**********************************************************************************************************
@@ -291,14 +303,42 @@ void GD25Q_SPIFLASH_EraseChip(void)
 	/* 发送FLASH写使能命令 */
 	GD25Q_SPIFLASH_WriteEnable();
 	
+	bool spi_status = false;
+	u8 debounce = 3U;
 	/* 等待FLASH空闲 */
-	GD25Q_SPIFLASH_WaitForBusy();
+	do
+	{
+		spi_status = GD25Q_SPIFLASH_WaitForBusy();
+		debounce--;
+	} while ((spi_status == false) && (debounce > 0U));
+	debounce = 30U;
 	
-	/* 发送片擦除命令 */
-	(void)GD25Q_SPI_FLASH_SendByte(GD25Q_ChipErase);
+	if(spi_status == false)
+	{
+		UartDriver_TxWriteString((uint8_t *)"Wait Flash fault happen!\r\n");
+	}
+	else{	
+		/* 发送片擦除命令 */
+		(void)GD25Q_SPI_FLASH_SendByte(GD25Q_ChipErase);
+		/* 等待擦除完毕 */
+		do
+		{
+			spi_status = GD25Q_SPIFLASH_WaitForBusy();
+			debounce--;
+		} while ((spi_status == false) && (debounce > 0U));
+
+		if(spi_status == false)
+		{
+			UartDriver_TxWriteString((uint8_t *)"Write Flash fault happen!\r\n");
+		}
+	}
+	if(spi_status == false)
+	{
+		DiagApp_FlashFaultCheck(true ,DIAG_FLASH_SPIINT_MASK);
+		Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
+        (void)SPIMDriver_Initialize();
+	}
 	
-	/* 等待擦除完毕 */
-	GD25Q_SPIFLASH_WaitForBusy();
 #endif
 }
  
@@ -320,18 +360,46 @@ void GD25Q_SPIFLASH_EraseBlock(u32 BlockAddr)
 	/* 发送FLASH写使能命令 */
 	GD25Q_SPIFLASH_WriteEnable();
 	
+	bool spi_status = false;
+	u8 debounce = 3U;
 	/* 等待FLASH空闲 */
-	GD25Q_SPIFLASH_WaitForBusy();
-
-	sendBuffer[0] = GD25Q_BlockErase;             /* 发送块区擦除命令 */
-	sendBuffer[1] = (uint8_t)((BlockAddr & 0xFF0000U) >> 16U); /* 发送块区擦除地址高位 */
-	sendBuffer[2] = (uint8_t)((BlockAddr & 0xFF00U) >> 8U);    /* 发送块区擦除地址中位 */
-	sendBuffer[3] = (uint8_t)(BlockAddr & 0xFFU);            /* 发送块区擦除地址低位 */
-		
-	(void)SPIMDriver_Transfer(sendBuffer, recvBuffer, 4);
+	do
+	{
+		spi_status = GD25Q_SPIFLASH_WaitForBusy();
+		debounce--;
+	} while ((spi_status == false) && (debounce > 0U));
+	debounce = 20U;
 	
-	/* 等待擦除完毕 */
-	GD25Q_SPIFLASH_WaitForBusy();
+	if(spi_status == false)
+	{
+		UartDriver_TxWriteString((uint8_t *)"Wait Flash fault happen!\r\n");
+	}
+	else{	
+		sendBuffer[0] = GD25Q_BlockErase;             				/* 发送块区擦除命令 */
+		sendBuffer[1] = (uint8_t)((BlockAddr & 0xFF0000U) >> 16U); 	/* 发送块区擦除地址高位 */
+		sendBuffer[2] = (uint8_t)((BlockAddr & 0xFF00U) >> 8U);   	/* 发送块区擦除地址中位 */
+		sendBuffer[3] = (uint8_t)(BlockAddr & 0xFFU);            	/* 发送块区擦除地址低位 */
+			
+		(void)SPIMDriver_Transfer(sendBuffer, recvBuffer, 4);
+		
+		/* 等待擦除完毕 */
+		do
+		{
+			spi_status = GD25Q_SPIFLASH_WaitForBusy();
+			debounce--;
+		} while ((spi_status == false) && (debounce > 0U));
+
+		if(spi_status == false)
+		{
+			UartDriver_TxWriteString((uint8_t *)"Write Flash fault happen!\r\n");
+		}
+	}
+	if(spi_status == false)
+	{
+		DiagApp_FlashFaultCheck(true ,DIAG_FLASH_SPIINT_MASK);
+		Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
+        (void)SPIMDriver_Initialize();
+	}
 #endif
 }
  
@@ -353,18 +421,47 @@ void GD25Q_SPIFLASH_EraseSector(u32 SectorAddr)
 	/* 发送FLASH写使能命令 */
 	GD25Q_SPIFLASH_WriteEnable();
 	
+	bool spi_status = false;
+	u8 debounce = 3U;
 	/* 等待FLASH空闲 */
-	GD25Q_SPIFLASH_WaitForBusy();
-
-	sendBuffer[0] = GD25Q_SectorErase;             /* 发送扇区擦除命令 */
-	sendBuffer[1] = (uint8_t)((SectorAddr & 0xFF0000U) >> 16U); /* 发送扇区擦除地址高位 */
-	sendBuffer[2] = (uint8_t)((SectorAddr & 0xFF00U) >> 8U);    /* 发送扇区擦除地址中位 */
-	sendBuffer[3] = (uint8_t)(SectorAddr & 0xFFU);            /* 发送扇区擦除地址低位 */
-		
-	(void)SPIMDriver_Transfer(sendBuffer, recvBuffer, 4U);
+	do
+	{
+		spi_status = GD25Q_SPIFLASH_WaitForBusy();
+		debounce--;
+	} while ((spi_status == false) && (debounce > 0U));
+	debounce = 10U;
 	
-	/* 等待擦除完毕 */
-	GD25Q_SPIFLASH_WaitForBusy();
+	if(spi_status == false)
+	{
+		UartDriver_TxWriteString((uint8_t *)"Wait Flash fault happen!\r\n");
+	}
+	else{	
+
+		sendBuffer[0] = GD25Q_SectorErase;             				/* 发送扇区擦除命令 */
+		sendBuffer[1] = (uint8_t)((SectorAddr & 0xFF0000U) >> 16U); /* 发送扇区擦除地址高位 */
+		sendBuffer[2] = (uint8_t)((SectorAddr & 0xFF00U) >> 8U);    /* 发送扇区擦除地址中位 */
+		sendBuffer[3] = (uint8_t)(SectorAddr & 0xFFU);           	/* 发送扇区擦除地址低位 */
+			
+		(void)SPIMDriver_Transfer(sendBuffer, recvBuffer, 4U);
+
+		/* 等待擦除完毕 */
+		do
+		{
+			spi_status = GD25Q_SPIFLASH_WaitForBusy();
+			debounce--;
+		} while ((spi_status == false) && (debounce > 0U));
+
+		if(spi_status == false)
+		{
+			UartDriver_TxWriteString((uint8_t *)"Write Flash fault happen!\r\n");
+		}
+	}
+	if(spi_status == false)
+	{
+		DiagApp_FlashFaultCheck(true ,DIAG_FLASH_SPIINT_MASK);
+		Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
+        (void)SPIMDriver_Initialize();
+	}
 #endif
 }
  
@@ -383,10 +480,10 @@ void GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
 		return;
 	}
 	
-	sendBuffer[0] = GD25Q_ReadData;                 /* 发送读指令 */
-	sendBuffer[1] = (uint8_t)((ReadAddr & 0xFF0000U) >> 16U); /* 发送块区擦除地址高位 */
-	sendBuffer[2] = (uint8_t)((ReadAddr & 0xFF00U) >> 8U);    /* 发送块区擦除地址中位 */
-	sendBuffer[3] = (uint8_t)(ReadAddr & 0xFFU);            /* 发送块区擦除地址低位 */
+	sendBuffer[0] = GD25Q_ReadData;                 			/* 发送读指令 */
+	sendBuffer[1] = (uint8_t)((ReadAddr & 0xFF0000U) >> 16U); 	/* 发送块区擦除地址高位 */
+	sendBuffer[2] = (uint8_t)((ReadAddr & 0xFF00U) >> 8U);    	/* 发送块区擦除地址中位 */
+	sendBuffer[3] = (uint8_t)(ReadAddr & 0xFFU);            	/* 发送块区擦除地址低位 */
 
 	for (u16 i = 0U; i < NumByteToRead; i++)
 	{
@@ -423,24 +520,52 @@ void GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 	/* 发送FLASH写使能命令 */
 	GD25Q_SPIFLASH_WriteEnable();
 	
+	bool spi_status = false;
+	u8 debounce = 3U;
 	/* 等待FLASH空闲 */
-	GD25Q_SPIFLASH_WaitForBusy();
-
-	sendBuffer[0] = GD25Q_PageProgram;            /* 发送FLASH写使能命令 */
-	sendBuffer[1] = (uint8_t)((WriteAddr & 0xFF0000U) >> 16U); /* 发送块区擦除地址高位 */
-	sendBuffer[2] = (uint8_t)((WriteAddr & 0xFF00U) >> 8U);    /* 发送块区擦除地址中位 */
-	sendBuffer[3] = (uint8_t)(WriteAddr & 0xFFU);            /* 发送块区擦除地址低位 */
-
-	/* 写入数据 */
-	for (u16 i = 0U; i < NumByteToWrite; i++)
+	do
 	{
-		sendBuffer[4U+i]=pBuffer[i];
+		spi_status = GD25Q_SPIFLASH_WaitForBusy();
+		debounce--;
+	} while ((spi_status == false) && (debounce > 0U));
+	debounce = 3U;
+	
+	if(spi_status == false)
+	{
+		UartDriver_TxWriteString((uint8_t *)"Wait Flash fault happen!\r\n");
 	}
+	else{
+		sendBuffer[0] = GD25Q_PageProgram;            				/* 发送FLASH写使能命令 */
+		sendBuffer[1] = (uint8_t)((WriteAddr & 0xFF0000U) >> 16U); 	/* 发送块区擦除地址高位 */
+		sendBuffer[2] = (uint8_t)((WriteAddr & 0xFF00U) >> 8U);    	/* 发送块区擦除地址中位 */
+		sendBuffer[3] = (uint8_t)(WriteAddr & 0xFFU);            	/* 发送块区擦除地址低位 */
+	
+		/* 写入数据 */
+		for (u16 i = 0U; i < NumByteToWrite; i++)
+		{
+			sendBuffer[4U+i]=pBuffer[i];
+		}
+	
+		(void)SPIMDriver_Transfer(sendBuffer, recvBuffer, 4U+NumByteToWrite);
+			
+		/* 等待写入完毕 */
+		do
+		{
+			spi_status = GD25Q_SPIFLASH_WaitForBusy();
+			debounce--;
+		} while ((spi_status == false) && (debounce > 0U));
 
-	(void)SPIMDriver_Transfer(sendBuffer, recvBuffer, 4U+NumByteToWrite);
-		
-	/* 等待写入完毕 */
-	GD25Q_SPIFLASH_WaitForBusy();
+		if(spi_status == false)
+		{
+			UartDriver_TxWriteString((uint8_t *)"Write Flash fault happen!\r\n");
+		}
+	}
+	if(spi_status == false)
+	{
+		DiagApp_FlashFaultCheck(true ,DIAG_FLASH_SPIINT_MASK);
+		Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
+        (void)SPIMDriver_Initialize();
+	}
 #endif
 }
  
