@@ -324,10 +324,13 @@ void DiagApp_LcdFaultCheckFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_LCD);
-    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == PowerSt.PowerLcdFautSt)){
+    if(IO_STATUS_HIGH == u8Status1){
         DiagSt.DiagLcdFautSt = IO_STATUS_HIGH;
-        DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
-        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
+        if (IO_STATUS_HIGH == PowerSt.PowerLcdFautSt)
+        {
+            DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
+            (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
+        }
         FAULT_LCD.Report = true;
     }else if(IO_STATUS_LOW == u8Status1){
         DiagSt.DiagLcdFautSt = IO_STATUS_LOW;
@@ -350,14 +353,16 @@ void DiagApp_LedFaultCheckFlow(void)
 {
     uint8_t u8Status1 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_LED);
-    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == PowerSt.PowerLedFautSt)){
+    if(IO_STATUS_HIGH == u8Status1){
         DiagSt.DiagLedFautSt = IO_STATUS_HIGH;
-        DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
-        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
+        if (IO_STATUS_HIGH == PowerSt.PowerLedFautSt)
+        {
+            DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
+            (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
+        }
     }else if(IO_STATUS_LOW == u8Status1){
         DiagSt.DiagLedFautSt = IO_STATUS_LOW;
         PowerApp_LP8664_FaultCheck();
-        FAULT_LED.Report = false;
     }else{
         /* When voltage at swim state, Do nothing*/
     }
@@ -370,10 +375,13 @@ void DiagApp_BiasFaultCheckFlow(void)
     uint8_t u8Status1 = IO_STATUS_SWIM;
     uint8_t u8Status2 = IO_STATUS_SWIM;
     u8Status1 = DiagApp_ConsecutiveCheckIO(&FAULT_BIAS);
-    if((IO_STATUS_HIGH == u8Status1) && (IO_STATUS_HIGH == PowerSt.PowerBaisFautSt)){
+    if(IO_STATUS_HIGH == u8Status1){
         DiagSt.DiagBaisFautSt = IO_STATUS_HIGH;
-        DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
-        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);
+        if (IO_STATUS_HIGH == PowerSt.PowerBaisFautSt)
+        {
+            DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
+            (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);
+        }
         FAULT_BIAS.Report = true;
     }else if(IO_STATUS_LOW == u8Status1){
         DiagSt.DiagBaisFautSt = IO_STATUS_LOW;

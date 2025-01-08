@@ -286,6 +286,12 @@ void PowerApp_LP8664_FaultCheck(void)
         u8fault[0] = u8fault[1]|u8fault[2]|u8fault[3]|u8fault[4]|u8fault[5]|u8fault[6];
         sprintf((char *)u8TxPowerBuffer,"LP8664 Fault Analysis >> 0x%02x\r\n",u8fault[0]);
         UartDriver_TxWriteString(u8TxPowerBuffer); 
+        /*Verify LED I2C Error Status */
+        if ((RegisterApp_DHU_Read(CMD_DTC,DTC_LED_FAULT_0x13) & 0x40U) == 0x40U)
+        {
+            uint8_t u8CmdDataAddr[3] = {0x12U,0x00U,0x60U};
+            I2C4MDriver_Write(LED_ADDR,u8CmdDataAddr,3U);
+        }
     }
 
     if(u8fault[0] == 0x00U)
@@ -328,10 +334,13 @@ void PowerApp_RTQ6749_I2CFaultCheck(void)
         // UartDriver_TxWriteString((uint8_t *)"RTQ6749 I2C M driver transmit success\r\n");
     }
 
-    if((IO_STATUS_HIGH == u8Status) && (IO_STATUS_HIGH == DiagSt.DiagBaisFautSt)){
+    if(IO_STATUS_HIGH == u8Status){
         PowerSt.PowerBaisFautSt = IO_STATUS_HIGH;
-        DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
-        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);
+        if (IO_STATUS_HIGH == DiagSt.DiagBaisFautSt)
+        {
+            DiagApp_DispStatusClear(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
+            (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_BIAS_MASK);
+        }
     }else if(IO_STATUS_LOW == u8Status){
         PowerSt.PowerBaisFautSt = IO_STATUS_LOW;
         DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPERR_MASK);
@@ -362,10 +371,13 @@ void PowerApp_LP8664_I2CFaultCheck(void)
         // UartDriver_TxWriteString((uint8_t *)"LP8864 I2C M driver transmit success\r\n");
     }
 
-    if((IO_STATUS_HIGH == u8Status) && (IO_STATUS_HIGH == DiagSt.DiagLedFautSt)){
+    if(IO_STATUS_HIGH == u8Status){
         PowerSt.PowerLedFautSt = IO_STATUS_HIGH;
-        DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
-        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
+        if (IO_STATUS_HIGH == DiagSt.DiagLedFautSt)
+        {
+            DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
+            (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LED_MASK);
+        }
     }else if(IO_STATUS_LOW == u8Status){
         PowerSt.PowerLedFautSt = IO_STATUS_LOW;
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_BLERR_MASK);
@@ -394,10 +406,13 @@ void PowerApp_DDI_I2CFaultCheck(void)
     // UartDriver_TxWriteString((uint8_t *)"DDI I2C M driver transmit success\r\n");
   }
 
-  if((IO_STATUS_HIGH == u8Status) && (IO_STATUS_HIGH == DiagSt.DiagLcdFautSt)){
+  if(IO_STATUS_HIGH == u8Status){
         PowerSt.PowerLcdFautSt = IO_STATUS_HIGH;
-        DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
-        (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
+        if (IO_STATUS_HIGH == DiagSt.DiagLcdFautSt)
+        {
+            DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
+            (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
+        }
     }else if(IO_STATUS_LOW == u8Status){
         PowerSt.PowerLcdFautSt = IO_STATUS_LOW;
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
