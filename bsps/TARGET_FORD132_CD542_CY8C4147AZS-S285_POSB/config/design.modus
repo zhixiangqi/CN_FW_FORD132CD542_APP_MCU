@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration app="BACKEND" formatVersion="14" lastSavedWith="Configurator Backend" lastSavedWithVersion="3.30.0" toolsPackage="ModusToolbox 3.3.0" xmlns="http://cypress.com/xsd/cydesignfile_v5">
+<Configuration app="BACKEND" formatVersion="14" lastSavedWith="Configurator Backend" lastSavedWithVersion="3.40.0" toolsPackage="ModusToolbox 3.4.0" xmlns="http://cypress.com/xsd/cydesignfile_v5">
     <Devices>
         <Device mpn="CY8C4147AZS-S285">
             <BlockConfig>
@@ -973,7 +973,7 @@
                         <Param id="calc" value="man"/>
                         <Param id="desFreq" value="48000000.000000"/>
                         <Param id="fracDivider" value="0"/>
-                        <Param id="intDivider" value="52"/>
+                        <Param id="intDivider" value="48"/>
                         <Param id="startOnReset" value="true"/>
                     </Parameters>
                 </Personality>

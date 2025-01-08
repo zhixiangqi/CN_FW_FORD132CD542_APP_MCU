@@ -136,7 +136,7 @@ void init_cycfg_clocks(void)
     Cy_SysClk_PeriphSetDivider(CY_SYSCLK_DIV_16_BIT, 5U, 0U);
     Cy_SysClk_PeriphEnableDivider(CY_SYSCLK_DIV_16_BIT, 5U);
     Cy_SysClk_PeriphDisableDivider(CY_SYSCLK_DIV_16_BIT, 6U);
-    Cy_SysClk_PeriphSetDivider(CY_SYSCLK_DIV_16_BIT, 6U, 51U);
+    Cy_SysClk_PeriphSetDivider(CY_SYSCLK_DIV_16_BIT, 6U, 47U);
     Cy_SysClk_PeriphEnableDivider(CY_SYSCLK_DIV_16_BIT, 6U);
     Cy_SysClk_PeriphDisableDivider(CY_SYSCLK_DIV_16_BIT, 7U);
     Cy_SysClk_PeriphSetDivider(CY_SYSCLK_DIV_16_BIT, 7U, 4U);
