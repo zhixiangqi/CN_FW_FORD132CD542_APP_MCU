@@ -267,24 +267,7 @@ void UartApp_ReadFlow(void)
 
                 case 0x34U:
                     /* Read Nor Flash Cmd and Write */
-                    if (rdBuffer[UART_CMD_ADDR_POS]==0xABU)
-                    {
-                        (void)GD25Q_SPIFLASH_ReadDeviceID();
-                    }
-                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x90U)
-                    {
-                        (void)GD25Q_SPIFLASH_ReadManufactureID();
-                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x9FU)
-                    {
-                        (void)GD25Q_SPIFLASH_ReadIdentificationID();
-                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0x05U)
-                    {
-                        (void)GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg1);
-                    }
-                    else if (rdBuffer[UART_CMD_ADDR_POS]==0x35U)
-                    {
-                        (void)GD25Q_SPIFLASH_ReadStatusRegister(GD25Q_ReadStatusReg2);
-                    }else if (rdBuffer[UART_CMD_ADDR_POS]==0xC7U)
+                    if (rdBuffer[UART_CMD_ADDR_POS]==0xC7U)
                     {
                         GD25Q_SPIFLASH_EraseChip();
                     }else

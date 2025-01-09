@@ -150,7 +150,7 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
         INTBApp_PullReqSetOrClear(INTB_REQ_SET);
         (void)DiagApp_RtnIsrCheck(true,INTB_INT_ERR_MASK);
         /* Only for Nor Flash Test*/
-        ExternFlashApp_Write();
+        // ExternFlashApp_Write();
     }
     (void)u8OldByte0;
     (void)u8OldByte1;

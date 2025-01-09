@@ -333,16 +333,20 @@ void DeviceApp_0xF1FabCommCtrl(void)
         }
         /*Calculate read Serial number the page*/
         u8VcuReadSN = u16VcuReadSN % 4U;
-        GD25Q_SPIFLASH_ReadBuffer(u8VcuReadBuff, GD25Q_SPIFLASH_Use_Address(u8VcuSectorSN,u8VcuPageSN,u8VcuReadSN), 64U);
-        /*Write to F2 Buffer*/
-        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
-        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
-        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
-        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x03U, u8CommAddr);
-        RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x04U, (u8CommLength));
-        for (uint32_t i = 0U; i < 64U; i++)
+        if(GD25Q_SPIFLASH_ReadBuffer(u8VcuReadBuff, GD25Q_SPIFLASH_Use_Address(u8VcuSectorSN,u8VcuPageSN,u8VcuReadSN), 64U))
         {
-            RegisterApp_DHU_Setup(0xF2U, (0x05U + i), u8VcuReadBuff[i]);
+            /*Write to F2 Buffer*/
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x00U, 0xF2U);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x01U, u8CommObject);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x02U, u8CommType);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x03U, u8CommAddr);
+            RegisterApp_DHU_Setup(CMD_FAB_CTRLRD, 0x04U, (u8CommLength));
+            for (uint32_t i = 0U; i < 64U; i++)
+            {
+                RegisterApp_DHU_Setup(0xF2U, (0x05U + i), u8VcuReadBuff[i]);
+            }
+        }else{
+            UartDriver_TxWriteString((uint8_t *)"Flash Read Fail\r\n");
         }
         break;
 

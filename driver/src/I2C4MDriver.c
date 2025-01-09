@@ -75,7 +75,7 @@ uint8_t I2C4MDriver_Read(uint16_t address, uint8_t* rdData, uint32_t rdLength)
     uint8_t status = ERROR_FAIL;
     cy_en_scb_i2c_status_t errorStatus;
     uint32_t masterStatus;
-    /* Timeout 1 sec (one unit is us) */
+    /* Timeout 8 msec (one unit is us) */
     uint32_t timeout = 8000U;
 
     /* Setup transfer specific parameters */
@@ -153,7 +153,7 @@ uint8_t I2C4MDriver_Write(uint16_t address, uint8_t* wrData, uint32_t wrLength)
     uint8_t status = ERROR_FAIL;
     cy_en_scb_i2c_status_t  errorStatus;
     uint32_t masterStatus;
-    /* Timeout 1 sec (one unit is us) */
+    /* Timeout 8 msec (one unit is us) */
     uint32_t timeout = 8000U;
 
     /* Setup transfer specific parameters */

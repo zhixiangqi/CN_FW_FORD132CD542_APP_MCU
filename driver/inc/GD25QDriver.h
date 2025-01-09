@@ -82,46 +82,31 @@ typedef enum
 	GD25Q80CSIG_OK								= 0x00,
 	GD25Q80CSIG_ERROR							= 0x01
 }GD25Q_StatusTypeDef;
- 
-extern GD25Q_StatusTypeDef GD25QStatus;
- 
-void GD25Q_SPIFLASH_Init(void);															//GD25Q SPIFLASH 初始化
-GD25Q_StatusTypeDef GD25Q_SPIFLASH_Get_Status(void);									//GD25Q SPIFLASH 状态
- 
-u8 GD25Q_SPI_FLASH_ReadByte(void);														//SPI FLASH 读取一个字节数据
-u8 GD25Q_SPI_FLASH_SendByte(u8 byte);													//SPI FLASH 发送一个字节数据
- 
-u32 GD25Q_SPIFLASH_ReadDeviceID(void);													//GD25Q SPIFLASH 读取设备ID
-u32 GD25Q_SPIFLASH_ReadManufactureID(void);												//GD25Q SPIFLASH 读取厂商ID
-u32 GD25Q_SPIFLASH_ReadIdentificationID(void);											//GD25Q SPIFLASH 读取型号ID
- 
-void GD25Q_SPIFLASH_WriteEnable(void);													//GD25Q SPIFLASH 写使能
-void GD25Q_SPIFLASH_WriteDisable(void);													//GD25Q SPIFLASH 写禁止
- 
-u8 GD25Q_SPIFLASH_ReadStatusRegister(u8 statusRegister);								//GD25Q SPIFLASH 读状态寄存器
-void GD25Q_SPIFLASH_WriteStatusRegister(u8 srLow, u8 srHigh);							//GD25Q SPIFLASH 写状态寄存器
- 
-bool GD25Q_SPIFLASH_WaitForBusy(void);													//GD25Q SPIFLASH 等待设备空闲
-void GD25Q_SPIFLASH_PowerDown(void);													//GD25Q SPIFLASH 进入掉电模式
-void GD25Q_SPIFLASH_WakeUp(void);														//GD25Q SPIFLASH 唤醒
- 
-void GD25Q_SPIFLASH_EraseChip(void);													//GD25Q SPIFLASH 擦除Chip
-void GD25Q_SPIFLASH_EraseBlock(u32 BlockAddr);											//GD25Q SPIFLASH 擦除Block
-void GD25Q_SPIFLASH_EraseSector(u32 SectorAddr);										//GD25Q SPIFLASH 擦除Sector
- 
-void GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead);			//GD25Q SPIFLASH 读取SPI FLASH数据
-void GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite);			//GD25Q SPIFLASH 写入SPI FLASH数据Page
-void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite);		//GD25Q SPIFLASH 写入SPI FLASH数据
- 
-u8 GD25Q_SPIFLASH_GetByte(u32 ReadAddr);												//GD25Q SPIFLASH 读取1个Byte
-u16 GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr);											//GD25Q SPIFLASH 读取2个Byte
-u32 GD25Q_SPIFLASH_GetWord(u32 ReadAddr);												//GD25Q SPIFLASH 读取4个Byte
- 
-void GD25Q_SPIFLASH_SetByte(u32 WriteAddr, u8 val);										//GD25Q SPIFLASH 写入1个Byte
-void GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, u16 val);								//GD25Q SPIFLASH 写入2个Byte
-void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, u32 val);									//GD25Q SPIFLASH 写入4个Byte
- 
-u32 GD25Q_SPIFLASH_GetNumofByte(u32 ReadAddr, u16 AllNum, u8 ByteVal);					//GD25Q SPIFLASH 读取指定地址中指定字节中有该值的个数
 
-u32 GD25Q_SPIFLASH_Use_Address(u8 nSector, u8 nPage, u8 nPos);							//GD25Q SPIFLASH 设定Ues Address
+bool GD25Q_SPIFLASH_Init(void);															//GD25Q SPIFLASH 初始化
+bool GD25Q_SPIFLASH_ReadByte(u8 *rxBuffer);												//SPI FLASH 读取一个字节数据
+bool GD25Q_SPIFLASH_SendByte(u8 *txBuffer);												//SPI FLASH 发送一个字节数据
+bool GD25Q_SPIFLASH_ReadDeviceID(u8 *deviceID);											//GD25Q SPIFLASH 读取设备ID
+bool GD25Q_SPIFLASH_ReadManufactureID(u16 *manufactureID);								//GD25Q SPIFLASH 读取厂商ID
+bool GD25Q_SPIFLASH_ReadIdentificationID(u32 *identificationID);						//GD25Q SPIFLASH 读取型号ID
+bool GD25Q_SPIFLASH_WriteEnable(void);													//GD25Q SPIFLASH 写使能
+bool GD25Q_SPIFLASH_WriteDisable(void);													//GD25Q SPIFLASH 写禁止
+bool GD25Q_SPIFLASH_ReadStatusRegister(u8 statusRegister, u8 *rxBuffer);				//GD25Q SPIFLASH 读状态寄存器
+bool GD25Q_SPIFLASH_WriteStatusRegister(u8 srLow, u8 srHigh);							//GD25Q SPIFLASH 写状态寄存器
+bool GD25Q_SPIFLASH_WaitForBusy(void);													//GD25Q SPIFLASH 等待设备空闲
+bool GD25Q_SPIFLASH_PowerDown(void);													//GD25Q SPIFLASH 进入掉电模式
+bool GD25Q_SPIFLASH_WakeUp(void);														//GD25Q SPIFLASH 唤醒
+bool GD25Q_SPIFLASH_EraseChip(void);													//GD25Q SPIFLASH 擦除Chip
+bool GD25Q_SPIFLASH_EraseBlock(u32 BlockAddr);											//GD25Q SPIFLASH 擦除Block
+bool GD25Q_SPIFLASH_EraseSector(u32 SectorAddr);										//GD25Q SPIFLASH 擦除Sector
+bool GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead);			//GD25Q SPIFLASH 读取SPI FLASH数据
+bool GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite);			//GD25Q SPIFLASH 写入SPI FLASH数据Page
+bool GD25Q_SPIFLASH_GetByte(u32 ReadAddr, u8 *rxBuffer);								//GD25Q SPIFLASH 读取1个Byte
+bool GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr, u16 *rxBuffer);							//GD25Q SPIFLASH 读取2个Byte
+bool GD25Q_SPIFLASH_GetWord(u32 ReadAddr, u32 *rxBuffer);								//GD25Q SPIFLASH 读取4个Byte
+bool GD25Q_SPIFLASH_SetByte(u32 WriteAddr, u8 val);										//GD25Q SPIFLASH 写入1个Byte
+bool GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, u16 val);								//GD25Q SPIFLASH 写入2个Byte
+bool GD25Q_SPIFLASH_SetWord(u32 WriteAddr, u32 val);									//GD25Q SPIFLASH 写入4个Byte
+u32 GD25Q_SPIFLASH_Use_Address(u8 nSector, u8 nPage , u8 nPos);		//GD25Q SPIFLASH 设定Ues Address
+
 #endif /* DRIVER_INC_GD25QDRIVER_H_ */

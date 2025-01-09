@@ -25,7 +25,8 @@
         "cortex-debug.JLinkGDBServerPath.osx": "/Applications/SEGGER/JLink/JLinkGDBServerCLExe",
         "cortex-debug.JLinkGDBServerPath.linux": "JLinkGDBServerCLExe",
         "files.associations": {
-            "spimdriver.h": "c"
+            "spimdriver.h": "c",
+            "diagapp.h": "c"
         }
     },
     "extensions": {

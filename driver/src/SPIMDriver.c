@@ -153,6 +153,7 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
         DiagApp_FlashFaultCheck(true ,DIAG_FLASH_SPIINT_MASK);
     }
     if(status != CY_SCB_SPI_SUCCESS){
+        UartDriver_TxWriteString((uint8_t *)"SPI Transfer Fail\r\n");
         Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
         (void)SPIMDriver_Initialize();
     }

@@ -101,14 +101,17 @@ static uint8_t MainApp_Boot_Mode(uint8_t u8Nothing)
     __enable_irq();
     /* Only for Nor Flash Test*/
     // Initialize the SPI Master
-    WdtApp_CleanCounter();
     if(SPIMDriver_Initialize() == false)
     {
         UartDriver_TxWriteString((uint8_t *)"SPI M driver init fail\r\n");
     }else{
         // Initial the Nor Flash
-        GD25Q_SPIFLASH_Init();
-        ExternFlashApp_Verify();
+        if(GD25Q_SPIFLASH_Init())
+        {
+            ExternFlashApp_Verify();
+        }else{
+            UartDriver_TxWriteString((uint8_t *)"SPI Flash init fail\r\n");
+        }
     }
     /*EIC initial*/
     if(EicDriver_Initial() == false)
