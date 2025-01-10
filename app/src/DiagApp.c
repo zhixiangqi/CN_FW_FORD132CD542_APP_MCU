@@ -34,7 +34,7 @@
 #include "driver/inc/UartDriver.h"
 
 static uint8_t u8DiagDispByte0 = 0x00U;
-static uint8_t u8DiagDispByte1 = 0x01U;
+static uint8_t u8DiagDispByte1 = 0x00U;
 static uint8_t u8TxDiagBuffer[80] = {0};
 static uint8_t u8DiagRstReqStatus = 0x00U;
 static uint8_t u8DiagIsrStatus = 0x00U;

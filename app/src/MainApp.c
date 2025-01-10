@@ -157,8 +157,6 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     if ((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x02U) == 0x02U)
     {
         PortDriver_PinSet(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
-        /* SWRA-05-03: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 1.*/
-        DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
     }
     PowerApp_Sequence(LCD_ON);
     /*Exit SourceIc StandyMode*/
@@ -166,6 +164,12 @@ static uint8_t MainApp_PreNormal_Mode(uint8_t u8Nothing)
     TC0App_TimerTaskStopper(false);
     /* SWRA-01-06: Set DISP_STATUS 0x00 CMD Byte1 DISP_ST set as 1.*/
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_DISPST_MASK);
+    /* Check TSC EN Cmd*/
+    if ((RegisterApp_DHU_Read(CMD_DISP_EN,1U) & 0x02U) == 0x02U)
+    {
+        /* SWRA-05-03: Set DISP_STATUS 0x00 CMD Byte1 TSC_ST set as 1.*/
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_TSCST_MASK);
+    }
     /* [Fix]Set at BacklightApp_Dimming Control.
     DiagApp_DispStatusSet(DISP_STATUS_BYTE1,DISP1_BLST_MASK);
     */
