@@ -102,7 +102,6 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
     uint32_t masterStatus;
     /* Timeout 8 msec (one unit is us) */
     uint32_t timeout = 8000U;
-
     /* Master: start a transfer. Slave: prepare for a transfer. */
     errorStatus = Cy_SCB_SPI_Transfer(SPI0M_MCU_HW, txBuffer, rxBuffer, bufferSize, &SPI0M_MCU_context);
     if (errorStatus == CY_SCB_SPI_SUCCESS)
@@ -113,7 +112,7 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
             masterStatus = Cy_SCB_SPI_GetTransferStatus(SPI0M_MCU_HW, &SPI0M_MCU_context);
             Cy_SysLib_DelayUs(CY_SCB_WAIT_1_UNIT);
             timeout--;
-        } while (0UL != (CY_SCB_SPI_TRANSFER_ACTIVE & masterStatus));
+        } while ((0UL != (CY_SCB_SPI_TRANSFER_ACTIVE & masterStatus)) && (timeout > 0U));
         if (timeout <= 0U)
         {
             status = ERROR_SPI_TIMEOUT;
@@ -153,7 +152,6 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
         DiagApp_FlashFaultCheck(true ,DIAG_FLASH_SPIINT_MASK);
     }
     if(status != CY_SCB_SPI_SUCCESS){
-        UartDriver_TxWriteString((uint8_t *)"SPI Transfer Fail\r\n");
         Cy_SCB_SPI_DeInit(SPI0M_MCU_HW);
         (void)SPIMDriver_Initialize();
     }
