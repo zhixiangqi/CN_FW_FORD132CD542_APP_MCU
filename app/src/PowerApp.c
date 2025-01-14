@@ -68,10 +68,11 @@ void PowerApp_Sequence(uint8_t u8Action)
 
     case POWER_OFF: //total ms
         /* code */
-        (void)TC0App_DelayMS(10U);
         PortDriver_PinClear(DES_PDB_PORT,DES_PDB_PIN);
         (void)TC0App_DelayMS(5U);
         PortDriver_PinClear(DES_INTB_PORT,DES_INTB_PIN);
+        (void)TC0App_DelayMS(5U);
+        PortDriver_PinClear(DISP_RESX_PORT,DISP_RESX_PIN);
         (void)TC0App_DelayMS(5U);
         PortDriver_PinClear(P1V2_EN_PORT,P1V2_EN_PIN);
         (void)TC0App_DelayMS(5U);
@@ -98,8 +99,6 @@ void PowerApp_Sequence(uint8_t u8Action)
         PortDriver_PinClear(DISP_STBY_PORT,DISP_STBY_PIN);
         PortDriver_PinClear(U301_TSC_RESET_PORT,U301_TSC_RESET_PIN);
         PortDriver_PinClear(BIAS_EN_PORT,BIAS_EN_PIN);
-        (void)TC0App_DelayMS(5U);
-        PortDriver_PinClear(DISP_RESX_PORT,DISP_RESX_PIN);
         break;
 
     default:
