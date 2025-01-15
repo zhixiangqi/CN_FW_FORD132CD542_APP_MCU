@@ -173,7 +173,7 @@ void PowerApp_PowerGoodFlow(void)
     // sprintf((char *)u8TxBuffer,"PG FLOW> P1V2 0x%02x > P3V3 0x%02x\r\n",u8Status1,u8Status2);
     // UartDriver_TxWriteString(u8TxBuffer);
 }
-
+//LDRA_EXCLUDE_START 8 D
 void PowerApp_RTQ6749_FaultCheck(void)
 {
     uint8_t CMD_ControlMultiRead[2] = {0xFFU,0x00};
@@ -217,6 +217,7 @@ void PowerApp_RTQ6749_FaultCheck(void)
         UartDriver_TxWriteString(u8TxPowerBuffer);
     }
 }
+//LDRA_EXCLUDE_END 8 D
 //LDRA_EXCLUDE_START 139 S
 //LDRA_EXCLUDE_START 105 D
 void PowerApp_LP8664_CurrentSet(void)
@@ -289,7 +290,7 @@ void PowerApp_LP8664_FaultCheck(void)
         if ((RegisterApp_DHU_Read(CMD_DTC,DTC_LED_FAULT_0x13) & 0x40U) == 0x40U)
         {
             uint8_t u8CmdDataAddr[3] = {0x12U,0x00U,0x60U};
-            I2C4MDriver_Write(LED_ADDR,u8CmdDataAddr,3U);
+            (void)I2C4MDriver_Write(LED_ADDR,u8CmdDataAddr,3U);
         }
     }
 

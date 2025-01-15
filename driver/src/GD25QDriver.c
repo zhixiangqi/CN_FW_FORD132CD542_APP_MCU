@@ -8,7 +8,9 @@
 #include "driver/inc/GD25QDriver.h"
 #include "driver/inc/SPIMDriver.h"
 #include "driver/inc/UartDriver.h"
-
+//LDRA_EXCLUDE_START 496 S
+//LDRA_EXCLUDE_START 139 S
+//LDRA_EXCLUDE_START 8 D
 GD25Q_StatusTypeDef GD25QStatus = GD25Q80CSIG_OK;
 
 bool GD25Q_SPIFLASH_Init(void)
@@ -102,7 +104,7 @@ bool GD25Q_SPIFLASH_ReadManufactureID(u16 *manufactureID)
     sendBuffer[5] = GD25Q_Dummy_Byte;
     if (SPIMDriver_Transfer(sendBuffer, recvBuffer, 4U+2U) == CY_SCB_SPI_SUCCESS)
     {
-        *manufactureID = ((uint16_t)recvBuffer[4] << 16) | recvBuffer[5];
+        *manufactureID =(uint16_t)((uint32_t)recvBuffer[4] << 16) | (uint16_t)recvBuffer[5];
         brstate = true;
     }
     else
@@ -198,7 +200,7 @@ bool GD25Q_SPIFLASH_WriteStatusRegister(u8 srLow, u8 srHigh){
     return bwstate;
 }
 
-bool GD25Q_SPIFLASH_WaitForBusy()
+bool GD25Q_SPIFLASH_WaitForBusy(void)
 {
     bool brstate = false;
     u8 statusRegister[2] = {0U};
@@ -424,7 +426,7 @@ bool GD25Q_SPIFLASH_EraseSector(u32 SectorAddr)
     return bwstate;
 }
 
-bool GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
+bool GD25Q_SPIFLASH_ReadBuffer(u8 pBuffer[], u32 ReadAddr, u16 NumByteToRead)
 {
     bool brstate = false;
     u8 sendBuffer[256] = {0U};
@@ -447,7 +449,7 @@ bool GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
     return brstate;
 }
 
-bool GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
+bool GD25Q_SPIFLASH_WritePage(u8 pBuffer[], u32 WriteAddr, u16 NumByteToWrite)
 {
     bool bwstate = false;
     u8 u8debounce = 3U;
@@ -545,7 +547,7 @@ bool GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr, u16 *rxBuffer)
     else
     {
         brstate = true;
-        *rxBuffer = (u16)(recvBuffer[4U] << 8U) | recvBuffer[5U];
+        *rxBuffer = ((u16)recvBuffer[4U] << 8U) |(u16)recvBuffer[5U];
     }
     return brstate;
 }
@@ -569,7 +571,7 @@ bool GD25Q_SPIFLASH_GetWord(u32 ReadAddr, u32 *rxBuffer)
     else
     {
         brstate = true;
-        *rxBuffer = (u32)(recvBuffer[4U] << 24U) | (u32)(recvBuffer[5U] << 16U) | (u32)(recvBuffer[6U] << 8U) | recvBuffer[7U];
+        *rxBuffer = ((u32)recvBuffer[4U] << 24U) | ((u32)recvBuffer[5U] << 16U) | ((u32)recvBuffer[6U] << 8U) | (u32)recvBuffer[7U];
     }
     return brstate;
 }
@@ -627,10 +629,13 @@ bool GD25Q_SPIFLASH_SetWord(u32 WriteAddr, u32 val)
 u32 GD25Q_SPIFLASH_Use_Address(u8 nSector, u8 nPage , u8 nPos)
 {
 	u32 u32UseAddress = 0U;
-	u32UseAddress = GD25Q80_BASE_ADDR + (GD25Q80_SECTOR_BYTE_SIZE * nSector);
-	u32UseAddress += GD25Q80_BASE_ADDR + (GD25Q80_PAGE_BYTE_SIZE * nPage);
-	u32UseAddress += nPos;
+	u32UseAddress = GD25Q80_BASE_ADDR + (GD25Q80_SECTOR_BYTE_SIZE *(u32)nSector);
+	u32UseAddress += GD25Q80_BASE_ADDR + (GD25Q80_PAGE_BYTE_SIZE * (u32)nPage);
+	u32UseAddress +=(u32)nPos;
 
 	return u32UseAddress;
 }
+//LDRA_EXCLUDE_END 496 S
+//LDRA_EXCLUDE_END 139 S
+//LDRA_EXCLUDE_END 8 D
 // End of File

@@ -13,7 +13,7 @@
 uint16_t u16CurLogSN =0U;
 uint8_t u8externFlashSenBuf[64] = {0U};
 uint8_t u8externFlashRecBuf[64] = {0U};
-uint16_t u16externFlashSenBuf[64] = {0U};
+// uint16_t u16externFlashSenBuf[64] = {0U};
 uint16_t u16externFlashRecBuf[64] = {0U};
 
 static uint8_t u8WriteComplete = 0U;
@@ -27,7 +27,10 @@ static uint16_t u16WrittenFlag =0U;
 static uint16_t u16WrittenFlag_64 =0U;
 
 uint8_t u8ExternFlashBuffer[60] = {0U};
-
+//LDRA_EXCLUDE_START 139 S
+//LDRA_EXCLUDE_START 8 D
+//LDRA_EXCLUDE_START 28 D
+//LDRA_EXCLUDE_START 105 D
 void ExternFlashApp_Verify(void)
 {
     /*Verify Chip if Erase*/
@@ -86,7 +89,7 @@ void ExternFlashApp_Verify(void)
                 /*Verify data integrity */
                 while (u8SectorSN <= 127U)
                 {
-                    if (GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,15U,0*0x40U),u16externFlashRecBuf))
+                    if (GD25Q_SPIFLASH_GetHalfWord(GD25Q_SPIFLASH_Use_Address(u8SectorSN,15U,0U*0x40U),u16externFlashRecBuf))
                     {
                         u16WrittenFlag_64 = u16externFlashRecBuf[0];
                         if (u16WrittenFlag_64 == Writable)//Please indicate that the address is within this sector
@@ -110,7 +113,7 @@ void ExternFlashApp_Verify(void)
                             break;
                         }
                         u8ReadSN++;
-                        if (u8ReadSN % 4 == 0U)
+                        if ((u8ReadSN % 4U) == 0U)
                         {
                             u8ReadSN =0U;
                             u8PageSN++;
@@ -120,7 +123,7 @@ void ExternFlashApp_Verify(void)
                     }
                 }
                 u8WriteSN = u8ReadSN;
-                u16CurLogSN = u8SectorSN*0x40U+u8PageSN*4U+u8ReadSN;
+                u16CurLogSN = (uint16_t)u8SectorSN*0x40U+(uint16_t)u8PageSN*4U+(uint16_t)u8ReadSN;
                 sprintf((char *)u8ExternFlashBuffer,"Sector#:%X Page#:%X Write#:%X Cycle#:%X\r\n",u8SectorSN,u8PageSN,u8WriteSN,u8WriteCycleFlag);
                 UartDriver_TxWriteString(u8ExternFlashBuffer);
             }else{
@@ -131,7 +134,9 @@ void ExternFlashApp_Verify(void)
         UartDriver_TxWriteString((uint8_t *)"Verify Flash Fail\r\n");
     }
 }
-
+//LDRA_EXCLUDE_END 105 D
+//LDRA_EXCLUDE_END 28 D
+//LDRA_EXCLUDE_END 139 S
 void ExternFlashApp_Write(void)
 {
     /*Clear Buffer*/
@@ -173,7 +178,7 @@ void ExternFlashApp_Write(void)
     /*NA, 1 byte*/
     u8externFlashSenBuf[63] = 0xFFU;
     /*Write One DTC Information*/
-    if (GD25Q_SPIFLASH_WritePage(&u8externFlashSenBuf[1],GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8WriteSN*0x40U+1U),63U))
+    if (GD25Q_SPIFLASH_WritePage(&u8externFlashSenBuf[1],GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,(u8WriteSN*0x40U)+1U),63U))
     {
         /*Prevent abnormal power outage until the entire logic is completed*/
         u8WriteComplete = 1U;
@@ -184,7 +189,7 @@ void ExternFlashApp_Write(void)
             if (GD25Q_SPIFLASH_SetByte(GD25Q_SPIFLASH_Use_Address(u8SectorSN,u8PageSN,u8WriteSN*0x40U),u8externFlashSenBuf[0]))
             {
                 u8WriteSN++;
-                if (u8WriteSN % 4 == 0U)
+                if ((u8WriteSN % 4U)== 0U)
                 {
                     u8WriteSN =0U;
                     u8PageSN++;
@@ -196,7 +201,7 @@ void ExternFlashApp_Write(void)
                         if (GD25Q_SPIFLASH_GetByte(GD25Q_SPIFLASH_Use_Address(FixedSectorAddr,0U,1U),u8externFlashRecBuf))
                         {
                             u8WriteCycleFlag = u8externFlashRecBuf[0];
-                            if (u8SectorSN >= 14 && u8WriteCycleFlag == 0xFFU)
+                            if ((u8SectorSN >= 0x80U) && (u8WriteCycleFlag == 0xFFU))
                             {
                                 u8SectorSN =0U;
                                 u8PageSN =0U;
@@ -213,7 +218,7 @@ void ExternFlashApp_Write(void)
                                 }else{
                                     UartDriver_TxWriteString((uint8_t *)"Flash Erase Sector Cycle Fail\r\n");
                                 }
-                            }else if(u8SectorSN >= 14 && u8WriteCycleFlag == 0x80U)
+                            }else if((u8SectorSN >= 0x80U) && (u8WriteCycleFlag == 0x80U))
                             {
                                 u8SectorSN =0U;
                                 u8PageSN =0U;
@@ -242,7 +247,7 @@ void ExternFlashApp_Write(void)
                     UartDriver_TxWriteString((uint8_t *)"Write Below 4\r\n");
                 }
                 u8WriteComplete = 0U;
-                u16CurLogSN = u8SectorSN*0x40U+u8PageSN*4U+u8WriteSN;
+                u16CurLogSN = (uint16_t)u8SectorSN*0x40U+(uint16_t)u8PageSN*4U+(uint16_t)u8ReadSN;
                 sprintf((char *)u8ExternFlashBuffer,"Sector#:%X Page#:%X Write#:%X Cycle#:%X\r\n",u8SectorSN,u8PageSN,u8WriteSN,u8WriteCycleFlag);
                 UartDriver_TxWriteString(u8ExternFlashBuffer);
             }else{
@@ -254,7 +259,8 @@ void ExternFlashApp_Write(void)
     }else{
         UartDriver_TxWriteString((uint8_t *)"Log Write Fail!\r\n");
     }
-}   
+} 
+//LDRA_EXCLUDE_END 8 D  
 /* *****************************************************************************
  End of File
  */

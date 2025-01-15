@@ -269,7 +269,7 @@ void UartApp_ReadFlow(void)
                     /* Read Nor Flash Cmd and Write */
                     if (rdBuffer[UART_CMD_ADDR_POS]==0xC7U)
                     {
-                        GD25Q_SPIFLASH_EraseChip();
+                        (void)GD25Q_SPIFLASH_EraseChip();
                     }else
                     {
                        //Do nothing

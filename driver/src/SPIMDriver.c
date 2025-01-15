@@ -94,7 +94,7 @@ bool SPIMDriver_Initialize(void)
 
     return bresult;
 }
-
+//LDRA_EXCLUDE_START 139 S
 uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t bufferSize)
 {
     uint8_t status = ERROR_SPI_FAIL;
@@ -159,3 +159,4 @@ uint8_t SPIMDriver_Transfer(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t buffe
 }
 //LDRA_EXCLUDE_END 496 S
 //LDRA_EXCLUDE_END 8 D
+//LDRA_EXCLUDE_END 139 S

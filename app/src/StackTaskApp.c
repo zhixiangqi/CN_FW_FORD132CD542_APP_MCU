@@ -273,7 +273,7 @@ void StackTaskApp_MissionAction(void)
         break;
 
         case TASK_UPDATE_ERASE:
-            if (u8UpdateVolatgeState)
+            if (u8UpdateVolatgeState == true)
             {
                (void)UpdateApp_EraseFlashMCU();
             }else{
@@ -284,7 +284,7 @@ void StackTaskApp_MissionAction(void)
         break;
 
         case TASK_UPDATE_TRANS:
-            if (u8UpdateVolatgeState)
+            if (u8UpdateVolatgeState == true)
             {
                 (void)UpdateApp_TransferFlashMCU();
             }else{

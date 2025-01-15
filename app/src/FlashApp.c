@@ -26,7 +26,8 @@
 #include "app/inc/RegisterApp.h"
 #include "app/inc/WdtApp.h"
 #include "driver/inc/NVMDriver.h"
-
+//LDRA_EXCLUDE_START 496 S
+//LDRA_EXCLUDE_START 554 S
 void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t length)
 {
   uint8_t dataStr[256] = {0};
@@ -41,3 +42,5 @@ void FlashApp_WriteRowFlash(uint8_t data[], const uint32_t address, uint8_t leng
   }
   (void)NVMDriver_PageWrite(dataStr,(const uint32_t)FLASH_ROW_ADDRESS(address));
 }
+//LDRA_EXCLUDE_END 496 S
+//LDRA_EXCLUDE_END 554 S

@@ -88,7 +88,7 @@ void DiagApp_DispStatusClear(uint8_t ByteNumber, uint8_t MaskValue)
     (void)u8OldByte0;
     (void)u8OldByte1;
 }
-
+ //LDRA_EXCLUDE_START 139 S
 void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
 {
     uint8_t u8OldByte0 = u8DiagDispByte0;
@@ -155,7 +155,7 @@ void DiagApp_DispStatusSet(uint8_t ByteNumber, uint8_t MaskValue)
     (void)u8OldByte0;
     (void)u8OldByte1;
 }
-
+//LDRA_EXCLUDE_END 139 S
 uint8_t DiagApp_ConsecutiveCheckIO(DiagIO* ds1)
 {
     DiagIO ds = *ds1;

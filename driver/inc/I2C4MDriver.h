@@ -44,7 +44,7 @@
 bool I2C4MDriver_Initialize(void);
 uint8_t I2C4MDriver_Read(uint16_t address, uint8_t* rdData, uint32_t rdLength);
 uint8_t I2C4MDriver_Write(uint16_t address, uint8_t* wrData, uint32_t wrLength);
-uint8_t I2C4MDriver_WriteRead(uint16_t address, uint8_t* wrData, uint32_t wrLength, uint8_t* rdData, uint32_t rdLength);
+uint8_t I2C4MDriver_WriteRead(uint16_t address, uint8_t wrData[], uint32_t wrLength, uint8_t rdData[], uint32_t rdLength);
 
 #endif /* _EXAMPLE_FILE_NAME_H */
 /* *****************************************************************************

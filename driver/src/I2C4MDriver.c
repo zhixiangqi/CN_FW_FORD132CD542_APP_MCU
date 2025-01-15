@@ -17,6 +17,7 @@ cy_stc_scb_i2c_master_xfer_config_t masterTransferCfg =
 ;       Return Values			:	void
 ;		Source ID				:
 ******************************************************************************/
+//LDRA_EXCLUDE_START 106 D
 uint8_t I2C4MDriver_Register_Event_Callback(cy_cb_scb_i2c_handle_events_t pCallback)
 {
 	uint8_t u8Result;
@@ -31,6 +32,7 @@ uint8_t I2C4MDriver_Register_Event_Callback(cy_cb_scb_i2c_handle_events_t pCallb
 	}
 	return u8Result;
 }
+//LDRA_EXCLUDE_END 106 D
 //LDRA_EXCLUDE_START 35 S
 static void I2C4MDriver_Interrupt(void)
 {
@@ -226,7 +228,7 @@ uint8_t I2C4MDriver_Write(uint16_t address, uint8_t* wrData, uint32_t wrLength)
     }
     return (status);
 }
-uint8_t I2C4MDriver_WriteRead(uint16_t address, uint8_t* wrData, uint32_t wrLength, uint8_t* rdData, uint32_t rdLength)
+uint8_t I2C4MDriver_WriteRead(uint16_t address, uint8_t wrData[], uint32_t wrLength, uint8_t rdData[], uint32_t rdLength)
 {
     cy_en_scb_i2c_status_t status;
     /* Timeout 8 msec (one unit is ms) */

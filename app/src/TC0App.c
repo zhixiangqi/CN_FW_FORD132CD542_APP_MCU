@@ -328,6 +328,7 @@ uint32_t TC0App_LogTimerReturn(uint8_t Request)
         break;
     
     default:
+    // do nothing
         break;
     }
 

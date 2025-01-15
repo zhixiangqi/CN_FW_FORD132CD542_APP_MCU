@@ -293,8 +293,8 @@ void DeviceApp_0xF1FabCommCtrl(void)
     case CommType_LOGCURENT:
         /* code */
         uint8_t dataStr[2] = {0U};
-        dataStr[0] = (u16CurLogSN >> 8U) & 0xFFU;
-        dataStr[1] = (u16CurLogSN & 0xFFU);
+        dataStr[0] = (uint8_t)(u16CurLogSN >> 8U) & 0xFFU;
+        dataStr[1] = (uint8_t)(u16CurLogSN & 0xFFU);
         uint8_t u8LogBuffer[256] = {0U};
         sprintf((char *)u8LogBuffer,"LOG Serial Number High:%d\r\n",dataStr[0]);
         UartDriver_TxWriteString(u8LogBuffer);
@@ -317,22 +317,22 @@ void DeviceApp_0xF1FabCommCtrl(void)
         uint8_t u8VcuSectorSN =0U,u8VcuPageSN =0U,u8VcuReadSN =0U;
         uint32_t u32LogOffeset = CMD_DATA_POS + 6U;
         uint16_t u16VcuReadSN =0U;
-        u16VcuReadSN = (uint16_t)((RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogOffeset + 0U) << 8) | RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogOffeset + 1U));
+        u16VcuReadSN = (((uint16_t)RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogOffeset + 0U) << 8) | (uint16_t)RegisterApp_DHU_Read(CMD_FAB_CTRL, u32LogOffeset + 1U));
         /*Calculate sector position*/
-        if (u16VcuReadSN % 48U == 0U)
+        if ((u16VcuReadSN % 48U) == 0U)
         {
-            u8VcuSectorSN = (u16VcuReadSN / 48U)-1U;
+            u8VcuSectorSN = (uint8_t)((u16VcuReadSN / 48U)-1U);
         }else{
-            u8VcuSectorSN = u16VcuReadSN / 48U;
+            u8VcuSectorSN = (uint8_t)(u16VcuReadSN / 48U);
         }
         /*Calculate page position*/
-        u8VcuPageSN = u16VcuReadSN / 4U;
+        u8VcuPageSN = (uint8_t)(u16VcuReadSN / 4U);
         while (u8VcuPageSN > 12U)
         {
             u8VcuPageSN -= 12U;
         }
         /*Calculate read Serial number the page*/
-        u8VcuReadSN = u16VcuReadSN % 4U;
+        u8VcuReadSN = (uint8_t)(u16VcuReadSN % 4U);
         if(GD25Q_SPIFLASH_ReadBuffer(u8VcuReadBuff, GD25Q_SPIFLASH_Use_Address(u8VcuSectorSN,u8VcuPageSN,u8VcuReadSN), 64U))
         {
             /*Write to F2 Buffer*/

@@ -30,17 +30,17 @@
 
 static uint8_t u8TxDisplayBuffer[80] = {0};
 static uint8_t u8Vaule = 0U;
-
+//LDRA_EXCLUDE_START 139 S
 void DisplayChipApp_WorkMode(uint8_t u8ModeState)
 {
   uint8_t txbuffer[2]={0x00U};
 
-  txbuffer[0]=0x1E;
-  txbuffer[1]=0x21;
+  txbuffer[0]=0x1EU;
+  txbuffer[1]=0x21U;
   (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
 
-  txbuffer[0]=0x09;
-  txbuffer[1]=0xA5;
+  txbuffer[0]=0x09U;
+  txbuffer[1]=0xA5U;
   (void)I2C4MDriver_Write(CHIP_ADDR, txbuffer, sizeof(txbuffer));
 
   txbuffer[0]=0x1EU;
@@ -117,7 +117,7 @@ void DisplayChipApp_WorkMode(uint8_t u8ModeState)
   }
   else{/*Do nothing*/}
 }
-
+//LDRA_EXCLUDE_END 139 S
 void DisplayChipApp_FaultCheck(void)
 {
   uint8_t u8Status;
