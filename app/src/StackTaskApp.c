@@ -208,8 +208,8 @@ void StackTaskApp_MissionAction(void)
             {
                 /* SWRA-01-05: Timer Lock Hold set as 1000ms, avoid rapid-off/on behavior*/
                 /* TIMER_HOLDCOUNT will return 0xFF if hold time > 1000ms*/
-                /* APP Position check if PowerOn Finished */
-                if (RegisterApp_DHU_Read(CMD_DTC,DTC_APP_POS) == 0x03U)
+                /* MAIN STATE check if PowerOn Finished */
+                if (RegisterApp_DHU_Read(CMD_DTC,DTC_MAIN_STATE) == 0x03U)
                 {
                     PowerApp_RTQ6749_I2CFaultCheck();
                     PowerApp_LP8664_I2CFaultCheck();
