@@ -336,11 +336,10 @@ void DiagApp_LcdFaultCheckFlow(void)
         DiagSt.DiagLcdFautSt = IO_STATUS_LOW;
         if(FAULT_LCD.Report == true)
         {
-            /* Do RST_RQ mechanism in FaultCheck function*/
+            /* Do RST_RQ mechanism and LCDERR in FaultCheck function */
             DisplayChipApp_FaultCheck();
             FAULT_LCD.Report = false;
         }
-        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
     }else{
         /* When voltage at swim state, Do nothing*/
         FAULT_LCD.Report = true;
