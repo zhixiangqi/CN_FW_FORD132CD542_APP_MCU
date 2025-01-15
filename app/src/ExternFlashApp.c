@@ -123,7 +123,7 @@ void ExternFlashApp_Verify(void)
                     }
                 }
                 u8WriteSN = u8ReadSN;
-                u16CurLogSN = (uint16_t)u8SectorSN*0x40U+(uint16_t)u8PageSN*4U+(uint16_t)u8ReadSN;
+                u16CurLogSN = (uint16_t)u8SectorSN*(uint16_t)0x40U+(uint16_t)u8PageSN*(uint16_t)4U+(uint16_t)u8ReadSN;
                 sprintf((char *)u8ExternFlashBuffer,"Sector#:%X Page#:%X Write#:%X Cycle#:%X\r\n",u8SectorSN,u8PageSN,u8WriteSN,u8WriteCycleFlag);
                 UartDriver_TxWriteString(u8ExternFlashBuffer);
             }else{
@@ -247,7 +247,7 @@ void ExternFlashApp_Write(void)
                     UartDriver_TxWriteString((uint8_t *)"Write Below 4\r\n");
                 }
                 u8WriteComplete = 0U;
-                u16CurLogSN = (uint16_t)u8SectorSN*0x40U+(uint16_t)u8PageSN*4U+(uint16_t)u8ReadSN;
+                u16CurLogSN = (uint16_t)u8SectorSN*(uint16_t)0x40U+(uint16_t)u8PageSN*(uint16_t)4U+(uint16_t)u8ReadSN;
                 sprintf((char *)u8ExternFlashBuffer,"Sector#:%X Page#:%X Write#:%X Cycle#:%X\r\n",u8SectorSN,u8PageSN,u8WriteSN,u8WriteCycleFlag);
                 UartDriver_TxWriteString(u8ExternFlashBuffer);
             }else{
