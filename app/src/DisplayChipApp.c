@@ -152,7 +152,7 @@ void DisplayChipApp_FaultCheck(void)
       RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x0A,u8ASIL[5]);
       RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x1F,u8ASIL[6]);
       /* Ref Hardware_Software_ReleaseNote_FORD CD542_0906.xlsx*/
-      if ((u8ASIL[0] | u8ASIL[1] | u8ASIL[2] | u8ASIL[3] | u8ASIL[4] | u8ASIL[5] | u8ASIL[6]) != 0x00U)
+      if ((u8ASIL[0] | u8ASIL[1] | u8ASIL[2] | u8ASIL[3] | u8ASIL[4] | u8ASIL[5]) != 0x00U)
       {
         DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
       }
