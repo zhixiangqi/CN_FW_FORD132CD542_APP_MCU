@@ -144,37 +144,37 @@ void DisplayChipApp_FaultCheck(void)
     if(u8Status != ERROR_NONE){
             /* Do nothing*/
     }else{
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x00,u8ASIL[0]);
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x01,u8ASIL[1]);
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x07,u8ASIL[2]);
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x03,u8ASIL[3]);
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x04,u8ASIL[4]);
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x0A,u8ASIL[5]);
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x1F,u8ASIL[6]);
-        /* Ref Hardware_Software_ReleaseNote_FORD CD542_0906.xlsx*/
-        if ((u8ASIL[0] | u8ASIL[1] | u8ASIL[2] | u8ASIL[3] | u8ASIL[4] | u8ASIL[5] | u8ASIL[6]) != 0x00U)
-        {
-          DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
-        }
-        else{
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x00,u8ASIL[0]);
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x01,u8ASIL[1]);
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x07,u8ASIL[2]);
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x03,u8ASIL[3]);
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x04,u8ASIL[4]);
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x0A,u8ASIL[5]);
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x1F,u8ASIL[6]);
+      /* Ref Hardware_Software_ReleaseNote_FORD CD542_0906.xlsx*/
+      if ((u8ASIL[0] | u8ASIL[1] | u8ASIL[2] | u8ASIL[3] | u8ASIL[4] | u8ASIL[5] | u8ASIL[6]) != 0x00U)
+      {
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
+      }
+      else{
+        /* Do nothing*/
+      }
+      //LDRA_EXCLUDE_START 139 S
+      if(((u8ASIL[0]&0x7DU)!=0x00U) || ((u8ASIL[1]&0x03U)!=0x00U) || ((u8ASIL[2]&0x5FU)!=0x00U))
+      {
+        (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LCD_MASK);
+      }else{
           /* Do nothing*/
-        }
-        //LDRA_EXCLUDE_START 139 S
-        if(((u8ASIL[0]&0x7DU)!=0x00U) || ((u8ASIL[1]&0x03U)!=0x00U) || ((u8ASIL[2]&0x5FU)!=0x00U))
-        {
-          (void)DiagApp_RtnRstRequestCheck(true,DIAG_RST_LCD_MASK);
-        }else{
-            /* Do nothing*/
-        }
-        sprintf((char *)u8TxDisplayBuffer,"FAULT CHECK FLOW> LCD [0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x]\r\n",u8ASIL[0],u8ASIL[1],u8ASIL[2],u8ASIL[3],u8ASIL[4],u8ASIL[5],u8ASIL[6]);
-        UartDriver_TxWriteString(u8TxDisplayBuffer);
+      }
+      sprintf((char *)u8TxDisplayBuffer,"FAULT CHECK FLOW> LCD [0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x]\r\n",u8ASIL[0],u8ASIL[1],u8ASIL[2],u8ASIL[3],u8ASIL[4],u8ASIL[5],u8ASIL[6]);
+      UartDriver_TxWriteString(u8TxDisplayBuffer);
     }
   }
   //LDRA_EXCLUDE_END 139 S
   if(u8Status != ERROR_NONE){
-        DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
-        sprintf((char *)u8TxDisplayBuffer,"FAULT CHECK FLOW> LCD I2C ERROR=0x%02x [0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x]\r\n",u8Status,u8ASIL[0],u8ASIL[1],u8ASIL[2],u8ASIL[3],u8ASIL[4],u8ASIL[5],u8ASIL[6]);
-        UartDriver_TxWriteString(u8TxDisplayBuffer);
+      DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
+      sprintf((char *)u8TxDisplayBuffer,"FAULT CHECK FLOW> LCD I2C ERROR=0x%02x [0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x]\r\n",u8Status,u8ASIL[0],u8ASIL[1],u8ASIL[2],u8ASIL[3],u8ASIL[4],u8ASIL[5],u8ASIL[6]);
+      UartDriver_TxWriteString(u8TxDisplayBuffer);
   }else{
       /* Do nothing*/
   }
@@ -185,51 +185,51 @@ void DisplayChipApp_FaultCheck(void)
   if(u8Status == ERROR_NONE){
     u8Status = I2C4MDriver_WriteRead(CHIP_ADDR,u8ReadRegister0x1C,sizeof(u8ReadRegister0x1C),&u8ASIL[7],1U);
     if(u8Status != ERROR_NONE){
-          /* Do nothing*/
+        /* Do nothing*/
     }else{
-        RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x1C,u8ASIL[7]);
-        /* Ref Hardware_Software_ReleaseNote_FORD CD542_0906.xlsx*/
-        if((u8ASIL[7]&0x7U)!=0x00U)
-        {
-            DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_TSCERR_MASK);
-        }else{
-            /* Do nothing*/
-        }
-        sprintf((char *)u8TxDisplayBuffer,"FAULT CHECK FLOW> TOUCH [0x%02x]\r\n",u8ASIL[7]);
-        UartDriver_TxWriteString(u8TxDisplayBuffer);
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_LCD_FAULT_0x1C,u8ASIL[7]);
+      /* Ref Hardware_Software_ReleaseNote_FORD CD542_0906.xlsx*/
+      if((u8ASIL[7]&0x7U)!=0x00U)
+      {
+        DiagApp_DispStatusSet(DISP_STATUS_BYTE0,DISP0_TSCERR_MASK);
+      }else{
+        /* Do nothing*/
+      }
+      sprintf((char *)u8TxDisplayBuffer,"FAULT CHECK FLOW> TOUCH [0x%02x]\r\n",u8ASIL[7]);
+      UartDriver_TxWriteString(u8TxDisplayBuffer);
     }
   }
   if(u8Status != ERROR_NONE){
-        DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
-        sprintf((char *)u8TxDisplayBuffer,"FAULT CHECK FLOW> LCD I2C ERROR=0x%02x [0x%02x]\r\n",u8Status,u8ASIL[7]);
-        UartDriver_TxWriteString(u8TxDisplayBuffer);
+      DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
+      sprintf((char *)u8TxDisplayBuffer,"FAULT CHECK FLOW> LCD I2C ERROR=0x%02x [0x%02x]\r\n",u8Status,u8ASIL[7]);
+      UartDriver_TxWriteString(u8TxDisplayBuffer);
   }else{
       /* Do nothing*/
   }
 }
 void DisplayChipApp_VerCheck(void)
 {
-    uint8_t u8Status;
-    uint8_t u8ChipVersion[1] = {0};
-    uint8_t u8PageCmd[2] = {0x1EU,0x28U};
-    uint8_t u8ReadRegister[1] = {0x1BU};
-    u8Status = I2C4MDriver_Write(CHIP_ADDR,u8PageCmd,sizeof(u8PageCmd));
-    if(u8Status == ERROR_NONE){
-        u8Status = I2C4MDriver_WriteRead(CHIP_ADDR,u8ReadRegister,sizeof(u8ReadRegister),&u8ChipVersion[0],1U);
-        if(u8Status != ERROR_NONE){
-            /* Do nothing*/
-        }else{
-            RegisterApp_DHU_Setup(CMD_DTC,DTC_DDI_VERSION,u8ChipVersion[0]);
-            sprintf((char *)u8TxDisplayBuffer,"VERSION CHECK > LCD Ver: 0x%02x\r\n",u8ChipVersion[0]);
-            UartDriver_TxWriteString(u8TxDisplayBuffer);
-        }
-    }else{
-        /* Do nothing*/
-    }
+  uint8_t u8Status;
+  uint8_t u8ChipVersion[1] = {0};
+  uint8_t u8PageCmd[2] = {0x1EU,0x28U};
+  uint8_t u8ReadRegister[1] = {0x1BU};
+  u8Status = I2C4MDriver_Write(CHIP_ADDR,u8PageCmd,sizeof(u8PageCmd));
+  if(u8Status == ERROR_NONE){
+    u8Status = I2C4MDriver_WriteRead(CHIP_ADDR,u8ReadRegister,sizeof(u8ReadRegister),&u8ChipVersion[0],1U);
     if(u8Status != ERROR_NONE){
-        DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
-        UartDriver_TxWriteString(u8TxDisplayBuffer);
+      /* Do nothing*/
     }else{
-        DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_LCD_MASK);
+      RegisterApp_DHU_Setup(CMD_DTC,DTC_DDI_VERSION,u8ChipVersion[0]);
+      sprintf((char *)u8TxDisplayBuffer,"VERSION CHECK > LCD Ver: 0x%02x\r\n",u8ChipVersion[0]);
+      UartDriver_TxWriteString(u8TxDisplayBuffer);
     }
+  }else{
+    /* Do nothing*/
+  }
+  if(u8Status != ERROR_NONE){
+    DiagApp_I2CMasterFaultCheck(true,DIAG_I2CM_LCD_MASK);
+    UartDriver_TxWriteString(u8TxDisplayBuffer);
+  }else{
+    DiagApp_I2CMasterFaultCheck(false,DIAG_I2CM_LCD_MASK);
+  }
 }

@@ -331,6 +331,7 @@ void DiagApp_LcdFaultCheckFlow(void)
             DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_LCDERR_MASK);
             (void)DiagApp_RtnRstRequestCheck(false,DIAG_RST_LCD_MASK);
         }
+         DiagApp_DispStatusClear(DISP_STATUS_BYTE0,DISP0_TSCERR_MASK);
         FAULT_LCD.Report = true;
     }else if(IO_STATUS_LOW == u8Status1){
         DiagSt.DiagLcdFautSt = IO_STATUS_LOW;
